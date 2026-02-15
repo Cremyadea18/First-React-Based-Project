@@ -1,0 +1,29 @@
+/*
+Theme Name: AstraPersonalTheme
+... (tus datos anteriores) ...
+*/
+
+/* Reset básico para que no se pegue a los bordes */
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: sans-serif !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    display: flex !important;
+    flex-direction: column !important; /* Esto ES la clave */
+    min-height: 100vh !important;
+}
+
+header, main, footer, #root {
+    display: block !important;
+    width: 100% !important;
+}
+
+/* El contenedor de React */
+#root {
+    padding: 20px;
+    text-align: center;
+}
