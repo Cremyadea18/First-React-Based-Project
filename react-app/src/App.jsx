@@ -2,7 +2,7 @@ import React from 'react'
 import './App.css'
 import './MediaQueries.css'
 import miImagenabout from "./assets/asset.svg"
-import ProductSearch from './components/ProductSearch' 
+import ProductSearch from './components/ProductSearch.jsx' 
 
 const MiTitulo = () => (
   <h1 className="hero__title animate"> <span className='hero_span animate'>AI-Powered Solutions </span>for <br /> Modern <span className='hero_span animate'>Businesses</span></h1>
