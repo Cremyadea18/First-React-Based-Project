@@ -1,44 +1,40 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
 export default function ProductSearch() {
-  const [products, setProducts] = useState([]);
+  // Datos de prueba para ver si la grilla renderiza
+  const [products] = useState([
+    { id: 1, title: 'Producto Prueba 1', price: '10.00', category: 'Zapatos' },
+    { id: 2, title: 'Producto Prueba 2', price: '20.00', category: 'Camisas' },
+    { id: 3, title: 'Producto Prueba 3', price: '30.00', category: 'Accesorios' },
+  ]);
+  
   const [searchTerm, setSearchTerm] = useState('');
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    // Pedimos los productos a la API de WordPress/WooCommerce
-    fetch('https://reactappapplication.online/wp-json/wp/v2/product') 
-      .then(response => response.json())
-      .then(data => {
-        setProducts(data);
-        setLoading(false);
-      })
-      .catch(err => console.error("Error cargando productos:", err));
-  }, []);
 
   const filteredProducts = products.filter(product =>
-    product.title.rendered.toLowerCase().includes(searchTerm.toLowerCase())
+    product.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  if (loading) return <p>Cargando productos...</p>;
-
   return (
-    <div className="product-search-container">
+    <div style={{ padding: '20px' }}>
       <input
         type="text"
-        placeholder="Buscar productos..."
-        className="search-input"
+        placeholder="Probar buscador..."
+        style={{ width: '100%', padding: '10px', marginBottom: '20px' }}
         onChange={(e) => setSearchTerm(e.target.value)}
       />
 
-      <div className="product-grid">
+      <div style={{ 
+        display: 'grid', 
+        gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', 
+        gap: '20px' 
+      }}>
         {filteredProducts.map(product => (
-          <div key={product.id} className="product-card">
-            {/* Si tienes imágenes, aquí iría la URL */}
-            <img src={product.featured_image_src || 'https://via.placeholder.com/150'} alt={product.title.rendered} />
-            <h4>{product.title.rendered}</h4>
-            <div dangerouslySetInnerHTML={{ __html: product.excerpt.rendered }} />
-            <a href={product.link} className="view-button">Ver Producto</a>
+          <div key={product.id} style={{ border: '1px solid #ccc', padding: '15px', borderRadius: '8px' }}>
+            <h4>{product.title}</h4>
+            <p>Precio: ${product.price}</p>
+            <button style={{ background: '#646cff', color: 'white', border: 'none', padding: '5px 10px', borderRadius: '4px' }}>
+              Ver más
+            </button>
           </div>
         ))}
       </div>
