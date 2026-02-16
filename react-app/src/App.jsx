@@ -55,8 +55,7 @@ function App() {
               <div></div>
             </div>
             <div>
-              {/* CORREGIDO: Sin comillas en el src */}
-              <img src={miImagenabout} alt="Tecnologi app image" />
+             
             </div>
           </div>
         </div>
