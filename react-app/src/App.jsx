@@ -23,6 +23,10 @@ const AboutText = () => (
 <p className='about_text animate'>Intelligent automation helps you eliminate repetitive task, reduce constly errors and optimize every step of your workflow for greater accuracy and efficency.</p>
 )
 
+const PruebaRepo = () => (
+<h1 className='hero_text'> Aqui estamos probando que tan rapido se conecta todo nuestro proyecto personal</h1>
+)
+
 function App() {
   return (
     <> 
@@ -50,7 +54,9 @@ function App() {
           </div>
           <div className='about_content_two'>
             <div>
-              <div></div>
+              <div>
+                <PruebaRepo />
+              </div>
             </div>
             <div>
               <img src="{miImagenabout}" alt="Tecnologi app image" />
