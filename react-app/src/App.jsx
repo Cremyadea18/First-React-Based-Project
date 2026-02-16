@@ -28,8 +28,6 @@ const PruebaRepo = () => (
 <h1 className='hero_text'> Aqui estamos probando que tan rapido se conecta todo nuestro proyecto personal</h1>
 )
 
-import ProductSearch from './components/ProductSearch'
-
 function App() {
   return (
     <> 
@@ -57,19 +55,18 @@ function App() {
               <div></div>
             </div>
             <div>
-              <img src="{miImagenabout}" alt="Tecnologi app image" />
+              {/* CORREGIDO: Sin comillas en el src */}
+              <img src={miImagenabout} alt="Tecnologi app image" />
             </div>
           </div>
         </div>
       </section>
 
-      {/* Sección del buscador para que le agregues tus clases de CSS */}
       <section className='products_search'>
         <div className='products_search_container'>
            <ProductSearch />
         </div>
       </section>
-
     </> 
   )
 }
