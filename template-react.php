@@ -1,8 +1,11 @@
-<?php get_header(); ?>
+<?php
+/**
+ * Template Name: Pagina React Hibrida
+ */
+
+get_header(); ?>
 
 <main> 
-    
-    
     <div id="root"></div>
 </main>
 
