@@ -55,7 +55,7 @@ function App() {
           <div className='about_content_two'>
             <div>
               <div>
-                <PruebaRepo />
+              
               </div>
             </div>
             <div>
