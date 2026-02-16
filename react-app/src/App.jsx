@@ -2,6 +2,7 @@ import React from 'react'
 import './App.css'
 import './MediaQueries.css'
 import miImagenabout from "./assets/asset.svg"
+import ProductSearch from './components/ProductSearch' 
 
 const MiTitulo = () => (
   <h1 className="hero__title animate"> <span className='hero_span animate'>AI-Powered Solutions </span>for <br /> Modern <span className='hero_span animate'>Businesses</span></h1>
@@ -27,18 +28,17 @@ const PruebaRepo = () => (
 <h1 className='hero_text'> Aqui estamos probando que tan rapido se conecta todo nuestro proyecto personal</h1>
 )
 
+import ProductSearch from './components/ProductSearch'
+
 function App() {
   return (
     <> 
-      
       <section className="hero">
         <div className='hero__content'>
           <MiTitulo />
           <div className='hero_content_container-text'>
-         <MiTexto />
+            <MiTexto />
           </div>
-          
-          
           <div className='hero__content_buttons'>
             <BtnPrimary />
             <BtnSecondary />
@@ -54,14 +54,19 @@ function App() {
           </div>
           <div className='about_content_two'>
             <div>
-              <div>
-              
-              </div>
+              <div></div>
             </div>
             <div>
               <img src="{miImagenabout}" alt="Tecnologi app image" />
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* Sección del buscador para que le agregues tus clases de CSS */}
+      <section className='products_search'>
+        <div className='products_search_container'>
+           <ProductSearch />
         </div>
       </section>
 
