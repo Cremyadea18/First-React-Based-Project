@@ -43,7 +43,7 @@ const ProductSearchTittle = () => (
 
 export const Header = () => (
   <header className="site-header-react">
-    <nav>
+    <nav className='nav-container'>
       <ul>
         <li><a href="/">Home</a></li>
         <li><a href="/productos">Products</a></li>
