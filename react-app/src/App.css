@@ -57,6 +57,20 @@ padding-right: clamp(20px,8vh,64px);
 box-sizing: border-box;
 }
 
+.main_container_structure {
+width: 100%;
+margin: 0 auto;
+min-height:800px;
+display: flex;
+align-items: center;
+justify-content: center;
+padding-top:clamp(20px,8vh,80px) ;
+padding-bottom:clamp(20px,8vh,80px) ;
+padding-left: clamp(20px,8vh,64px);
+padding-right: clamp(20px,8vh,64px);
+box-sizing: border-box;
+}
+
 
 .hero__content {
 height: auto;
@@ -67,6 +81,21 @@ gap: 20px;
 }
 
 .about_content {
+width: 100%;
+margin: 0 auto;
+max-width: 1400px;
+display: flex;
+align-items: center;
+justify-content: center;
+flex-direction: column;
+gap: clamp(30px, 5vw, 40px);
+align-items: center;
+justify-content: center;
+text-align: center;
+}
+
+
+.main_container_structure_content {
 width: 100%;
 margin: 0 auto;
 max-width: 1400px;
