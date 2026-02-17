@@ -24,6 +24,9 @@ const AboutText = () => (
 <p className='about_text animate'>Intelligent automation helps you eliminate repetitive task, reduce constly errors and optimize every step of your workflow for greater accuracy and efficency.</p>
 )
 
+const DebugTittle = () => (
+<h2 className='about_title'>DEBUG TITTLE</h2>
+)
 
 
 function App() {
@@ -61,6 +64,7 @@ function App() {
 
       <section className='products_search'>
   <div className='products_search_container'>
+    <DebugTittle/>
       <h2>DEBUG: La sección de búsqueda debería estar abajo</h2>
       <ProductSearch />
   </div>
