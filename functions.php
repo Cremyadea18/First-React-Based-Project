@@ -2,18 +2,18 @@
 
 function enqueue_react_app_custom() {
     $theme_uri = get_template_directory_uri();
-    $version = time(); // Cache busting activo
+    $version = time(); // Cache busting activo para ver cambios al instante
 
-    // 1. DEFINIMOS DÓNDE CARGAR REACT
-    // Agrega aquí los "slugs" de tus nuevas páginas de Elementor en el array is_page
-    $cargar_en_paginas = is_page(array('hibrid-page','home','servicios', 'contacto', 'sobre-nosotros'));
-    $es_template_react = is_page_template('template-react.php');
-    $es_producto = is_product();
-
-    // 2. CONDICIONAL GLOBAL
-    if ( $cargar_en_paginas || $es_template_react || $es_producto ) {
+    /**
+     * CONDICIONAL INTELIGENTE:
+     * Cargamos React en:
+     * 1. Todas las "Páginas" de WordPress (is_page). Esto incluye Home, About, y cualquier página de Elementor.
+     * 2. Plantillas de React específicas.
+     * 3. Páginas de producto individual.
+     */
+    if ( is_page() || is_page_template('template-react.php') || is_product() ) {
         
-        // Cargar el CSS de React (Global para estilos de botones, glassmorphism, etc.)
+        // 1. CSS de React
         wp_enqueue_style(
             'react-app-style', 
             $theme_uri . '/index.css', 
@@ -21,9 +21,7 @@ function enqueue_react_app_custom() {
             $version
         );
 
-        // Cargar el JS de React
-        // Ahora lo cargamos SIEMPRE en estas páginas porque el nuevo main.jsx 
-        // solo montará los componentes si encuentra el ID (react-hero, react-products, etc.)
+        // 2. JS de React
         wp_enqueue_script(
             'react-app-main', 
             $theme_uri . '/index.js', 
@@ -34,20 +32,21 @@ function enqueue_react_app_custom() {
     }
 
     // Estilos generales del tema Astra/Hijo
-    wp_enqueue_style('main-styles', get_stylesheet_uri(), array(), time());
+    wp_enqueue_style('main-styles', get_stylesheet_uri(), array(), $version);
 }
 
 add_action('wp_enqueue_scripts', 'enqueue_react_app_custom');
 
-// Filtro para mantener el soporte de Módulos de JS (Vite)
+// Filtro clave para que Vite/React funcione (type="module")
 add_filter('script_loader_tag', function($tag, $handle, $src) {
     if ($handle !== 'react-app-main') {
         return $tag;
     }
-    return '<script type="module" defer src="' . esc_url($src) . '"></script>';
+    // Añadimos crossOrigin para evitar problemas de carga de assets
+    return '<script type="module" crossorigin src="' . esc_url($src) . '"></script>';
 }, 10, 3);
 
-// Acceso público a la API de WooCommerce
+// Acceso público a la API de WooCommerce (Read-only para productos)
 add_filter( 'woocommerce_rest_check_permissions', function( $permission, $context, $object_id, $post_type ) {
     if ( $post_type === 'product' && $context === 'read' ) {
         return true;
