@@ -343,9 +343,9 @@ margin: 0 auto;
 
 /* Tarjeta de Producto */
 .product-card {
-    flex: 1 1 clamp(320px, 30vw, 360px);
+    flex: 1 1 clamp(320px, 30vw, 350px);
     width: 100%;
-    max-width: 360px;
+    max-width: 350px;
     background:  #121212;
     border-radius: 22px;
     overflow: hidden;
@@ -406,7 +406,7 @@ font-family: "Inter", sans-serif;
   padding: 12px 28px;
   border-radius: 30px;
   cursor: pointer;
-
+text-decoration: none;
   font-family: "Inter", sans-serif;
   font-size: clamp(14px, 1.1vw, 16px);
   font-weight: 400; 
