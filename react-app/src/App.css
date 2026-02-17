@@ -346,16 +346,31 @@ margin: 0 auto;
     flex: 1 1 clamp(320px, 30vw, 360px);
     width: 100%;
     max-width: 360px;
-    background: #fff;
-    border-radius: 15px;
+    background:  #121212;
+    border-radius: 22px;
     overflow: hidden;
-    border: 1px solid #f0f0f0;
-    transition: transform 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    cursor: pointer;
+    position: relative;
 }
 
 .product-card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 15px 30px rgba(0,0,0,0.08);
+    transform: translateY(-12px) scale(1.02);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5), 
+                0 0 20px rgba(255, 255, 255, 0.15); 
+}
+
+.product-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, transparent 50%);
+    pointer-events: none;
 }
 
 .product-image {

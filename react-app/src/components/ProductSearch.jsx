@@ -35,7 +35,7 @@ export default function ProductSearch() {
         <input
           type="text"
           className="search-input"
-          placeholder="¿Qué estás buscando hoy?"
+          placeholder="Search for your Digital product"
           onChange={(e) => setSearchTerm(e.target.value)}
         />
       </div>
