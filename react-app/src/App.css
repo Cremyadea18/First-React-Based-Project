@@ -551,34 +551,76 @@ margin: 0px;
 }
 
 /* Estilo para el input de cantidad */
-.product-single-container .quantity input.qty {
-    width: 60px !important;
-    height: 52px !important; /* Misma altura que el botón para que alineen */
-    border-radius: 10px !important;
-    border: 2px solid #eee !important;
+/* 1. Contenedor para alinear Input y Botón */
+.product-single-container .product-main-action form.cart {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 25px;
+}
+
+/* 2. Estilo Base para el Botón de Añadir al Carrito */
+.product-single-container .product-main-action .cart .single_add_to_cart_button.button.alt {
+    /* Estructura y Espaciado */
+    display: inline-block !important;
+    padding: 12px 28px !important;
+    border-radius: 30px !important;
+    cursor: pointer !important;
+    border: 1px solid rgba(255, 255, 255, 0.5) !important;
+    
+    /* Tipografía */
+    font-family: "Inter", sans-serif !important;
+    font-size: clamp(14px, 1.1vw, 16px) !important;
+    font-weight: 500 !important;
+    line-height: 1 !important;
+    color: #0f172a !important;
     text-align: center !important;
-    font-size: 1.1rem !important;
-    font-weight: 600 !important;
-    color: #333 !important;
-    background-color: #f9f9f9 !important;
+    letter-spacing: 0.01em !important;
+
+    /* Efecto Glassmorphism */
+    background: rgba(255, 255, 255, 0.7) !important;
+    backdrop-filter: blur(10px) !important;
+    -webkit-backdrop-filter: blur(10px) !important;
+    
+    /* Sombras y Transición */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05) !important;
+    transition: all 0.3s ease !important;
+}
+
+/* Hover del Botón */
+.product-single-container .product-main-action .cart .single_add_to_cart_button.button.alt:hover {
+    background: rgba(255, 255, 255, 0.9) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1) !important;
+    border-color: rgba(255, 255, 255, 0.8) !important;
+}
+
+/* 3. Estilo para el Input de Cantidad (Mismo Estilo Glass) */
+.product-single-container .quantity input.qty {
+    /* Estructura */
+    width: 40px !important;
+    height: 32px !important; /* Ajustado para que coincida con el padding del botón */
+    border-radius: 30px !important; /* Redondeado igual al botón */
+    border: 1px solid rgba(255, 255, 255, 0.5) !important;
+    
+    /* Efecto Glassmorphism */
+    background: rgba(255, 255, 255, 0.7) !important;
+    backdrop-filter: blur(10px) !important;
+    -webkit-backdrop-filter: blur(10px) !important;
+    
+    /* Tipografía */
+    font-family: "Inter", sans-serif !important;
+    color: #0f172a !important;
+    font-weight: 500 !important;
+    text-align: center !important;
     outline: none !important;
-    transition: border-color 0.3s ease !important;
 }
 
-.product-single-container .quantity input.qty:focus {
-    border-color: #646cff !important;
-    background-color: #fff !important;
-}
-
-/* Ocultar las flechas (spinners) nativas del navegador */
+/* Ocultar flechas del input para mantener la estética limpia */
 .product-single-container .quantity input::-webkit-outer-spin-button,
 .product-single-container .quantity input::-webkit-inner-spin-button {
     -webkit-appearance: none;
     margin: 0;
-}
-
-.product-single-container .quantity input[type=number] {
-    -moz-appearance: textfield;
 }
 
 
