@@ -157,6 +157,7 @@ letter-spacing: 4px;
 font-family:  "Inter", sans-serif;
 text-transform: uppercase;
 margin: 0px;
+text-align: center;
 }
 
 .about__title {
