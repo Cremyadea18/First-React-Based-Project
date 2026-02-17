@@ -4,8 +4,8 @@ get_header();
 while ( have_posts() ) : the_post();
     global $product;
     ?>
-
-    <div class="product-single-container">
+   <div class= "product_main_container">
+<div class="product-single-container">
         <div class="product-layout-grid">
             
             <div class="product-image-wrapper">
@@ -32,6 +32,8 @@ while ( have_posts() ) : the_post();
 
         </div>
     </div>
+   </div>
+    
 
     <?php
 endwhile;

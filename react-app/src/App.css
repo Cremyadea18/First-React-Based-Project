@@ -72,6 +72,20 @@ box-sizing: border-box;
 }
 
 
+.product_main_container {
+width: 100%;
+display: flex;
+align-items: center;
+justify-content: center;
+padding-top: clamp(50px,8vh,150px);
+padding-bottom: clamp(50px,8vh,150px);
+padding-left: clamp(20px, 8vh,64px);
+padding-right: clamp(20px,8vh,64px);
+box-sizing: border-box;
+}
+
+
+
 .hero__content {
 height: auto;
 max-width: 1000px;
@@ -94,6 +108,11 @@ justify-content: center;
 text-align: center;
 }
 
+.product-single-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 20px;
+}
 
 .main_container_structure_content {
 width: 100%;
@@ -449,17 +468,6 @@ text-decoration: none;
 }
 
 
-
-
-
-
-/* 1. Contenedor y Grid (No necesitan !important normalmente) */
-.product-single-container {
-    max-width: 1200px;
-    margin: 50px auto;
-    padding: 20px;
-}
-
 .product-layout-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -467,7 +475,7 @@ text-decoration: none;
     align-items: start;
 }
 
-/* 2. Imagen */
+
 .main-product-img {
     width: 100%;
     height: auto;
@@ -475,39 +483,66 @@ text-decoration: none;
     box-shadow: 0 10px 30px rgba(0,0,0,0.05);
 }
 
-/* 3. Título (Fusionado y específico) */
+
 .product-single-container .product-main-title {
-    font-size: 3rem !important; 
-    color: #1a1a1a !important;
-    margin-bottom: 10px;
-    line-height: 1.2;
+font-size: clamp(28px, 5vw, 50px);
+line-height: 1.1;
+font-weight:500;
+color: #ffffff;
+letter-spacing: 4px;
+font-family:  "Inter", sans-serif;
+text-transform: uppercase;
+
 }
 
 /* 4. Precio (Fusionado y específico) */
-.product-single-container .product-main-price {
-    font-size: 1.8rem !important;
-    color: #646cff !important;
-    font-weight: bold;
-    margin-bottom: 30px;
+.product-single-container .product-main-price {    
+font-weight: bold;
+font-size: clamp(20px, 5vw, 32px);
+line-height: 1.1;
+color: #CBD5E1;
+letter-spacing: 4px;
+font-family:  "Inter", sans-serif;
+text-transform: uppercase;
+margin: 0px;
 }
 
 /* 5. Botón de WooCommerce */
 .product-main-action .button {
-    background-color: #646cff !important;
-    color: white !important;
-    padding: 15px 40px !important;
-    border-radius: 10px !important;
-    font-size: 1.1rem !important;
-    border: none !important;
-    cursor: pointer;
-    transition: background 0.3s ease;
+    display: inline-block;
+  padding: 12px 28px;
+  border-radius: 30px;
+  cursor: pointer;
+
+  
+  font-family: "Inter", sans-serif;
+  font-size: clamp(14px, 1.1vw, 16px);
+  font-weight: 500;          
+  line-height: 1;
+  color: #0f172a;             
+  text-align: center;
+  letter-spacing: 0.01em;
+
+ 
+  background: rgba(255, 255, 255, 0.7); 
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  
+ 
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+
+
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .product-main-action .button:hover {
-    background-color: #535bf2 !important;
+     background: rgba(255, 255, 255, 0.9); 
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
 }
 
-/* 6. Responsivo */
+
 @media (max-width: 850px) {
     .product-layout-grid {
         grid-template-columns: 1fr;
