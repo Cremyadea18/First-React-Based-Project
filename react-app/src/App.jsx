@@ -46,7 +46,9 @@ export const Header = () => (
     <nav className='nav-container'>
       <ul>
         <li><a href="/">Home</a></li>
+        <li><a href="/productos">About Us</a></li>
         <li><a href="/productos">Products</a></li>
+        <li><a href="/productos">Benefits</a></li>
       </ul>
     </nav>
   </header>
