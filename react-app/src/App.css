@@ -344,7 +344,9 @@ margin: 0 auto;
 
 /* Tarjeta de Producto */
 .product-card {
-    flex: 1 1 clamp(320px, 30vw, 380px);
+    flex: 1 1 clamp(320px, 30vw, 360px);
+    width: 100%;
+    max-width: 360px;
     background: #fff;
     border-radius: 15px;
     overflow: hidden;
