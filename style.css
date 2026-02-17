@@ -22,7 +22,7 @@ header, main, footer, #root {
     width: 100% !important;
 }
 
-/* El contenedor de React */
+
 #root {
     padding: 20px;
     text-align: center;

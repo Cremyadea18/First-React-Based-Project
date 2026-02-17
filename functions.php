@@ -2,13 +2,13 @@
 
 function enqueue_react_app_custom() {
     // 1. CONDICIONAL ESTRICTO: Solo cargar en tu página híbrida
-    // Esto evita que Astra o WooCommerce interfieran en otras páginas
     if ( is_page('hibrid-page') || is_page_template('template-react.php') ) {
         
         $theme_uri = get_template_directory_uri();
         
-        // Usamos una versión fija durante esta prueba para estabilidad
-        $version = '1.0.1'; 
+        // USAMOS TIME() PARA ROMPER LA CACHÉ: 
+        // Genera un número único basado en el segundo actual (ej: 17713345)
+        $version = time(); 
 
         // Cargar el CSS de React
         wp_enqueue_style(
@@ -24,21 +24,21 @@ function enqueue_react_app_custom() {
             $theme_uri . '/index.js', 
             array(), 
             $version, 
-            true // En el footer es correcto
+            true 
         );
     }
 
-    // Estilos generales del tema (siempre cargan)
-    wp_enqueue_style('main-styles', get_stylesheet_uri(), array(), '1.0.0');
+    // Estilos generales del tema
+    wp_enqueue_style('main-styles', get_stylesheet_uri(), array(), time());
 }
 
 add_action('wp_enqueue_scripts', 'enqueue_react_app_custom');
 
-// 2. FILTRO MEJORADO: Añadimos 'module' y 'defer'
+// 2. FILTRO MEJORADO: Mantenemos el type="module" y el "defer"
 add_filter('script_loader_tag', function($tag, $handle, $src) {
     if ($handle !== 'react-app-main') {
         return $tag;
     }
-    // 'defer' es vital para evitar el error de "Target container is not a DOM element" o dobles cargas
+    // Defer es clave para que el DOM esté listo antes de que React intente montar el root
     return '<script type="module" defer src="' . esc_url($src) . '"></script>';
 }, 10, 3);
