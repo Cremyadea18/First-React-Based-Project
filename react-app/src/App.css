@@ -635,60 +635,88 @@ margin: 0px;
     }
 }
 
-/* Ocultar reviews y otros elementos si no los quieres */
-.related-products-container .star-rating,
-.related-products-container .woocommerce-placeholder {
-    display: none;
-}
-
-/* Contenedor de la cuadrícula de relacionados */
+/* 1. Ajuste del contenedor de la cuadrícula */
 .related-products-container ul.products {
-    display: grid !important;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)) !important;
-    gap: 30px !important;
-    list-style: none !important;
-    padding: 0 !important;
-    margin-top: 30px !important;
+    display: flex !important;
+    flex-wrap: wrap;
+    gap: 30px;
+    padding: 0;
+    list-style: none;
+    justify-content: center;
 }
 
-/* La Card Individual */
+/* 2. La Card (Aplicando tu estilo .product-card a li.product) */
 .related-products-container ul.products li.product {
-    background: rgba(255, 255, 255, 0.7) !important;
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.5);
-    border-radius: 20px;
-    padding: 20px;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    text-align: center;
-}
-
-.related-products-container ul.products li.product:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-}
-
-/* Imagen de la card */
-.related-products-container ul.products li.product img {
-    border-radius: 15px;
-    margin-bottom: 15px;
+    flex: 1 1 clamp(320px, 30vw, 350px);
     width: 100%;
-    height: auto;
+    max-width: 350px;
+    background: #121212 !important; /* Tu color oscuro */
+    border-radius: 22px !important;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+    cursor: pointer;
+    position: relative;
+    padding-bottom: 20px; /* Espacio para el botón */
+    margin: 0 !important; /* Reset de márgenes de WooCommerce */
+}
+
+/* Efecto Hover */
+.related-products-container ul.products li.product:hover {
+    transform: translateY(-12px) scale(1.02) !important;
+    border: 1px solid rgba(255, 255, 255, 0.5) !important;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5), 
+                0 0 20px rgba(255, 255, 255, 0.15) !important; 
+}
+
+/* El gradiente superior ::before */
+.related-products-container ul.products li.product::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* 3. Ajuste de elementos internos (Imagen, Título, Precio) */
+.related-products-container ul.products li.product img {
+    width: 100%;
+    height: 250px;
     object-fit: cover;
+    display: block;
 }
 
-/* Título de la card */
 .related-products-container ul.products li.product .woocommerce-loop-product__title {
+    color: #ffffff !important;
     font-family: "Inter", sans-serif;
-    font-size: 1.1rem;
-    color: #0f172a;
-    margin: 10px 0;
+    padding: 15px 20px 5px 20px;
+    font-size: 1.2rem;
+    margin: 0;
 }
 
-/* Botón de la card */
+.related-products-container ul.products li.product .price {
+    color: rgba(255, 255, 255, 0.7) !important;
+    padding: 0 20px 15px 20px;
+    display: block;
+    font-weight: 400;
+}
+
+/* 4. Botón de la Card */
 .related-products-container ul.products li.product .button {
-    background: #646cff !important;
+    margin: 0 20px 10px 20px !important;
+    background: rgba(255, 255, 255, 0.1) !important;
     color: white !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
     border-radius: 30px !important;
-    padding: 10px 20px !important;
-    font-size: 0.9rem !important;
+    text-transform: none !important;
+    backdrop-filter: blur(5px);
+}
+
+.related-products-container .star-rating, 
+.related-products-container .onsale {
+    display: none !important;
 }
