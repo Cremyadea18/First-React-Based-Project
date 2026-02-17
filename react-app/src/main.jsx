@@ -1,26 +1,41 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import App from './App.jsx'
+import App, { Hero, About, ProductsSection } from './App.jsx' // Importamos los componentes específicos
 import './index.css'
 
-const rootElement = document.getElementById('root');
+// 1. Mapeamos el ID del HTML con el Componente de React
+const componentsToMount = [
+  { id: 'root', component: <App /> },             // Para la página completa original
+  { id: 'react-hero', component: <Hero /> },       // Para el Hero en Elementor
+  { id: 'react-about', component: <About /> },     // Para el About en Elementor
+  { id: 'react-products', component: <ProductsSection /> } // Para el buscador
+];
 
-if (rootElement) {
-  // Usamos una variable global personalizada para controlar la raíz
-  if (!window.reactRoot) {
-    // Si no existe, la creamos y la guardamos en window para que nadie más la cree
-    window.reactRoot = ReactDOM.createRoot(rootElement);
-    window.reactRoot.render(
-      <React.StrictMode>
-        <App />
-      </React.StrictMode>
-    );
-  } else {
-    // Opcional: Si ya existe, simplemente volvemos a renderizar sobre la misma raíz
-    window.reactRoot.render(
-      <React.StrictMode>
-        <App />
-      </React.StrictMode>
-    );
-  }
-}
+// 2. Función para inicializar los roots de forma segura
+const initRoots = () => {
+  componentsToMount.forEach(({ id, component }) => {
+    const el = document.getElementById(id);
+    
+    if (el) {
+      // Usamos un nombre de propiedad único en el elemento para guardar su propia raíz
+      // Esto evita conflictos si Elementor recarga secciones
+      if (!el._reactRoot) {
+        el._reactRoot = ReactDOM.createRoot(el);
+      }
+      
+      el._reactRoot.render(
+        <React.StrictMode>
+          {component}
+        </React.StrictMode>
+      );
+    }
+  });
+};
+
+// 3. Ejecutar la inicialización
+initRoots();
+
+/** * Opcional: Si Elementor usa carga dinámica o widgets que aparecen después, 
+ * podemos re-ejecutar la función cuando sea necesario.
+ */
+window.refreshReactComponents = initRoots;
