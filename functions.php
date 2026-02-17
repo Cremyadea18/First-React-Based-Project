@@ -6,7 +6,7 @@ function enqueue_react_app_custom() {
 
     // 1. DEFINIMOS DÓNDE CARGAR REACT
     // Agrega aquí los "slugs" de tus nuevas páginas de Elementor en el array is_page
-    $cargar_en_paginas = is_page(array('hibrid-page','Home','servicios', 'contacto', 'sobre-nosotros'));
+    $cargar_en_paginas = is_page(array('hibrid-page','home','servicios', 'contacto', 'sobre-nosotros'));
     $es_template_react = is_page_template('template-react.php');
     $es_producto = is_product();
 
