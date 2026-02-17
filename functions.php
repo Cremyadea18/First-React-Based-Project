@@ -1,38 +1,44 @@
 <?php
 
 function enqueue_react_app_custom() {
-    $theme_uri = get_template_directory_uri();
-    
-    // Usamos time() para que cada carga sea "nueva" y saltarnos la caché del navegador
-    $version = time(); 
+    // 1. CONDICIONAL ESTRICTO: Solo cargar en tu página híbrida
+    // Esto evita que Astra o WooCommerce interfieran en otras páginas
+    if ( is_page('hibrid-page') || is_page_template('template-react.php') ) {
+        
+        $theme_uri = get_template_directory_uri();
+        
+        // Usamos una versión fija durante esta prueba para estabilidad
+        $version = '1.0.1'; 
 
-    // 1. Cargamos el CSS de React
-    wp_enqueue_style(
-        'react-app-style', 
-        $theme_uri . '/index.css', 
-        array(), 
-        $version
-    );
+        // Cargar el CSS de React
+        wp_enqueue_style(
+            'react-app-style', 
+            $theme_uri . '/index.css', 
+            array(), 
+            $version
+        );
 
-    // 2. Cargamos el JS de React
-    wp_enqueue_script(
-        'react-app-main', 
-        $theme_uri . '/index.js', 
-        array(), 
-        $version, 
-        true // Se carga en el footer
-    );
+        // Cargar el JS de React
+        wp_enqueue_script(
+            'react-app-main', 
+            $theme_uri . '/index.js', 
+            array(), 
+            $version, 
+            true // En el footer es correcto
+        );
+    }
 
-    // Estilos generales del tema
-    wp_enqueue_style('main-styles', get_stylesheet_uri(), array(), time());
+    // Estilos generales del tema (siempre cargan)
+    wp_enqueue_style('main-styles', get_stylesheet_uri(), array(), '1.0.0');
 }
 
 add_action('wp_enqueue_scripts', 'enqueue_react_app_custom');
 
-// IMPORTANTE: No olvides mantener el filtro del type="module" abajo
+// 2. FILTRO MEJORADO: Añadimos 'module' y 'defer'
 add_filter('script_loader_tag', function($tag, $handle, $src) {
     if ($handle !== 'react-app-main') {
         return $tag;
     }
-    return '<script type="module" src="' . esc_url($src) . '"></script>';
+    // 'defer' es vital para evitar el error de "Target container is not a DOM element" o dobles cargas
+    return '<script type="module" defer src="' . esc_url($src) . '"></script>';
 }, 10, 3);
