@@ -449,6 +449,50 @@ text-decoration: none;
 }
 
 
-.custom-product-page {
-  background-color: yellow;
+
+.product-single-container {
+    max-width: 1200px;
+    margin: 50px auto;
+    padding: 20px;
+}
+
+.product-layout-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Dos columnas iguales */
+    gap: 60px;
+    align-items: start;
+}
+
+.main-product-img {
+    width: 100%;
+    height: auto;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+}
+
+.product-main-title {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+}
+
+.product-main-price {
+    font-size: 1.8rem;
+    color: #646cff;
+    font-weight: bold;
+    margin-bottom: 30px;
+}
+
+.product-main-action .button {
+    background-color: #646cff !important;
+    color: white !important;
+    padding: 15px 40px !important;
+    border-radius: 10px !important;
+    font-size: 1.1rem !important;
+}
+
+/* Responsivo para móviles */
+@media (max-width: 768px) {
+    .product-layout-grid {
+        grid-template-columns: 1fr;
+    }
 }
