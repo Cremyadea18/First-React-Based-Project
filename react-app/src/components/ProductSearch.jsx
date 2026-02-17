@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 
 export default function ProductSearch() {
-  const [products, setProducts] = useState([]); // Siempre iniciamos con array vacío
+  const [products, setProducts] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -9,60 +9,65 @@ export default function ProductSearch() {
   useEffect(() => {
     fetch('/wp-json/wc/v3/products?per_page=20')
       .then(response => {
-        if (!response.ok) {
-          throw new Error('Error de autenticación o respuesta del servidor');
-        }
+        if (!response.ok) throw new Error('Error de conexión con la tienda');
         return response.json();
       })
       .then(data => {
-        // VALIDACIÓN CLAVE: Verificamos que 'data' sea realmente un Array
-        if (Array.isArray(data)) {
-          setProducts(data);
-        } else {
-          console.error('La API no devolvió un array:', data);
-          setProducts([]);
-        }
+        if (Array.isArray(data)) setProducts(data);
         setLoading(false);
       })
       .catch(err => {
-        console.error('Error en fetch:', err);
         setError(err.message);
         setLoading(false);
       });
   }, []);
 
-  // Usamos encadenamiento opcional (?.) para evitar errores de lectura
   const filteredProducts = products?.filter(product =>
     product?.name?.toLowerCase().includes(searchTerm.toLowerCase())
   ) || [];
 
-  if (loading) return <p style={{textAlign: 'center', padding: '20px'}}>Cargando productos...</p>;
-  if (error) return <p style={{color: 'red', textAlign: 'center'}}>Error: {error}. Revisa los permisos de la API.</p>;
+  if (loading) return <div className="loading-state">Cargando productos...</div>;
+  if (error) return <div className="error-state">Error: {error}</div>;
 
   return (
-    <div style={{ padding: '20px' }}>
-      <input
-        type="text"
-        placeholder="Buscar productos..."
-        style={{ width: '100%', padding: '10px', marginBottom: '20px' }}
-        onChange={(e) => setSearchTerm(e.target.value)}
-      />
+    <div className="search-section">
+      <div className="search-bar-container">
+        <input
+          type="text"
+          className="search-input"
+          placeholder="¿Qué estás buscando hoy?"
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+      </div>
 
-      <div style={{ 
-        display: 'grid', 
-        gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', 
-        gap: '20px' 
-      }}>
+      <div className="products-grid">
         {filteredProducts.map(product => (
-          <div key={product.id} style={{ border: '1px solid #ccc', padding: '15px' }}>
-             {product.images?.[0] && (
-              <img src={product.images[0].src} style={{width: '100%', height: '150px', objectFit: 'cover'}} />
-            )}
-            <h4>{product.name}</h4>
-            <p>${product.price}</p>
-          </div>
+          <article key={product.id} className="product-card">
+            <div className="product-image-container">
+              {product.images?.[0] ? (
+                <img src={product.images[0].src} alt={product.name} className="product-image" />
+              ) : (
+                <div className="no-image">Sin imagen</div>
+              )}
+            </div>
+            
+            <div className="product-info">
+              <h3 className="product-title">{product.name}</h3>
+              <div 
+                className="product-price" 
+                dangerouslySetInnerHTML={{ __html: product.price_html || `$${product.price}` }} 
+              />
+              <a href={product.permalink} className="product-button">
+                Ver Detalle
+              </a>
+            </div>
+          </article>
         ))}
       </div>
+
+      {filteredProducts.length === 0 && (
+        <p className="no-results">No encontramos productos que coincidan con tu búsqueda.</p>
+      )}
     </div>
   );
 }
