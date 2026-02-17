@@ -1,65 +1,35 @@
 <?php
 /**
- * Plantilla personalizada para producto individual
+ * DIAGNÓSTICO EXTREMO
  */
-
-if ( ! defined( 'ABSPATH' ) ) {
-    exit; // Seguridad: No permitir acceso directo al archivo
-}
+if ( ! defined( 'ABSPATH' ) ) { exit; }
 
 get_header(); 
 
-// Banner de prueba para confirmar que carga
-echo '<div style="background: #4CAF50; color: white; text-align: center; padding: 15px;">🚀 Plantilla Personalizada Activa</div>';
+echo '<h1 style="color: red; text-align: center; background: yellow; padding: 20px; position: relative; z-index: 9999;">
+        SI VES ESTO, LA PLANTILLA ESTÁ CARGANDO
+      </h1>';
 
 if ( have_posts() ) :
     while ( have_posts() ) : the_post();
-        
-        // Es vital cargar la variable global $product dentro del loop
         global $product;
-
-        // Si por alguna razón el objeto producto no carga, evitamos que la página rompa
-        if ( ! is_object( $product ) ) {
-            $product = wc_get_product( get_the_ID() );
+        
+        // Verificamos si el objeto producto existe
+        if ( is_object( $product ) ) {
+            echo '<h2 style="text-align:center;">Producto detectado: ' . get_the_title() . '</h2>';
+        } else {
+            echo '<h2 style="text-align:center; color: orange;">Error: El objeto $product no se cargó correctamente.</h2>';
         }
-        ?>
 
-        <section class="custom-product-page" style="padding: 40px 0;">
-            <div class="container-hibrido" style="max-width: 1200px; margin: 0 auto; display: flex; gap: 40px;">
-                
-                <div class="product-gallery" style="flex: 1;">
-                    <?php 
-                    if ( has_post_thumbnail() ) {
-                        the_post_thumbnail( 'large', array( 'style' => 'width:100%; height:auto; border-radius:15px;' ) ); 
-                    }
-                    ?>
-                </div>
+        // Mostrar el contenido básico
+        echo '<div style="max-width:800px; margin: 0 auto; border: 2px solid blue; padding: 20px;">';
+        the_title('<h1>', '</h1>');
+        the_content();
+        echo '</div>';
 
-                <div class="product-details" style="flex: 1;">
-                    <h1 class="product-title-custom"><?php the_title(); ?></h1>
-                    
-                    <div class="product-price-custom" style="font-size: 24px; font-weight: bold; margin: 20px 0;">
-                        <?php echo $product->get_price_html(); ?>
-                    </div>
-
-                    <div class="product-description-custom" style="margin-bottom: 30px;">
-                        <?php the_content(); ?>
-                    </div>
-
-                    <div class="product-action-custom">
-                        <?php 
-                        // Esta función es sagrada: renderiza el botón de carrito y variaciones
-                        woocommerce_template_single_add_to_cart(); 
-                        ?>
-                    </div>
-                </div>
-
-            </div>
-        </section>
-
-        <?php
     endwhile;
+else :
+    echo '<h2 style="text-align:center; color: red;">ERROR: WordPress no encontró el post del producto.</h2>';
 endif;
 
-get_footer(); 
-?>
+get_footer();
