@@ -9,5 +9,4 @@
     <?php wp_head(); ?> </head>
 <body <?php body_class(); ?>>
 <header>
-    <h1>Desarrollo con SDK y React</h1>
 </header>
