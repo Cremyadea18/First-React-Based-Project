@@ -496,3 +496,14 @@ text-decoration: none;
         grid-template-columns: 1fr;
     }
 }
+
+/* Usamos el nombre de la clase del contenedor que pusimos en el PHP */
+.product-single-container .product-main-title {
+    font-size: 3rem !important; /* El !important asegura que le gane a Astra */
+    color: #1a1a1a !important;
+}
+
+.product-single-container .product-main-price {
+    font-size: 1.8rem !important;
+    color: #646cff !important;
+}
