@@ -1,15 +1,13 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import App, { Hero, About, ProductsSection } from './App.jsx'
+import App, { Header, Hero, About, ProductsSection } from './App.jsx' // <--- Verifica que Header esté aquí
 import './index.css'
 
 const componentsToMount = [
   { id: 'react-header', component: <Header /> },
-  { id: 'react-footer', component: <Footer /> },
   { id: 'react-hero', component: <Hero /> },
   { id: 'react-about', component: <About /> },
-  { id: 'react-products', component: <ProductsSection /> },
-  { id: 'full-app-container', component: <App /> } 
+  { id: 'react-products', component: <ProductsSection /> }
 ];
 
 const initRoots = () => {
@@ -28,7 +26,7 @@ const initRoots = () => {
   });
 };
 
-// Esto asegura que React espere a que el HTML de Elementor esté listo
+// IMPORTANTE: Asegúrate de que esto esté presente para manejar el orden de carga
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', initRoots);
 } else {
