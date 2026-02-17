@@ -126,16 +126,6 @@ margin: 0 auto;
 }
 
 
-.filter_section_search {
-width: 100%;
-min-width: ;
-display: flex;
-justify-content: center;
-align-items: center;
-margin: 0 auto;
-}
-
-
 .hero_content_container-text {
 max-width: 500px;
 margin: 0 auto;
@@ -302,6 +292,16 @@ font-family: "Inter", sans-serif;
   animation-delay: 0.5s;
 }
 
+
+.filter_section_search {
+width: 100%;
+min-width:800px ;
+display: flex;
+flex-direction: row;
+justify-content: center;
+align-items: center;
+margin: 0 auto;
+}
 
 /* Contenedor Principal */
 .search-section {
