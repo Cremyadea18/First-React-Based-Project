@@ -7,7 +7,7 @@ const componentsToMount = [
   { id: 'react-hero', component: <Hero /> },
   { id: 'react-about', component: <About /> },
   { id: 'react-products', component: <ProductsSection /> },
-  { id: 'root', component: <App /> } // Solo se activará si pones id="root"
+  { id: 'full-app-container', component: <App /> } 
 ];
 
 const initRoots = () => {

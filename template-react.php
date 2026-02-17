@@ -5,9 +5,8 @@
 
 get_header(); ?>
 
-
 <main id="primary" class="site-main"> 
-    <div id="root">
+    <div id="full-app-container">
        
     </div>
 </main>
