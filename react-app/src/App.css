@@ -449,3 +449,47 @@ text-decoration: none;
 }
 
 
+.product-card {
+    /* Mantenemos tu estructura de tamaño */
+    flex: 0 1 clamp(320px, 30vw, 360px); 
+    width: 100%;
+    max-width: 360px;
+    
+    /* Estética Oscura */
+    background: #121212;
+    border-radius: 22px;
+    overflow: hidden;
+    
+    /* Borde inicial sutil para que no "desaparezca" en el fondo */
+    border: 1px solid rgba(255, 255, 255, 0.1); 
+    
+    /* Transiciones suaves para todas las propiedades */
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    cursor: pointer;
+    position: relative;
+}
+
+.product-card:hover {
+    /* Elevación y crecimiento */
+    transform: translateY(-12px) scale(1.02);
+    
+    /* El "Viso" Blanco: 
+       1. Un resplandor externo suave (blanco con poca opacidad)
+       2. Un borde más iluminado
+    */
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5), 
+                0 0 20px rgba(255, 255, 255, 0.15); /* Este es el viso blanco */
+}
+
+/* Opcional: Un reflejo interno superior para que parezca cristal */
+.product-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, transparent 50%);
+    pointer-events: none;
+}
