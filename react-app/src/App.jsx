@@ -40,6 +40,26 @@ const ProductSearchTittle = () => (
   <h2 className='about__title'>Our Products</h2>
 )
 
+
+export const Header = () => (
+  <header className="site-header-react">
+    <nav>
+      <ul>
+        <li><a href="/">Home</a></li>
+        <li><a href="/productos">Products</a></li>
+      </ul>
+    </nav>
+  </header>
+);
+
+export const Footer = () => (
+  <footer className="site-footer-react">
+    <p>© 2024 AI Solutions - Built with React & WP</p>
+  </footer>
+);
+
+
+
 // --- Secciones Exportables (Para Elementor/Main.jsx) ---
 
 export const Hero = () => (

@@ -4,6 +4,8 @@ import App, { Hero, About, ProductsSection } from './App.jsx'
 import './index.css'
 
 const componentsToMount = [
+  { id: 'react-header', component: <Header /> },
+  { id: 'react-footer', component: <Footer /> },
   { id: 'react-hero', component: <Hero /> },
   { id: 'react-about', component: <About /> },
   { id: 'react-products', component: <ProductsSection /> },
