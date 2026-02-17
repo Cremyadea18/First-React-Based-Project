@@ -308,7 +308,7 @@ margin: 0 auto;
     display: flex;
     flex-direction: column;
     max-width: 1200px;
-    min-width: 1000px;
+    width: 100%;
     margin: 0 auto;
     padding: 40px 20px;
 }
@@ -334,13 +334,17 @@ margin: 0 auto;
 
 /* Grid de Productos */
 .products-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 30px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 20px;
+    width: 100%;
+    justify-content: center;
 }
 
 /* Tarjeta de Producto */
 .product-card {
+    flex: 1 1 clamp(320px, 30vw, 380px);
     background: #fff;
     border-radius: 15px;
     overflow: hidden;
