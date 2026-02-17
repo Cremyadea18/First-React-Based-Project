@@ -635,6 +635,12 @@ margin: 0px;
     }
 }
 
+/* Ocultar reviews y otros elementos si no los quieres */
+.related-products-container .star-rating,
+.related-products-container .woocommerce-placeholder {
+    display: none;
+}
+
 /* Contenedor de la cuadrícula de relacionados */
 .related-products-container ul.products {
     display: grid !important;
