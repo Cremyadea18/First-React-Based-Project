@@ -102,12 +102,13 @@ max-width: 1400px;
 display: flex;
 align-items: center;
 justify-content: center;
-flex-direction: row;
+flex-direction: column;
 gap: clamp(30px, 5vw, 40px);
 align-items: center;
 justify-content: center;
 text-align: center;
 }
+
 
 .about_content_one {
 width: 100%;
@@ -124,6 +125,15 @@ align-items: center;
 margin: 0 auto;
 }
 
+
+.filter_section_search {
+width: 100%;
+min-width: 1000px;
+display: flex;
+justify-content: center;
+align-items: center;
+margin: 0 auto;
+}
 
 
 .hero_content_container-text {

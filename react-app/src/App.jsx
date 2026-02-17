@@ -65,7 +65,7 @@ function App() {
       <section className='main_container_structure'>
   <div className='main_container_structure_content'>
     <div className='about_content_one'><ProductSearchTittle /></div>
-    <div className='about_content_two'> <ProductSearch /></div>  
+    <div className='filter_section_search'> <ProductSearch /></div>  
   </div>
 </section>
     </> 
