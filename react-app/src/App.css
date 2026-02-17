@@ -508,7 +508,7 @@ margin: 0px;
 }
 
 /* 5. Botón de WooCommerce */
-.product-main-action .button {
+.product-single-container .product-main-action .cart .single_add_to_cart_button.button.alt {
     display: inline-block;
   padding: 12px 28px;
   border-radius: 30px;
@@ -536,7 +536,7 @@ margin: 0px;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.product-main-action .button:hover {
+.product-single-container .product-main-action .cart .single_add_to_cart_button.button.alt:hover {
      background: rgba(255, 255, 255, 0.9); 
   transform: translateY(-1px);
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
