@@ -58,7 +58,7 @@ export default function ProductSearch() {
                 dangerouslySetInnerHTML={{ __html: product.price_html || `$${product.price}` }} 
               />
               <a href={product.permalink} className="product-button">
-                Ver Detalle
+                View Details
               </a>
             </div>
           </article>

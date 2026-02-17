@@ -314,7 +314,11 @@ margin: 0 auto;
 
 /* Barra de Búsqueda */
 .search-input {
+   min-width: 320px;
+   width: 100%;
+   max-width: 600px;
    border-radius: 30px;
+   padding-bottom: 50px;
   cursor: pointer;
 text-decoration: none;
   font-family: "Inter", sans-serif;
