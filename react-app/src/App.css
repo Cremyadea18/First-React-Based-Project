@@ -295,7 +295,6 @@ font-family: "Inter", sans-serif;
 
 .filter_section_search {
 width: 100%;
-min-width:800px ;
 display: flex;
 flex-direction: row;
 justify-content: center;
