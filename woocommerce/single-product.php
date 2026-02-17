@@ -1,35 +1,39 @@
 <?php
-/**
- * DIAGNÓSTICO EXTREMO
- */
-if ( ! defined( 'ABSPATH' ) ) { exit; }
+get_header();
 
-get_header(); 
+while ( have_posts() ) : the_post();
+    global $product;
+    ?>
 
-echo '<h1 style="color: red; text-align: center; background: yellow; padding: 20px; position: relative; z-index: 9999;">
-        SI VES ESTO, LA PLANTILLA ESTÁ CARGANDO
-      </h1>';
+    <div class="product-single-container">
+        <div class="product-layout-grid">
+            
+            <div class="product-image-wrapper">
+                <?php if ( has_post_thumbnail() ) : ?>
+                    <?php the_post_thumbnail('large', ['class' => 'main-product-img']); ?>
+                <?php endif; ?>
+            </div>
 
-if ( have_posts() ) :
-    while ( have_posts() ) : the_post();
-        global $product;
-        
-        // Verificamos si el objeto producto existe
-        if ( is_object( $product ) ) {
-            echo '<h2 style="text-align:center;">Producto detectado: ' . get_the_title() . '</h2>';
-        } else {
-            echo '<h2 style="text-align:center; color: orange;">Error: El objeto $product no se cargó correctamente.</h2>';
-        }
+            <div class="product-info-wrapper">
+                <h1 class="product-main-title"><?php the_title(); ?></h1>
+                
+                <div class="product-main-price">
+                    <?php echo $product->get_price_html(); ?>
+                </div>
 
-        // Mostrar el contenido básico
-        echo '<div style="max-width:800px; margin: 0 auto; border: 2px solid blue; padding: 20px;">';
-        the_title('<h1>', '</h1>');
-        the_content();
-        echo '</div>';
+                <div class="product-main-description">
+                    <?php the_content(); ?>
+                </div>
 
-    endwhile;
-else :
-    echo '<h2 style="text-align:center; color: red;">ERROR: WordPress no encontró el post del producto.</h2>';
-endif;
+                <div class="product-main-action">
+                    <?php woocommerce_template_single_add_to_cart(); ?>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <?php
+endwhile;
 
 get_footer();
