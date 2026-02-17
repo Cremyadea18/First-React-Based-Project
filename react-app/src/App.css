@@ -542,6 +542,45 @@ margin: 0px;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
 }
 
+/* Contenedor que agrupa el input y el botón */
+.product-main-action form.cart {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+/* Estilo para el input de cantidad */
+.product-single-container .quantity input.qty {
+    width: 60px !important;
+    height: 52px !important; /* Misma altura que el botón para que alineen */
+    border-radius: 10px !important;
+    border: 2px solid #eee !important;
+    text-align: center !important;
+    font-size: 1.1rem !important;
+    font-weight: 600 !important;
+    color: #333 !important;
+    background-color: #f9f9f9 !important;
+    outline: none !important;
+    transition: border-color 0.3s ease !important;
+}
+
+.product-single-container .quantity input.qty:focus {
+    border-color: #646cff !important;
+    background-color: #fff !important;
+}
+
+/* Ocultar las flechas (spinners) nativas del navegador */
+.product-single-container .quantity input::-webkit-outer-spin-button,
+.product-single-container .quantity input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.product-single-container .quantity input[type=number] {
+    -moz-appearance: textfield;
+}
+
 
 @media (max-width: 850px) {
     .product-layout-grid {
