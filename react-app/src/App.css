@@ -726,7 +726,7 @@ margin: 0px;
     max-width: 1200px;
     margin: 0 auto;
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-end;
     align-items: center;
     padding: 15px 20px;
 }
@@ -743,7 +743,7 @@ margin: 0px;
 
 .nav-container ul li a {
     text-decoration: none; 
-    font-size: clamp(16px, 5vw, 18px);
+    font-size: clamp(14px, 5vw, 16px);
     line-height: 1.7;
     font-weight: 400;
     color: #F8FAFC;
