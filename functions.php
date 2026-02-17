@@ -1,33 +1,38 @@
 <?php
 
 function enqueue_react_app_custom() {
-    // Obtenemos el slug o ID de la página para asegurar la carga
-    global $post;
+    $theme_uri = get_template_directory_uri();
     
-    // CARGA SI: Es la plantilla física O si el slug de la página es 'hibrid-page'
-    if ( is_page_template('template-react.php') || (isset($post->post_name) && $post->post_name === 'hibrid-page') ) {
+    // Usamos time() para que cada carga sea "nueva" y saltarnos la caché del navegador
+    $version = time(); 
 
-        $theme_uri = get_template_directory_uri();
-        $version = time(); // Fuerza la actualización para evitar caché vieja
+    // 1. Cargamos el CSS de React
+    wp_enqueue_style(
+        'react-app-style', 
+        $theme_uri . '/index.css', 
+        array(), 
+        $version
+    );
 
-        // CSS con versión dinámica
-        wp_enqueue_style(
-            'react-app-style', 
-            $theme_uri . '/index.css', 
-            array(), 
-            $version
-        );
+    // 2. Cargamos el JS de React
+    wp_enqueue_script(
+        'react-app-main', 
+        $theme_uri . '/index.js', 
+        array(), 
+        $version, 
+        true // Se carga en el footer
+    );
 
-        // JS con versión dinámica
-        wp_enqueue_script(
-            'react-app-main', 
-            $theme_uri . '/index.js', 
-            array(), 
-            $version, 
-            true
-        );
-    }
-
-    // Estilos generales
+    // Estilos generales del tema
     wp_enqueue_style('main-styles', get_stylesheet_uri(), array(), time());
 }
+
+add_action('wp_enqueue_scripts', 'enqueue_react_app_custom');
+
+// IMPORTANTE: No olvides mantener el filtro del type="module" abajo
+add_filter('script_loader_tag', function($tag, $handle, $src) {
+    if ($handle !== 'react-app-main') {
+        return $tag;
+    }
+    return '<script type="module" src="' . esc_url($src) . '"></script>';
+}, 10, 3);
