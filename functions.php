@@ -50,3 +50,8 @@ add_filter( 'woocommerce_rest_check_permissions', function( $permission, $contex
     }
     return $permission;
 }, 10, 4 );
+
+function mytheme_add_woocommerce_support() {
+    add_theme_support( 'woocommerce' );
+}
+add_action( 'after_setup_theme', 'mytheme_add_woocommerce_support' );
