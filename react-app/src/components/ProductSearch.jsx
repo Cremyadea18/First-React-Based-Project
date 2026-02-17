@@ -1,81 +1,68 @@
 import { useState, useEffect } from 'react';
 
 export default function ProductSearch() {
-  const [products, setProducts] = useState([]);
+  const [products, setProducts] = useState([]); // Siempre iniciamos con array vacío
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  // 1. Función para obtener productos de WooCommerce
   useEffect(() => {
-    // Usamos la ruta nativa de WP-JSON para productos de WooCommerce
-    // No necesitas poner el dominio completo si el JS corre en el mismo sitio
     fetch('/wp-json/wc/v3/products?per_page=20')
-      .then(response => response.json())
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Error de autenticación o respuesta del servidor');
+        }
+        return response.json();
+      })
       .then(data => {
-        setProducts(data);
+        // VALIDACIÓN CLAVE: Verificamos que 'data' sea realmente un Array
+        if (Array.isArray(data)) {
+          setProducts(data);
+        } else {
+          console.error('La API no devolvió un array:', data);
+          setProducts([]);
+        }
         setLoading(false);
       })
-      .catch(error => {
-        console.error('Error cargando productos:', error);
+      .catch(err => {
+        console.error('Error en fetch:', err);
+        setError(err.message);
         setLoading(false);
       });
   }, []);
 
-  // 2. Filtrado dinámico
-  const filteredProducts = products.filter(product =>
-    product.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // Usamos encadenamiento opcional (?.) para evitar errores de lectura
+  const filteredProducts = products?.filter(product =>
+    product?.name?.toLowerCase().includes(searchTerm.toLowerCase())
+  ) || [];
 
-  if (loading) return <p style={{ textAlign: 'center' }}>Cargando productos...</p>;
+  if (loading) return <p style={{textAlign: 'center', padding: '20px'}}>Cargando productos...</p>;
+  if (error) return <p style={{color: 'red', textAlign: 'center'}}>Error: {error}. Revisa los permisos de la API.</p>;
 
   return (
     <div style={{ padding: '20px' }}>
       <input
         type="text"
-        placeholder="Buscar productos reales..."
-        style={{ width: '100%', padding: '10px', marginBottom: '20px', borderRadius: '8px', border: '1px solid #ddd' }}
+        placeholder="Buscar productos..."
+        style={{ width: '100%', padding: '10px', marginBottom: '20px' }}
         onChange={(e) => setSearchTerm(e.target.value)}
       />
 
       <div style={{ 
         display: 'grid', 
-        gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', 
+        gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', 
         gap: '20px' 
       }}>
         {filteredProducts.map(product => (
-          <div key={product.id} style={{ border: '1px solid #eee', padding: '15px', borderRadius: '12px', textAlign: 'center', background: '#fff' }}>
-            {/* Imagen del producto */}
-            {product.images && product.images[0] && (
-              <img src={product.images[0].src} alt={product.name} style={{ width: '100%', height: '180px', objectFit: 'contain' }} />
+          <div key={product.id} style={{ border: '1px solid #ccc', padding: '15px' }}>
+             {product.images?.[0] && (
+              <img src={product.images[0].src} style={{width: '100%', height: '150px', objectFit: 'cover'}} />
             )}
-            
-            <h4 style={{ margin: '15px 0 5px' }}>{product.name}</h4>
-            
-            {/* Precio usando el formato de WooCommerce */}
-            <p style={{ fontWeight: 'bold', color: '#2c3e50' }}>
-              {product.price_html ? (
-                <span dangerouslySetInnerHTML={{ __html: product.price_html }} />
-              ) : (
-                `$${product.price}`
-              )}
-            </p>
-
-            <a href={product.permalink} style={{ 
-              display: 'inline-block',
-              background: '#646cff', 
-              color: 'white', 
-              textDecoration: 'none',
-              padding: '8px 15px', 
-              borderRadius: '6px',
-              marginTop: '10px'
-            }}>
-              Ver producto
-            </a>
+            <h4>{product.name}</h4>
+            <p>${product.price}</p>
           </div>
         ))}
       </div>
-      
-      {filteredProducts.length === 0 && <p>No se encontraron productos.</p>}
     </div>
   );
 }

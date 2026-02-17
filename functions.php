@@ -42,3 +42,11 @@ add_filter('script_loader_tag', function($tag, $handle, $src) {
     // Defer es clave para que el DOM esté listo antes de que React intente montar el root
     return '<script type="module" defer src="' . esc_url($src) . '"></script>';
 }, 10, 3);
+
+// Permitir acceso público a los productos vía REST API
+add_filter( 'woocommerce_rest_check_permissions', function( $permission, $context, $object_id, $post_type ) {
+    if ( $post_type === 'product' && $context === 'read' ) {
+        return true;
+    }
+    return $permission;
+}, 10, 4 );
