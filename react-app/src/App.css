@@ -754,3 +754,24 @@ margin: 0px;
 .nav-container ul li a:hover {
     color: #cbd5e1; 
 }
+
+.logo a {
+    font-family: "Inter", sans-serif;
+    font-weight: 800;
+    font-size: 22px;
+    color: #F8FAFC;
+    text-decoration: none;
+    letter-spacing: 1px;
+}
+
+.logo span {
+    color: #38bdf8; 
+}
+
+.nav-links {
+    display: flex;
+    list-style: none;
+    gap: 30px;
+    margin: 0;
+    padding: 0;
+}
