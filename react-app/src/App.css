@@ -453,6 +453,7 @@ text-decoration: none;
 
 
 
+/* 1. Contenedor y Grid (No necesitan !important normalmente) */
 .product-single-container {
     max-width: 1200px;
     margin: 50px auto;
@@ -461,11 +462,12 @@ text-decoration: none;
 
 .product-layout-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr; /* Dos columnas iguales */
+    grid-template-columns: 1fr 1fr;
     gap: 60px;
     align-items: start;
 }
 
+/* 2. Imagen */
 .main-product-img {
     width: 100%;
     height: auto;
@@ -473,40 +475,46 @@ text-decoration: none;
     box-shadow: 0 10px 30px rgba(0,0,0,0.05);
 }
 
-.product-main-title {
-    font-size: 2.5rem;
+/* 3. Título (Fusionado y específico) */
+.product-single-container .product-main-title {
+    font-size: 3rem !important; 
+    color: #1a1a1a !important;
     margin-bottom: 10px;
+    line-height: 1.2;
 }
 
-.product-main-price {
-    font-size: 1.8rem;
-    color: #646cff;
+/* 4. Precio (Fusionado y específico) */
+.product-single-container .product-main-price {
+    font-size: 1.8rem !important;
+    color: #646cff !important;
     font-weight: bold;
     margin-bottom: 30px;
 }
 
+/* 5. Botón de WooCommerce */
 .product-main-action .button {
     background-color: #646cff !important;
     color: white !important;
     padding: 15px 40px !important;
     border-radius: 10px !important;
     font-size: 1.1rem !important;
+    border: none !important;
+    cursor: pointer;
+    transition: background 0.3s ease;
 }
 
-/* Responsivo para móviles */
-@media (max-width: 768px) {
+.product-main-action .button:hover {
+    background-color: #535bf2 !important;
+}
+
+/* 6. Responsivo */
+@media (max-width: 850px) {
     .product-layout-grid {
         grid-template-columns: 1fr;
+        gap: 30px;
     }
-}
-
-/* Usamos el nombre de la clase del contenedor que pusimos en el PHP */
-.product-single-container .product-main-title {
-    font-size: 3rem !important; /* El !important asegura que le gane a Astra */
-    color: #1a1a1a !important;
-}
-
-.product-single-container .product-main-price {
-    font-size: 1.8rem !important;
-    color: #646cff !important;
+    
+    .product-single-container .product-main-title {
+        font-size: 2rem !important;
+    }
 }
