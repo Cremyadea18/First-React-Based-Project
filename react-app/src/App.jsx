@@ -49,7 +49,7 @@ function App() {
         <div className='about_content'>
           <div className='about_content_one'>
             <AboutTittle />
-            <AboutText />
+            
           </div>
           <div className='about_content_two'>
             <div>
