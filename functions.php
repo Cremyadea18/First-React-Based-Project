@@ -1,14 +1,19 @@
 <?php
 
 function enqueue_react_app_custom() {
-    // 1. CONDICIONAL AMPLIADO: 
-    // Ahora incluye is_product() para que tus estilos lleguen a la plantilla de producto
-    if ( is_page('hibrid-page') || is_page_template('template-react.php') || is_product() ) {
-        
-        $theme_uri = get_template_directory_uri();
-        $version = time(); // Seguimos rompiendo caché
+    $theme_uri = get_template_directory_uri();
+    $version = time(); // Cache busting activo
 
-        // Cargar el CSS de React (¡Ahora también cargará en cada producto!)
+    // 1. DEFINIMOS DÓNDE CARGAR REACT
+    // Agrega aquí los "slugs" de tus nuevas páginas de Elementor en el array is_page
+    $cargar_en_paginas = is_page(array('hibrid-page','Home','servicios', 'contacto', 'sobre-nosotros'));
+    $es_template_react = is_page_template('template-react.php');
+    $es_producto = is_product();
+
+    // 2. CONDICIONAL GLOBAL
+    if ( $cargar_en_paginas || $es_template_react || $es_producto ) {
+        
+        // Cargar el CSS de React (Global para estilos de botones, glassmorphism, etc.)
         wp_enqueue_style(
             'react-app-style', 
             $theme_uri . '/index.css', 
@@ -16,26 +21,25 @@ function enqueue_react_app_custom() {
             $version
         );
 
-        // Solo cargamos el JS de React si NO estamos en un producto individual
-        // Esto evita que React intente buscar el ID "root" en la página del producto y de error.
-        if ( ! is_product() ) {
-            wp_enqueue_script(
-                'react-app-main', 
-                $theme_uri . '/index.js', 
-                array(), 
-                $version, 
-                true 
-            );
-        }
+        // Cargar el JS de React
+        // Ahora lo cargamos SIEMPRE en estas páginas porque el nuevo main.jsx 
+        // solo montará los componentes si encuentra el ID (react-hero, react-products, etc.)
+        wp_enqueue_script(
+            'react-app-main', 
+            $theme_uri . '/index.js', 
+            array(), 
+            $version, 
+            true 
+        );
     }
 
-    // Estilos generales del tema
+    // Estilos generales del tema Astra/Hijo
     wp_enqueue_style('main-styles', get_stylesheet_uri(), array(), time());
 }
 
 add_action('wp_enqueue_scripts', 'enqueue_react_app_custom');
 
-// Filtro para el JS de React (Mantenemos como estaba)
+// Filtro para mantener el soporte de Módulos de JS (Vite)
 add_filter('script_loader_tag', function($tag, $handle, $src) {
     if ($handle !== 'react-app-main') {
         return $tag;
@@ -43,7 +47,7 @@ add_filter('script_loader_tag', function($tag, $handle, $src) {
     return '<script type="module" defer src="' . esc_url($src) . '"></script>';
 }, 10, 3);
 
-// Acceso público a la API
+// Acceso público a la API de WooCommerce
 add_filter( 'woocommerce_rest_check_permissions', function( $permission, $context, $object_id, $post_type ) {
     if ( $post_type === 'product' && $context === 'read' ) {
         return true;
