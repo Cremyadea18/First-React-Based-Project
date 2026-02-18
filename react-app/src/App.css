@@ -1026,9 +1026,15 @@ text-decoration: none;
   letter-spacing: 0.01em;
 }
 
+.wc-block-cart-items {
+gap: 20px;
+}
 
 .wc-block-cart-items__row {
-padding: 10px;
+padding-top: 10px;
+padding-bottom: 10px;
+padding-left: 10px;
+padding-right: 10px;
 background:  #121212;
     border-radius: 22px;
     overflow: hidden;
