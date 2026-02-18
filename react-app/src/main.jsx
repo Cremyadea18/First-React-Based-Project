@@ -3,7 +3,6 @@ import ReactDOM from 'react-dom/client'
 import App, { Header, Footer, Hero, About, ProductsSection } from './App.jsx' 
 import './index.css'
 
-// 1. Mapeo de componentes
 const componentsToMount = [
   { id: 'react-header', component: <Header /> },
   { id: 'react-hero', component: <Hero /> },
@@ -13,7 +12,7 @@ const componentsToMount = [
   { id: 'root-full-app', component: <App /> }
 ];
 
-// 2. Función de montaje con diagnóstico
+
 const initRoots = () => {
   console.log("🚀 React: Iniciando búsqueda de puntos de montaje...");
 

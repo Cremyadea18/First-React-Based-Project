@@ -3,6 +3,7 @@ import './App.css'
 import './MediaQueries.css'
 import miImagenabout from "./assets/asset.svg"
 import ProductSearch from './components/ProductSearch.jsx' 
+import { CartIcon } from './components/CartIcon.jsx'
 
 
 const MiTitulo = () => (
@@ -54,7 +55,10 @@ export const Header = () => (
         <li><a href="#about-us">About Us</a></li>
         <li><a href="#products">Products</a></li>
         <li><a href="#benefits">Benefits</a></li>
+    
       </ul>
+
+        < CartIcon />
     </nav>
   </header>
 );
@@ -62,8 +66,7 @@ export const Header = () => (
 
 
 export const Footer = () => {
-  // --- LOG DE DIAGNÓSTICO ---
-  console.log("🛠️ React: El componente Footer se ha ejecutado correctamente.");
+ 
 
   return (
     <footer className="footer_main_container">
