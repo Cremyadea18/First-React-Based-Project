@@ -1028,10 +1028,11 @@ text-decoration: none;
 
 
 .wc-block-cart-items__row {
+padding: 10px;
 background:  #121212;
     border-radius: 22px;
     overflow: hidden;
-    border: 1px solid rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.37);
     transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     cursor: pointer;
     position: relative;
@@ -1098,4 +1099,17 @@ box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5),
     height: 100%;
     background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, transparent 50%);
     pointer-events: none;
+}
+
+@media (min-width: 1367px) {
+.content-corrected {
+max-width: 80%;
+}
+}
+
+.wc-block-cart .wc-block-cart__totals-title {
+font-size: 1.5rem;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #eee;
+    padding-bottom: 10px;
 }
