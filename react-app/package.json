@@ -4,11 +4,11 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build && copy dist\\assets\\index.js ..\\index.js /Y && copy dist\\assets\\index.css ..\\index.css /Y",
-    "lint": "eslint .",
-    "preview": "vite preview"
-  },
+  "dev": "vite",
+  "build": "vite build && (cp dist/index.js ../index.js || copy dist\\index.js ..\\index.js /Y) && (cp dist/index.css ../index.css || copy dist\\index.css ..\\index.css /Y)",
+  "lint": "eslint .",
+  "preview": "vite preview"
+},
   "dependencies": {
     "react": "^19.2.0",
     "react-dom": "^19.2.0"

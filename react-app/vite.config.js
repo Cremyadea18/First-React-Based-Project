@@ -6,10 +6,9 @@ export default defineConfig({
   build: {
     rollupOptions: {
       output: {
-        // Esto quita los códigos aleatorios de los nombres de archivo
-        entryFileNames: `assets/[name].js`,
-        chunkFileNames: `assets/[name].js`,
-        assetFileNames: `assets/[name].[ext]`
+        entryFileNames: `index.js`,
+        chunkFileNames: `index.js`,
+        assetFileNames: `index.[ext]`
       }
     }
   }
