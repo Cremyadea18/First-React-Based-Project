@@ -995,6 +995,7 @@ font-family: "Inter", sans-serif;
 
 .wc-block-cart__submit-container {
     display: inline-block;
+ width: 200px;
   padding: 12px 28px;
   border-radius: 30px;
   cursor: pointer;
@@ -1004,6 +1005,7 @@ font-family: "Inter", sans-serif;
   border: 1px solid rgba(255, 255, 255, 0.5);
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  text-decoration: none!important;
 }
 
 .wc-block-cart__submit-container:hover {
