@@ -7,7 +7,7 @@ get_header();
 ?>
 
 <div class="cart-page-wrapper">
-    <div class="container">
+    <div class="cart_page_wrapper_content">
         <?php
        
         while ( have_posts() ) : the_post();
