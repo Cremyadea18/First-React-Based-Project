@@ -803,6 +803,21 @@ margin: 0px;
 
 /* App.css */
 
+#react-footer {
+    display: block !important;
+    width: 100% !important;
+    clear: both !important;
+    position: relative !important;
+    z-index: 99 !important;
+}
+
+.footer_main_container {
+    min-height: 200px; /* Forzamos altura para verlo */
+    background-color: #0a0a0a !important;
+}
+
+
+
 .footer_main_container {
     background-color: #0a0a0a; /* Un poco más oscuro que el fondo principal */
     color: #ffffff;
