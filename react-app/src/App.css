@@ -939,6 +939,16 @@ justify-content: center;
 text-align: center;
 }
 
+
+@media (min-width: 1000px) {
+.cart_page_wrapper_content {
+flex-direction: row;        
+justify-content: space-between; 
+align-items: flex-start;    
+text-align: left;            
+}
+}
+
 .woocommerce-cart-form {
     background: white;
     border-radius: 8px;
