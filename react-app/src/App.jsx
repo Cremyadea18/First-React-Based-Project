@@ -61,38 +61,43 @@ export const Header = () => (
 
 
 
-export const Footer = () => (
-  <footer className="footer_main_container">
-    <div className="footer_content">
-      <div className="footer_column">
-        <h3 className="footer_logo">AI Solutions</h3>
-        <p className="footer_description">
-          Empowering businesses with intelligent tools for a scalable future.
-        </p>
-      </div>
+export const Footer = () => {
+  // --- LOG DE DIAGNÓSTICO ---
+  console.log("🛠️ React: El componente Footer se ha ejecutado correctamente.");
 
-      <div className="footer_column">
-        <h4>Product</h4>
-        <ul className="footer_links">
-          <li><a href="#features">Features</a></li>
-          <li><a href="#pricing">Pricing</a></li>
-        </ul>
-      </div>
+  return (
+    <footer className="footer_main_container">
+      <div className="footer_content">
+        <div className="footer_column">
+          <h3 className="footer_logo">AI Solutions</h3>
+          <p className="footer_description">
+            Empowering businesses with intelligent tools for a scalable future.
+          </p>
+        </div>
 
-      <div className="footer_column">
-        <h4>Legal</h4>
-        <ul className="footer_links">
-          <li><a href="/privacy">Privacy Policy</a></li>
-          <li><a href="/terms">Terms of Service</a></li>
-        </ul>
+        <div className="footer_column">
+          <h4>Product</h4>
+          <ul className="footer_links">
+            <li><a href="#features">Features</a></li>
+            <li><a href="#pricing">Pricing</a></li>
+          </ul>
+        </div>
+
+        <div className="footer_column">
+          <h4>Legal</h4>
+          <ul className="footer_links">
+            <li><a href="/privacy">Privacy Policy</a></li>
+            <li><a href="/terms">Terms of Service</a></li>
+          </ul>
+        </div>
       </div>
-    </div>
-    
-    <div className="footer_bottom">
-      <p>&copy; {new Date().getFullYear()} AI Solutions. All rights reserved.</p>
-    </div>
-  </footer>
-);
+      
+      <div className="footer_bottom">
+        <p>&copy; {new Date().getFullYear()} AI Solutions. All rights reserved.</p>
+      </div>
+    </footer>
+  );
+};
 
 
 
