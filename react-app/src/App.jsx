@@ -45,12 +45,12 @@ export const Header = () => (
   <header id="main-site-header">
     <nav className="nav-container">
       <div className="logo">
-        <a href="#home">TECH<span>AURA</span></a>
+        <a href="https://reactappapplication.online/#home">TECH<span>AURA</span></a>
       </div>
 
       <ul className="nav-links">
         {/* Usamos # seguido del ID de la sección */}
-        <li><a href="#home">Home</a></li>
+        <li><a href="https://reactappapplication.online/#home">Home</a></li>
         <li><a href="#about-us">About Us</a></li>
         <li><a href="#products">Products</a></li>
         <li><a href="#benefits">Benefits</a></li>
