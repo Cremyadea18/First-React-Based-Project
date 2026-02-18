@@ -1159,3 +1159,47 @@ justify-content: space-between;
         margin-right: 0 !important;
     }
 }
+
+
+
+.checkout-page-wrapper {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 60px 20px;
+}
+
+
+#customer_details h3, #order_review_heading {
+    font-size: 22px;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+
+.woocommerce-checkout input.input-text, 
+.woocommerce-checkout select, 
+.woocommerce-checkout textarea {
+    border-radius: 8px;
+    padding: 12px;
+    border: 1px solid #ddd;
+    width: 100%;
+}
+
+
+#order_review {
+    background: #f9f9f9;
+    padding: 25px;
+    border-radius: 12px;
+    border: 1px solid #eee;
+}
+
+
+#place_order {
+    background-color: #6200ee !important; 
+    color: white !important;
+    padding: 20px !important;
+    font-size: 18px !important;
+    border-radius: 10px !important;
+    width: 100% !important;
+    transition: background 0.3s ease;
+}
