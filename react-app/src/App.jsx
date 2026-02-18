@@ -44,20 +44,17 @@ const ProductSearchTittle = () => (
 export const Header = () => (
   <header id="main-site-header">
     <nav className="nav-container">
-      
-      {/* HIJO 1: El Logo */}
       <div className="logo">
-        <a href="/">TECH<span>AURA</span></a>
+        <a href="#home">TECH<span>AURA</span></a>
       </div>
 
-      {/* HIJO 2: La Lista de enlaces */}
       <ul className="nav-links">
-        <li><a href="/">Home</a></li>
-        <li><a href="/about">About Us</a></li>
-        <li><a href="/productos">Products</a></li>
-        <li><a href="/benefits">Benefits</a></li>
+        {/* Usamos # seguido del ID de la sección */}
+        <li><a href="#home">Home</a></li>
+        <li><a href="#about-us">About Us</a></li>
+        <li><a href="#products">Products</a></li>
+        <li><a href="#benefits">Benefits</a></li>
       </ul>
-
     </nav>
   </header>
 );
