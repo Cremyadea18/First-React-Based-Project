@@ -1,5 +1,7 @@
 <?php
-
+/*
+Template Name: Carrito Custom React
+*/
 
 get_header(); 
 ?>
