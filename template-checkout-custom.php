@@ -7,7 +7,7 @@ get_header();
 ?>
 
 <div class="checkout-page-wrapper">
-    <div class="container">
+    <div class="container_checkout">
         <?php
       
         while ( have_posts() ) : the_post();
