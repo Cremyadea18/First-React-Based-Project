@@ -1,5 +1,2 @@
-<div id="react-footer"></div>
-
-    <?php wp_footer(); ?>
-</body>
+<div id="react-footer"></div> <?php wp_footer(); ?> </body>
 </html>
