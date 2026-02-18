@@ -1071,10 +1071,10 @@ text-decoration: none;
 }
 
 .wc-block-components-sidebar {
+padding: 10px;
 background:  #121212;
     border-radius: 22px;
     overflow: hidden;
-    border: 1px solid rgba(255, 255, 255, 0.9);
     transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     cursor: pointer;
     position: relative;
@@ -1083,8 +1083,7 @@ background:  #121212;
 
 .wc-block-components-sidebar:hover {
 transform: translateY(-12px) scale(1.02);
-    border: 1px solid rgba(255, 255, 255, 0.5);
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5), 
+box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5), 
                 0 0 20px rgba(255, 255, 255, 0.15); 
 }
 
