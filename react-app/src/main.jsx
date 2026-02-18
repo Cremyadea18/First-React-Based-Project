@@ -1,6 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import App, { Header, Hero, About, ProductsSection, Footer } from './App.jsx' 
+import App, { Header, Footer, Hero, About, ProductsSection, } from './App.jsx' 
 import './index.css'
 
 // main.jsx
