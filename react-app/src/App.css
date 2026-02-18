@@ -1058,3 +1058,43 @@ background:  #121212;
 width: 200px;
 height:200px
 }
+
+.wc-block-cart-items__header-image {
+font-family: "Inter", sans-serif;
+text-decoration: none;
+  font-size: clamp(16px, 1.1vw, 22px);
+  font-weight: 500;          
+  line-height: 1;
+ color: #F8FAFC;           
+  text-align: center;
+  letter-spacing: 0.01em;
+}
+
+.wc-block-components-sidebar {
+background:  #121212;
+    border-radius: 22px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.9);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    cursor: pointer;
+    position: relative;
+}
+
+
+.wc-block-components-sidebar:hover {
+transform: translateY(-12px) scale(1.02);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5), 
+                0 0 20px rgba(255, 255, 255, 0.15); 
+}
+
+.wc-block-components-sidebar::before {
+ content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, transparent 50%);
+    pointer-events: none;
+}
