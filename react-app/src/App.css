@@ -960,8 +960,16 @@ table.shop_table thead {
     font-size: 13px;
 }
 
+.table.wc-block-cart-items .wc-block-cart-items__header th {
+font-size: clamp(18px, 5vw, 22px);
+line-height: 1.7;
+font-weight: 600;
+color: #F8FAFC;
+font-family: "Inter", sans-serif;
+}
 
-.product-name a {
+
+.wc-block-components-product-name {
 font-size: clamp(16px, 5vw, 18px);
 line-height: 1.7;
 font-weight: 400;
@@ -985,7 +993,7 @@ font-family: "Inter", sans-serif;
     padding-bottom: 10px;
 }
 
-.wc-proceed-to-checkout a.checkout-button {
+.wc-block-cart__submit-container {
     display: inline-block;
   padding: 12px 28px;
   border-radius: 30px;
@@ -1013,7 +1021,7 @@ font-family: "Inter", sans-serif;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.wc-proceed-to-checkout a.checkout-button:hover {
+.wc-block-cart__submit-container:hover {
    background: rgba(255, 255, 255, 0.9); 
   transform: translateY(-1px);
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
