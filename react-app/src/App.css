@@ -1133,3 +1133,19 @@ text-decoration: none;
 display: flex;
 justify-content: space-between;
 }
+
+@media (max-width: 1000px) {
+    .wc-block-components-sidebar-layout {
+        display: flex;
+        flex-direction: column; 
+        gap: 40px;              
+    }
+
+    
+    .wc-block-components-sidebar-layout > * {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+    }
+}
