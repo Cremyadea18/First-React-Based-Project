@@ -1,13 +1,16 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import App, { Header, Hero, About, ProductsSection } from './App.jsx' // <--- Verifica que Header esté aquí
+import App, { Header, Hero, About, ProductsSection, Footer } from './App.jsx' 
 import './index.css'
 
+// main.jsx
 const componentsToMount = [
   { id: 'react-header', component: <Header /> },
   { id: 'react-hero', component: <Hero /> },
   { id: 'react-about', component: <About /> },
-  { id: 'react-products', component: <ProductsSection /> }
+  { id: 'react-products', component: <ProductsSection /> },
+  { id: 'react-footer', component: <Footer /> }, 
+  { id: 'root-full-app', component: <App /> }
 ];
 
 const initRoots = () => {
@@ -26,7 +29,7 @@ const initRoots = () => {
   });
 };
 
-// IMPORTANTE: Asegúrate de que esto esté presente para manejar el orden de carga
+
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', initRoots);
 } else {

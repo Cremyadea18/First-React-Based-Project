@@ -4,7 +4,7 @@ import './MediaQueries.css'
 import miImagenabout from "./assets/asset.svg"
 import ProductSearch from './components/ProductSearch.jsx' 
 
-// --- Componentes Átomos (Se mantienen internos) ---
+
 const MiTitulo = () => (
   <h1 className="hero__title animate"> 
     <span className='hero_span animate'>AI-Powered Solutions </span>for <br /> 
@@ -49,7 +49,7 @@ export const Header = () => (
       </div>
 
       <ul className="nav-links">
-        {/* Usamos # seguido del ID de la sección */}
+        
         <li><a href="https://reactappapplication.online/#home">Home</a></li>
         <li><a href="#about-us">About Us</a></li>
         <li><a href="#products">Products</a></li>
@@ -59,15 +59,43 @@ export const Header = () => (
   </header>
 );
 
+
+
 export const Footer = () => (
-  <footer className="site-footer-react">
-    <p>© 2024 AI Solutions - Built with React & WP</p>
+  <footer className="footer_main_container">
+    <div className="footer_content">
+      <div className="footer_column">
+        <h3 className="footer_logo">AI Solutions</h3>
+        <p className="footer_description">
+          Empowering businesses with intelligent tools for a scalable future.
+        </p>
+      </div>
+
+      <div className="footer_column">
+        <h4>Product</h4>
+        <ul className="footer_links">
+          <li><a href="#features">Features</a></li>
+          <li><a href="#pricing">Pricing</a></li>
+        </ul>
+      </div>
+
+      <div className="footer_column">
+        <h4>Legal</h4>
+        <ul className="footer_links">
+          <li><a href="/privacy">Privacy Policy</a></li>
+          <li><a href="/terms">Terms of Service</a></li>
+        </ul>
+      </div>
+    </div>
+    
+    <div className="footer_bottom">
+      <p>&copy; {new Date().getFullYear()} AI Solutions. All rights reserved.</p>
+    </div>
   </footer>
 );
 
 
 
-// --- Secciones Exportables (Para Elementor/Main.jsx) ---
 
 export const Hero = () => (
   <section className="hero">
@@ -91,7 +119,7 @@ export const About = () => (
         <AboutTittle />
         <AboutText />
       </div>
-      {/* Puedes agregar aquí la columna de la imagen si la necesitas luego */}
+      
     </div>
   </section>
 )
@@ -109,7 +137,7 @@ export const ProductsSection = () => (
   </section>
 )
 
-// --- Componente Principal (La App completa) ---
+
 function App() {
   return (
     <> 
