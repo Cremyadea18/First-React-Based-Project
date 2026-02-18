@@ -1128,3 +1128,8 @@ text-decoration: none;
   text-align: center;
   letter-spacing: 0.01em;
 }
+
+.wc-block-components-totals-item {
+display: flex;
+justify-content: space-between;
+}
