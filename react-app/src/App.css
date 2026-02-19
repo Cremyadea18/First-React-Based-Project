@@ -942,7 +942,7 @@ align-items: center;
 justify-content: center;
 }
 
-@media (max-width:500px) {
+@media (max-width:551px) {
 .cart_widget {
   display: none;
 }
