@@ -1275,66 +1275,64 @@ max-width: 200px;
 }
 
 
-
-/* Aplicamos a inputs de texto Y a los contenedores de selección */
-.wc-block-components-text-input,
-.wc-block-components-combobox,
-.wc-block-components-select-input {
+/* 1. FORZAMOS EL CONTENEDOR (Reseteo de fondo blanco) */
+.wc-block-checkout__form .wc-block-components-text-input,
+.wc-block-checkout__form .wc-block-components-combobox,
+.wc-block-checkout__form .wc-block-components-select-input {
     background: rgba(255, 255, 255, 0.05) !important;
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
     border: 1px solid rgba(255, 255, 255, 0.1) !important;
     border-radius: 50px !important;
-    
-    /* Centrado Vertical */
     display: flex !important;
     align-items: center !important;
-    min-height: 55px !important; /* Altura fija para asegurar el centrado */
+    min-height: 60px !important;
     padding: 0 25px !important;
-    margin-bottom: 20px !important;
-    overflow: visible !important; /* Para que el label pueda subir sin cortarse */
+    margin-bottom: 25px !important;
+    overflow: visible !important;
 }
 
-/* Alineación del Label para que esté centrado antes de escribir */
-.wc-block-components-text-input label,
-.wc-block-components-select-input label {
+/* 2. QUITAR EL FONDO BLANCO DEL INPUT INTERNO (Esto es lo que ves blanco) */
+.wc-block-checkout__form .wc-block-components-text-input input,
+.wc-block-checkout__form .wc-block-components-text-input__input,
+.wc-block-checkout__form .wc-block-components-select-input__control,
+.wc-block-checkout__form input[type="text"],
+.wc-block-checkout__form input[type="email"],
+.wc-block-checkout__form input[type="tel"] {
+    background-color: transparent !important; /* ¡Vital! */
+    background: transparent !important;
+    color: white !important;
+    border: none !important;
+    box-shadow: none !important;
+    width: 100% !important;
+    appearance: none !important;
+}
+
+/* 3. RE-ESTILIZAR LOS LABELS (Para que no vuelvan al default) */
+.wc-block-checkout__form .wc-block-components-text-input label,
+.wc-block-checkout__form .wc-block-components-select-input label {
+    position: absolute !important;
     top: 50% !important;
-    transform: translateY(-50%) !important; /* Centrado perfecto */
     left: 25px !important;
-    margin: 0 !important;
-    transition: all 0.2s ease-in-out !important;
-    pointer-events: none;
+    transform: translateY(-50%) !important;
+    color: rgba(255, 255, 255, 0.5) !important;
+    background: transparent !important;
+    pointer-events: none !important;
+    z-index: 10 !important;
+    transition: all 0.2s ease !important;
 }
 
-/* Cuando el label sube (campo activo) */
+/* 4. CUANDO EL CAMPO TIENE FOCO O TEXTO (is-active) */
 .wc-block-components-text-input.is-active label,
-.wc-block-components-select-input.is-active label {
+.wc-block-components-select-input.is-active label,
+.wc-block-components-text-input:focus-within label {
     top: 0 !important;
-    transform: translateY(-120%) scale(0.85) !important; /* Sale del input hacia arriba */
-    background: #121212 !important; /* Color de fondo de tu web para que se lea bien */
-    padding: 0 8px !important;
-    border-radius: 4px;
+    transform: translateY(-135%) scale(0.8) !important;
+    color: #ffffff !important;
 }
 
-/* Quitar el estilo default del select de sistema */
-.wc-block-components-select-input__control {
-    background: transparent !important;
-    border: none !important;
-    color: white !important;
-    width: 100% !important;
-    appearance: none; /* Quita la flecha nativa fea */
-}
-
-
-.wc-block-components-select-input__chevron {
-    fill: white !important; 
-    right: 20px !important;
-}
-
-.wc-block-components-text-input__input {
-    background: transparent !important;
-    border: none !important;
-    color: white !important;
-    width: 100% !important;
-    padding-top: 10px !important; 
+/* 5. QUITAR EL BORDE AZUL O NEGRO POR DEFECTO AL HACER CLIC */
+.wc-block-components-text-input:focus-within {
+    border-color: rgba(255, 255, 255, 0.4) !important;
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.1) !important;
 }
