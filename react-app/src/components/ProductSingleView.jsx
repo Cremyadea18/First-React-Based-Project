@@ -40,10 +40,10 @@ export const ProductSingleView = ({ data }) => {
                 <div dangerouslySetInnerHTML={{ __html: descripcion }} />
               </div>
 
-              <div className="product-main-action ">
+              <div className="product-main-action animate_dos">
                 <div className="cart">
                   <button 
-                    className="single_add_to_cart_button button alt"
+                    className="btn-secondary"
                     onClick={handleAddToCart}
                   >
                     Add to cart
