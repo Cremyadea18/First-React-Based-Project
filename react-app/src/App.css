@@ -1143,7 +1143,7 @@ display: flex;
 justify-content: space-between;
 }
 
-@media (max-width: 1000px) {
+@media (max-width: 1100px) {
     .wc-block-components-sidebar-layout {
         display: flex;
         flex-direction: column; 
@@ -1313,3 +1313,12 @@ text-align: center;
 .wc-block-cart-item__image img {
 max-width: 200px;
 }
+
+@media (max-width:828px) {
+.wc-block-components-sidebar {
+        padding: 20px;
+        width: 100%;
+    }
+}
+
+
