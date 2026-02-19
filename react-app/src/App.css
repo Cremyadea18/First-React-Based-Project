@@ -942,6 +942,12 @@ align-items: center;
 justify-content: center;
 }
 
+@media (max-width:500px) {
+.cart_widget {
+  display: none;
+}
+}
+
 
 @media (min-width: 1000px) {
 .cart_page_wrapper_content {
