@@ -1223,7 +1223,7 @@ text-align: center;
     transition: background 0.3s ease;
 }
 
-@media (min-width: 768px) {
+@media (max-width: 828px) and (min-width:481px) {
     .is-medium table.wc-block-cart-items .wc-block-cart-items__row, .is-mobile table.wc-block-cart-items .wc-block-cart-items__row, .is-small table.wc-block-cart-items .wc-block-cart-items__row {
     display: grid !important;
         
@@ -1237,22 +1237,22 @@ text-align: center;
   
 }
 
-    /* 1. La Imagen */
+   
     .wc-block-cart-item__image {
         grid-area: image;
         display: flex;
         justify-content: center;
     }
 
-    /* 2. El Producto (Info/Título) */
+    
     .wc-block-cart-item__info {
         grid-area: product;
     }
 
-    /* 3. El Total (Precio y quizás cantidad según tu configuración) */
+    
     .wc-block-cart-item__totals {
         grid-area: total;
-        justify-self: end; /* Pegado a la derecha de la card */
+        justify-self: end; 
         text-align: right;
     }
 }
