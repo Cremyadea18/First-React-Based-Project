@@ -1292,47 +1292,59 @@ max-width: 200px;
     overflow: visible !important;
 }
 
-/* 2. QUITAR EL FONDO BLANCO DEL INPUT INTERNO (Esto es lo que ves blanco) */
-.wc-block-checkout__form .wc-block-components-text-input input,
-.wc-block-checkout__form .wc-block-components-text-input__input,
-.wc-block-checkout__form .wc-block-components-select-input__control,
-.wc-block-checkout__form input[type="text"],
-.wc-block-checkout__form input[type="email"],
-.wc-block-checkout__form input[type="tel"] {
-    background-color: transparent !important; /* ¡Vital! */
-    background: transparent !important;
-    color: white !important;
-    border: none !important;
-    box-shadow: none !important;
-    width: 100% !important;
-    appearance: none !important;
+
+/* 1. AGREGAMOS LA CLASE FALTANTE AL ESTILO CRISTAL */
+.wc-block-checkout__form .wc-block-components-text-input,
+.wc-block-checkout__form .wc-block-components-combobox,
+.wc-block-checkout__form .wc-block-components-select-input,
+.wc-block-checkout__form .wc-blocks-components-select__container { /* <--- La clase que encontraste */
+    background: rgba(255, 255, 255, 0.05) !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 50px !important;
+    display: flex !important;
+    align-items: center !important;
+    min-height: 60px !important;
+    padding: 0 25px !important;
+    margin-bottom: 25px !important;
+    position: relative !important;
+    overflow: visible !important;
 }
 
-/* 3. RE-ESTILIZAR LOS LABELS (Para que no vuelvan al default) */
-.wc-block-checkout__form .wc-block-components-text-input label,
-.wc-block-checkout__form .wc-block-components-select-input label {
+/* 2. CORRECCIÓN PARA EL SELECT INTERNO */
+/* Estos campos suelen tener un <select> o un div que actúa como tal */
+.wc-blocks-components-select__container select,
+.wc-blocks-components-select__container .wc-block-components-select-input__control {
+    background: transparent !important;
+    background-color: transparent !important;
+    border: none !important;
+    color: white !important;
+    padding: 0 !important;
+    width: 100% !important;
+    appearance: none !important; /* Quita la flecha nativa del sistema */
+}
+
+/* 3. ALINEACIÓN DEL LABEL EN ESTOS CONTENEDORES */
+.wc-blocks-components-select__container label {
     position: absolute !important;
     top: 50% !important;
     left: 25px !important;
     transform: translateY(-50%) !important;
     color: rgba(255, 255, 255, 0.5) !important;
-    background: transparent !important;
-    pointer-events: none !important;
-    z-index: 10 !important;
     transition: all 0.2s ease !important;
+    pointer-events: none !important;
 }
 
-/* 4. CUANDO EL CAMPO TIENE FOCO O TEXTO (is-active) */
-.wc-block-components-text-input.is-active label,
-.wc-block-components-select-input.is-active label,
-.wc-block-components-text-input:focus-within label {
+/* 4. EFECTO CUANDO EL SELECT TIENE VALOR (is-active) */
+.wc-blocks-components-select__container.is-active label {
     top: 0 !important;
     transform: translateY(-135%) scale(0.8) !important;
     color: #ffffff !important;
 }
 
-/* 5. QUITAR EL BORDE AZUL O NEGRO POR DEFECTO AL HACER CLIC */
-.wc-block-components-text-input:focus-within {
-    border-color: rgba(255, 255, 255, 0.4) !important;
-    box-shadow: 0 0 15px rgba(255, 255, 255, 0.1) !important;
+/* 5. AJUSTE PARA LA FLECHITA (CHEVRON) */
+.wc-blocks-components-select__container .wc-block-components-select-input__chevron {
+    right: 20px !important;
+    fill: white !important;
 }
