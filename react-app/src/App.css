@@ -483,11 +483,33 @@ color: #ffffff;
 letter-spacing: 4px;
 font-family:  "Inter", sans-serif;
 text-transform: uppercase;
+}
+
+.product-main-title {
+font-size: clamp(28px, 5vw, 50px);
+line-height: 1.1;
+font-weight:500;
+color: #ffffff;
+letter-spacing: 4px;
+font-family:  "Inter", sans-serif;
+text-transform: uppercase;
 
 }
 
 
 .product-single-container .product-main-price {    
+font-weight: bold;
+font-size: clamp(20px, 5vw, 32px);
+line-height: 1.1;
+color: #CBD5E1;
+letter-spacing: 4px;
+font-family:  "Inter", sans-serif;
+text-transform: uppercase;
+margin: 0px;
+}
+
+
+.product-main-price {    
 font-weight: bold;
 font-size: clamp(20px, 5vw, 32px);
 line-height: 1.1;
@@ -1404,6 +1426,10 @@ display: flex;
 justify-content: center; 
 }
 
+.product-image-wrapper-one img {
+max-width: 600px;
+}
+
 .product-info-wrapper-two {
 width: 50%;
 display: flex;
@@ -1414,30 +1440,25 @@ justify-content: flex-start;
 @media (max-width: 950px) {
     .product_template_container_information {
         flex-direction: column; 
-        /* Cambiamos center por flex-start para que los bloques se alineen a la izquierda */
         align-items: flex-start;    
-        /* Alineamos el texto a la izquierda para mejor legibilidad */
         text-align: left; 
-        gap: 30px; /* Un poco de aire entre la imagen y el texto */
+        gap: 30px; 
     }
 
     .product-image-wrapper-one {
         width: 100%;
-        /* Limitamos el ancho de la imagen como pediste */
         max-width: 400px; 
-        /* Si quieres que la imagen (aunque sea pequeña) esté alineada a la izquierda */
         align-self: flex-start; 
     }
 
     .product-info-wrapper-two {
         width: 100%;
-        /* Forzamos que el contenido interno también se alinee a la izquierda */
         display: flex;
         flex-direction: column;
         align-items: flex-start;
     }
     
-    /* Aseguramos que la imagen dentro del wrapper no se desborde */
+   
     .product-image-wrapper-one img {
         width: 100%;
         height: auto;
