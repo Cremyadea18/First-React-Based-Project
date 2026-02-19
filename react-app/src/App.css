@@ -1408,18 +1408,39 @@ justify-content: center;
 width: 50%;
 display: flex;
 flex-direction: column;
-justify-content: center;
+justify-content: flex-start;
 }
 
 @media (max-width: 950px) {
     .product_template_container_information {
         flex-direction: column; 
-        align-items: center;    
-        text-align: center;     
+        /* Cambiamos center por flex-start para que los bloques se alineen a la izquierda */
+        align-items: flex-start;    
+        /* Alineamos el texto a la izquierda para mejor legibilidad */
+        text-align: left; 
+        gap: 30px; /* Un poco de aire entre la imagen y el texto */
     }
 
-    .product-image-wrapper-one,
+    .product-image-wrapper-one {
+        width: 100%;
+        /* Limitamos el ancho de la imagen como pediste */
+        max-width: 400px; 
+        /* Si quieres que la imagen (aunque sea pequeña) esté alineada a la izquierda */
+        align-self: flex-start; 
+    }
+
     .product-info-wrapper-two {
-        width: 100%;           
+        width: 100%;
+        /* Forzamos que el contenido interno también se alinee a la izquierda */
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    /* Aseguramos que la imagen dentro del wrapper no se desborde */
+    .product-image-wrapper-one img {
+        width: 100%;
+        height: auto;
+        display: block;
     }
 }
