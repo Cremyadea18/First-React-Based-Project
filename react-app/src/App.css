@@ -1283,3 +1283,7 @@ text-align: center;
 .wc-block-cart-items__row td {
     padding-left: 0 !important;
 }
+
+.wc-block-cart-item__image img {
+max-width: 200px;
+}
