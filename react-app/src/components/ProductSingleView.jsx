@@ -23,7 +23,7 @@ export const ProductSingleView = ({ data }) => {
     <PayPalScriptProvider options={paypalOptions}>
       <div className="product_template_container">
         <div className="product_template_container_information">
-            <div className="product-image-wrapper-one">
+            <div className="product-image-wrapper-one animate_dos">
               {/* Usamos un fallback por si no hay imagen */}
               <img src={imagen || 'ruta/a/imagen-por-defecto.jpg'} alt={titulo} className="main-product-img" />
             </div>
