@@ -1363,3 +1363,18 @@ max-width: 200px;
     background-color: #121212 !important; /* Fondo oscuro para que se lea el texto de la lista */
     color: white !important;
 }
+
+.wc-block-checkout__form {
+    width: 80% !important;
+    max-width: 1200px !important; /* Es recomendable un tope para que en pantallas gigantes no se estire demasiado */
+    margin-left: auto !important;
+    margin-right: auto !important;
+    float: none !important; /* Por si acaso el tema Astra tiene algún float activo */
+}
+
+/* Ajuste para móviles: en pantallas pequeñas el 80% es muy poco espacio */
+@media (max-width: 768px) {
+    .wc-block-checkout__form {
+        width: 95% !important; /* Casi todo el ancho en celulares */
+    }
+}
