@@ -1222,3 +1222,28 @@ text-align: center;
     width: 100% !important;
     transition: background 0.3s ease;
 }
+
+/* Ajuste para que los elementos no se colapsen a la izquierda */
+.is-medium table.wc-block-cart-items .wc-block-cart-items__row, 
+.is-mobile table.wc-block-cart-items .wc-block-cart-items__row, 
+.is-small table.wc-block-cart-items .wc-block-cart-items__row {
+    display: grid !important;
+    /* Cambiamos px por fr y permitimos que los elementos se posicionen mejor */
+    grid-template-columns: 100px 1fr !important; 
+    grid-template-areas: 
+        "image title"
+        "image details";
+    column-gap: 15px;
+    row-gap: 10px;
+    align-items: start;
+}
+
+/* Forzamos que la imagen ocupe su área */
+.wc-block-cart-item__image {
+    grid-area: image;
+}
+
+/* Forzamos que la info ocupe su área */
+.wc-block-cart-item__info {
+    grid-area: title;
+}
