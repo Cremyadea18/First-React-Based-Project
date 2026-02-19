@@ -1223,7 +1223,7 @@ text-align: center;
     transition: background 0.3s ease;
 }
 
-@media (max-width: 828px) and (min-width:481px) {
+@media (min-width:481px) {
     .is-medium table.wc-block-cart-items .wc-block-cart-items__row, .is-mobile table.wc-block-cart-items .wc-block-cart-items__row, .is-small table.wc-block-cart-items .wc-block-cart-items__row {
     display: grid !important;
         
