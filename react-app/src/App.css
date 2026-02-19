@@ -1223,12 +1223,12 @@ text-align: center;
     transition: background 0.3s ease;
 }
 
-/* Para tablets y móviles grandes (Mantenemos el grid pero con más flexibilidad) */
+
 @media (max-width: 767px) {
     .is-mobile table.wc-block-cart-items .wc-block-cart-items__row,
     .is-small table.wc-block-cart-items .wc-block-cart-items__row {
         display: grid !important;
-        grid-template-columns: 80px 1fr !important; /* Reducimos la imagen a 80px */
+        grid-template-columns: 80px 1fr !important;
         grid-template-areas: 
             "image title"
             "image price"
@@ -1238,20 +1238,20 @@ text-align: center;
     }
 }
 
-/* Para móviles pequeños (Donde se solapan los elementos) */
+
 @media (max-width: 480px) {
     .is-mobile table.wc-block-cart-items .wc-block-cart-items__row,
     .is-small table.wc-block-cart-items .wc-block-cart-items__row {
-        display: flex !important; /* Cambiamos a Flex para apilar */
+        display: flex !important; 
         flex-direction: column !important;
-        align-items: center; /* Centramos para que se vea como una card */
+        align-items: center; 
         text-align: center;
         padding: 20px 10px !important;
     }
 
     .wc-block-cart-item__image {
         margin-bottom: 15px;
-        width: 120px !important; /* Imagen un poco más grande al estar sola */
+        width: 120px !important; 
     }
 
     .wc-block-cart-item__info, 
@@ -1261,3 +1261,11 @@ text-align: center;
         margin: 5px 0;
     }
 }
+
+@media (max-width:800px) {
+.wc-block-cart-item__image {
+    width: 100px; 
+    height: 100px; 
+}
+}
+
