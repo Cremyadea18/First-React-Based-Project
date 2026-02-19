@@ -312,7 +312,7 @@ align-items: center;
 margin: 0 auto;
 }
 
-/* Contenedor Principal */
+
 .search-section {
     display: flex;
     flex-direction: column;
@@ -326,7 +326,7 @@ margin: 0 auto;
 padding-bottom: 50px;
 }
 
-/* Barra de Búsqueda */
+
 .search-input {
    min-width: 320px;
    width: 100%;
@@ -359,7 +359,7 @@ text-decoration: none;
   transform: translateY(-1px);
 }
 
-/* Grid de Productos */
+
 .products-grid {
     display: flex;
     flex-direction: row;
@@ -369,7 +369,7 @@ text-decoration: none;
     justify-content: center;
 }
 
-/* Tarjeta de Producto */
+
 .product-card {
     flex: 1 1 clamp(320px, 30vw, 350px);
     width: 100%;
@@ -428,7 +428,7 @@ font-family: "Inter", sans-serif;
     font-family: "Inter", sans-serif;
 }
 
-/* Botón */
+
 .product-button {
     display: inline-block; 
   padding: 12px 28px;
@@ -717,7 +717,7 @@ margin: 0px;
     top: 0;
     width: 100%;
     z-index: 9999;
-    background: rgba(18, 18, 18, 0.8); /* Fondo oscuro translúcido */
+    background: rgba(18, 18, 18, 0.8); 
     backdrop-filter: blur(15px);
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
@@ -1275,7 +1275,7 @@ max-width: 200px;
 }
 
 
-/* 1. FORZAMOS EL CONTENEDOR (Reseteo de fondo blanco) */
+
 .wc-block-checkout__form .wc-block-components-text-input,
 .wc-block-checkout__form .wc-block-components-combobox,
 .wc-block-checkout__form .wc-block-components-select-input {
@@ -1293,8 +1293,7 @@ max-width: 200px;
 }
 
 
-/* 1. EL CONTENEDOR (CRISTAL PARA TODOS) */
-/* Agrupamos todos los posibles contenedores de WooCommerce Blocks */
+
 .wc-block-checkout__form .wc-block-components-text-input,
 .wc-block-checkout__form .wc-block-components-combobox,
 .wc-block-checkout__form .wc-block-components-select-input,
@@ -1313,8 +1312,7 @@ max-width: 200px;
     overflow: visible !important;
 }
 
-/* 2. ELIMINAR FONDO BLANCO DE TODOS LOS HIJOS (INPUTS, SELECTS, TEXTAREAS) */
-/* Esta es la parte que evita que los campos vuelvan a blanco */
+
 .wc-block-checkout__form .wc-block-components-text-input input,
 .wc-block-checkout__form .wc-block-components-text-input__input,
 .wc-block-checkout__form .wc-block-components-select-input__control,
@@ -1333,7 +1331,7 @@ max-width: 200px;
     -webkit-appearance: none !important;
 }
 
-/* 3. LABELS (CENTRADOS Y FLOTANTES) */
+
 .wc-block-checkout__form .wc-block-components-text-input label,
 .wc-block-checkout__form .wc-block-components-select-input label,
 .wc-block-checkout__form .wc-blocks-components-select__container label {
@@ -1349,8 +1347,7 @@ max-width: 200px;
     margin: 0 !important;
 }
 
-/* 4. ESTADO ACTIVO (LABEL SUBE) */
-/* Aplicamos a todos los contenedores cuando tienen la clase is-active */
+
 .wc-block-checkout__form .is-active label {
     top: 0 !important;
     transform: translateY(-135%) scale(0.8) !important;
@@ -1358,23 +1355,23 @@ max-width: 200px;
     opacity: 1 !important;
 }
 
-/* 5. FIX PARA EL COLOR DEL TEXTO SELECCIONADO EN LOS SELECTS */
+
 .wc-block-checkout__form select option {
-    background-color: #121212 !important; /* Fondo oscuro para que se lea el texto de la lista */
+    background-color: #121212 !important; 
     color: white !important;
 }
 
 .wc-block-checkout__form {
     width: 80% !important;
-    max-width: 1200px !important; /* Es recomendable un tope para que en pantallas gigantes no se estire demasiado */
+    max-width: 1200px !important; 
     margin-left: auto !important;
     margin-right: auto !important;
-    float: none !important; /* Por si acaso el tema Astra tiene algún float activo */
+    float: none !important; 
 }
 
-/* Ajuste para móviles: en pantallas pequeñas el 80% es muy poco espacio */
+
 @media (max-width: 768px) {
     .wc-block-checkout__form {
-        width: 95% !important; /* Casi todo el ancho en celulares */
+        width: 95% !important; 
     }
 }
