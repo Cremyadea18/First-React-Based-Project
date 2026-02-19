@@ -1465,3 +1465,13 @@ justify-content: flex-start;
         display: block;
     }
 }
+
+.product-main-description {
+display: inline-block;
+width: 80%;
+font-size: clamp(16px, 5vw, 18px);
+line-height: 1.7;
+font-weight: 400;
+color: #F8FAFC;
+font-family: "Inter", sans-serif;
+}
