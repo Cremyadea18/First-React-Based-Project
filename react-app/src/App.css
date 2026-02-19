@@ -1188,44 +1188,6 @@ text-align: center;
 }
 
 
-#customer_details h3, #order_review_heading {
-    font-size: 22px;
-    margin-bottom: 20px;
-    color: #333;
-}
-
-
-.woocommerce-checkout input.input-text, 
-.woocommerce-checkout select, 
-.woocommerce-checkout textarea {
-    border-radius: 8px;
-    padding: 12px;
-    border: 1px solid #ddd;
-    width: 100%;
-}
-
-
-#order_review {
-    background: #f9f9f9;
-    padding: 25px;
-    border-radius: 12px;
-    border: 1px solid #eee;
-}
-
-
-#place_order {
-    background-color: #6200ee !important; 
-    color: white !important;
-    padding: 20px !important;
-    font-size: 18px !important;
-    border-radius: 10px !important;
-    width: 100% !important;
-    transition: background 0.3s ease;
-}
-
-/* Definimos las clases en una variable para no repetir */
-/* Aplicamos a todas las variantes de WooCommerce para que no haya saltos */
-
 @media (min-width: 691px) {
     .wc-block-cart-items__row {
         display: grid !important;
@@ -1233,7 +1195,7 @@ text-align: center;
         grid-template-areas: "image product total" !important;
         column-gap: 30px; 
         padding: 20px !important;
-        flex-direction: row !important; /* Reset por si acaso */
+        flex-direction: row !important; 
     }
 
     .wc-block-cart-item__image { grid-area: image; display: flex; justify-content: center; }
@@ -1242,14 +1204,13 @@ text-align: center;
 }
 
 @media (max-width: 690px) {
-    /* Quitamos los selectores .is-small/.is-mobile para que el cambio sea instantáneo por medida */
+    
     .wc-block-cart-items__row {
         display: flex !important; 
         flex-direction: column !important;
         align-items: center !important; 
         text-align: center !important;
         padding: 20px 10px !important;
-        /* Limpiamos el grid para que no interfiera con el flex */
         grid-template-columns: 1fr !important;
         grid-template-areas: none !important;
     }
@@ -1257,14 +1218,14 @@ text-align: center;
     .wc-block-cart-item__image {
         margin-bottom: 15px;
         width: 120px !important;
-        grid-area: auto; /* Reset del área de grid */
+        grid-area: auto; 
     }
 
     .wc-block-cart-item__info, 
     .wc-block-cart-item__totals {
         width: 100% !important;
         margin: 5px 0;
-        grid-area: auto; /* Reset del área de grid */
+        grid-area: auto; 
         text-align: center !important;
     }
 }
