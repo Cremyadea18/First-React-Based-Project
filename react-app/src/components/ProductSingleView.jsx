@@ -51,7 +51,7 @@ export const ProductSingleView = ({ data }) => {
             <div className="product-main-action animate_dos">
               <div className="cart">
                 {/* Botón de Carrito */}
-                <button className="btn-secondary" onClick={handleAddToCart} style={{ marginBottom: '20px', width: '100%' }}>
+                <button className="btn-secondary" onClick={handleAddToCart}>
                   Add to cart
                 </button>
 
