@@ -10,7 +10,7 @@ const paypalOptions = {
 export const ProductSingleView = ({ data }) => {
   // 1. Escudo de seguridad: si data es undefined, no rompemos la app
   if (!data) {
-    return <div className="product_main_container">Cargando producto...</div>;
+    return <div className="product_template_container">Cargando producto...</div>;
   }
 
   const { titulo, precio, descripcion, imagen, stock } = data;

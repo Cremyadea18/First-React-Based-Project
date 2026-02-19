@@ -15,7 +15,7 @@ while ( have_posts() ) : the_post();
     ];
     ?>
 
-    <div class="product_main_container">
+    <div class="product_template_container">
         <div id="react-single-product-root" 
              data-product="<?php echo esc_attr( json_encode( $react_data ) ); ?>">
         </div>
