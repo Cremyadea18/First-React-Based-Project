@@ -1224,19 +1224,18 @@ text-align: center;
 }
 
 @media (min-width: 768px) {
-    .wc-block-cart-items__row {
-        display: grid !important;
-        /* Definimos solo 3 columnas */
-        /* La imagen de 200px, el producto flexible, y el total de 200px */
+    .is-medium table.wc-block-cart-items .wc-block-cart-items__row, .is-mobile table.wc-block-cart-items .wc-block-cart-items__row, .is-small table.wc-block-cart-items .wc-block-cart-items__row {
+    display: grid !important;
+        
         grid-template-columns: 200px 1fr 200px !important; 
         
-        /* Solo 3 áreas en una sola fila */
+        
         grid-template-areas: "image product total" !important;
         
-        column-gap: 30px; /* Un poco más de espacio entre ellos */
-        align-items: center; 
+        column-gap: 30px; 
         padding: 20px !important;
-    }
+  
+}
 
     /* 1. La Imagen */
     .wc-block-cart-item__image {
@@ -1309,14 +1308,11 @@ max-width: 200px;
 }
 
 @media (max-width:828px) {
-.wc-block-components-sidebar-layout .wc-block-components-main .wc-block-components-sidebar-layout .wc-block-components-sidebar {
-    padding: 20px;
+.wc-block-components-sidebar-layout .wc-block-components-sidebar{
+    padding: 20px !important;
     width: 100%;
 }
-.wc-block-components-sidebar .wc-block-cart__sidebar .wp-block-woocommerce-cart-totals-block {
- padding: 20px;
-    width: 100%;
-}
+
 }
 
 
