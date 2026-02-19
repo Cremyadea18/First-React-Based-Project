@@ -1275,3 +1275,47 @@ max-width: 200px;
 }
 
 
+
+.wc-block-components-text-input {
+    background: rgba(255, 255, 255, 0.05) !important; 
+    backdrop-filter: blur(10px); 
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 50px !important; 
+    padding: 8px 20px !important;
+    transition: all 0.3s ease;
+    margin-bottom: 15px !important;
+    position: relative;
+    overflow: hidden;
+}
+
+
+.wc-block-components-text-input label {
+    background: transparent !important; 
+    color: rgba(255, 255, 255, 0.7) !important;
+    font-weight: 500;
+    padding-left: 10px !important;
+    transition: all 0.2s ease;
+}
+
+
+.wc-block-components-text-input:focus-within {
+    background: rgba(255, 255, 255, 0.1) !important;
+    border-color: rgba(255, 255, 255, 0.3) !important;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+}
+
+
+.wc-block-components-text-input input {
+    background: transparent !important;
+    border: none !important;
+    color: white !important;
+    outline: none !important;
+    padding: 10px 0 !important;
+}
+
+
+.wc-block-components-text-input.is-active label {
+    transform: translateY(-12px) scale(0.8) !important;
+    color: #6200ee !important; 
+}
