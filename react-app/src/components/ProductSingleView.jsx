@@ -21,10 +21,8 @@ export const ProductSingleView = ({ data }) => {
 
   return (
     <PayPalScriptProvider options={paypalOptions}>
-      <div className="product_main_container">
-        <div className="product-single-container">
-          <div className="product-layout-grid">
-            
+      <div className="product_template_container">
+        <div className="product_template_container_information">
             <div className="product-image-wrapper">
               {/* Usamos un fallback por si no hay imagen */}
               <img src={imagen || 'ruta/a/imagen-por-defecto.jpg'} alt={titulo} className="main-product-img" />
@@ -53,8 +51,6 @@ export const ProductSingleView = ({ data }) => {
                 </div>
               </div>
             </div>
-
-          </div>
         </div>
       </div>
     </PayPalScriptProvider>

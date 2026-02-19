@@ -1375,3 +1375,23 @@ max-width: 200px;
         width: 95% !important; 
     }
 }
+
+.product_template_container {
+width: 100%;
+display: flex;
+align-items: center;
+justify-content: center;
+padding-top: clamp(50px,8vh,150px);
+padding-bottom: clamp(50px,8vh,150px);
+padding-left: clamp(20px, 8vh,64px);
+padding-right: clamp(20px,8vh,64px);
+box-sizing: border-box;
+}
+
+.product_template_container_information { 
+height: auto;
+max-width: 1000px;
+display: flex;
+flex-direction: column;
+gap: 20px;
+}
