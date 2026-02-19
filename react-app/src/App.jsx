@@ -5,12 +5,8 @@ import miImagenabout from "./assets/asset.svg"
 import ProductSearch from './components/ProductSearch.jsx' 
 import { CartIcon } from './components/CartIcon.jsx'
 import { PayPalScriptProvider } from "@paypal/react-paypal-js";
+import { ProductSingleView } from './components/ProductSingleView';
 
-
-const paypalOptions = {
-  "client-id": "TU_CLIENT_ID_DE_SANDBOX",
-  currency: "USD",
-};
 
 
 const MiTitulo = () => (
@@ -164,6 +160,12 @@ export const ProductsSection = () => (
     </div>
   </section>
 )
+
+
+
+
+
+
 
 
 function App() {

@@ -3,41 +3,25 @@ get_header();
 
 while ( have_posts() ) : the_post();
     global $product;
+    
+   
+    $react_data = [
+        'titulo'      => get_the_title(),
+        'precio'      => $product->get_price_html(),
+        
+        'descripcion' => apply_filters( 'the_content', get_the_content() ),
+        'imagen'      => get_the_post_thumbnail_url(get_the_ID(), 'large'),
+        'stock'       => $product->get_stock_quantity(),
+    ];
     ?>
+
     <div class="product_main_container">
-        <div class="product-single-container">
-            <div class="product-layout-grid">
-                
-                <div class="product-image-wrapper">
-                    <?php if ( has_post_thumbnail() ) : ?>
-                        <?php the_post_thumbnail('large', ['class' => 'main-product-img']); ?>
-                    <?php endif; ?>
-                </div>
-
-                <div class="product-info-wrapper">
-                    <h1 class="product-main-title"><?php the_title(); ?></h1>
-                    
-                    <div class="product-main-price">
-                        <?php echo $product->get_price_html(); ?>
-                    </div>
-
-                    <div class="product-main-description">
-                        <?php the_content(); ?>
-                    </div>
-
-                    <div class="product-main-action">
-                        <?php woocommerce_template_single_add_to_cart(); ?>
-                    </div>
-                </div>
-
+        <div id="react-single-product-root" 
+             data-product="<?php echo esc_attr( json_encode( $react_data ) ); ?>">
             </div>
 
-            <div class="related-products-container" style="margin-top: 80px; border-top: 1px solid rgba(0,0,0,0.05); padding-top: 40px;">
-                <?php
-                // Esta función llama automáticamente a los productos relacionados de WooCommerce
-                woocommerce_output_related_products();
-                ?>
-            </div>
+        <div class="related-products-container" style="margin-top: 80px; padding: 40px;">
+            <?php woocommerce_output_related_products(); ?>
         </div>
     </div>
 
@@ -45,3 +29,4 @@ while ( have_posts() ) : the_post();
 endwhile;
 
 get_footer();
+?>
