@@ -1223,61 +1223,49 @@ text-align: center;
     transition: background 0.3s ease;
 }
 
-@media (min-width:691px) {
-    .is-medium table.wc-block-cart-items .wc-block-cart-items__row, .is-mobile table.wc-block-cart-items .wc-block-cart-items__row, .is-small table.wc-block-cart-items .wc-block-cart-items__row {
-    display: grid !important;
-        
+/* Definimos las clases en una variable para no repetir */
+/* Aplicamos a todas las variantes de WooCommerce para que no haya saltos */
+
+@media (min-width: 691px) {
+    .wc-block-cart-items__row {
+        display: grid !important;
         grid-template-columns: 200px 1fr 200px !important; 
-        
-        
         grid-template-areas: "image product total" !important;
-        
         column-gap: 30px; 
         padding: 20px !important;
-  
+        flex-direction: row !important; /* Reset por si acaso */
+    }
+
+    .wc-block-cart-item__image { grid-area: image; display: flex; justify-content: center; }
+    .wc-block-cart-item__info { grid-area: product; text-align: left; }
+    .wc-block-cart-item__totals { grid-area: total; justify-self: end; text-align: right; }
 }
-
-   
-    .wc-block-cart-item__image {
-        grid-area: image;
-        display: flex;
-        justify-content: center;
-    }
-
-    
-    .wc-block-cart-item__info {
-        grid-area: product;
-    }
-
-    
-    .wc-block-cart-item__totals {
-        grid-area: total;
-        justify-self: end; 
-        text-align: right;
-    }
-}
-
 
 @media (max-width: 690px) {
-    .is-mobile table.wc-block-cart-items .wc-block-cart-items__row,
-    .is-small table.wc-block-cart-items .wc-block-cart-items__row {
+    /* Quitamos los selectores .is-small/.is-mobile para que el cambio sea instantáneo por medida */
+    .wc-block-cart-items__row {
         display: flex !important; 
         flex-direction: column !important;
-        align-items: center; 
-        text-align: center;
+        align-items: center !important; 
+        text-align: center !important;
         padding: 20px 10px !important;
+        /* Limpiamos el grid para que no interfiera con el flex */
+        grid-template-columns: 1fr !important;
+        grid-template-areas: none !important;
     }
 
     .wc-block-cart-item__image {
         margin-bottom: 15px;
-        width: 120px !important; 
+        width: 120px !important;
+        grid-area: auto; /* Reset del área de grid */
     }
 
     .wc-block-cart-item__info, 
-    .wc-block-cart-item__totals,
-    .wc-block-cart-item__quantity {
+    .wc-block-cart-item__totals {
         width: 100% !important;
         margin: 5px 0;
+        grid-area: auto; /* Reset del área de grid */
+        text-align: center !important;
     }
 }
 
