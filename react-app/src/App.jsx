@@ -20,12 +20,24 @@ const MiTexto = () => (
 )
 
 const BtnPrimary = () => (
-  <button className="btn-primary animate">Start free trial</button>
-)
+  <a 
+    href="https://reactappapplication.online/#contact" 
+    className="btn-primary animate"
+    style={{ textDecoration: 'none', display: 'inline-block', textAlign: 'center' }}
+  >
+    Start free trial
+  </a>
+);
 
 const BtnSecondary = () => (
-  <button className="btn-secondary animate">See how it works</button> 
-)
+  <a 
+    href="https://reactappapplication.online/#benefits" 
+    className="btn-secondary animate"
+    style={{ textDecoration: 'none', display: 'inline-block' }}
+  >
+    See how it works
+  </a>
+);
 
 const AboutTittle = () => (
   <h2 className='about__title animate '>Simplify Complex Business Operations with AI</h2>
