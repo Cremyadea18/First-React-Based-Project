@@ -1276,46 +1276,65 @@ max-width: 200px;
 
 
 
-.wc-block-components-text-input {
-    background: rgba(255, 255, 255, 0.05) !important; 
-    backdrop-filter: blur(10px); 
+/* Aplicamos a inputs de texto Y a los contenedores de selección */
+.wc-block-components-text-input,
+.wc-block-components-combobox,
+.wc-block-components-select-input {
+    background: rgba(255, 255, 255, 0.05) !important;
+    backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.1) !important;
-    border-radius: 50px !important; 
-    padding: 8px 20px !important;
-    transition: all 0.3s ease;
-    margin-bottom: 15px !important;
-    position: relative;
-    overflow: hidden;
+    border-radius: 50px !important;
+    
+    /* Centrado Vertical */
+    display: flex !important;
+    align-items: center !important;
+    min-height: 55px !important; /* Altura fija para asegurar el centrado */
+    padding: 0 25px !important;
+    margin-bottom: 20px !important;
+    overflow: visible !important; /* Para que el label pueda subir sin cortarse */
 }
 
-
-.wc-block-components-text-input label {
-    background: transparent !important; 
-    color: rgba(255, 255, 255, 0.7) !important;
-    font-weight: 500;
-    padding-left: 10px !important;
-    transition: all 0.2s ease;
+/* Alineación del Label para que esté centrado antes de escribir */
+.wc-block-components-text-input label,
+.wc-block-components-select-input label {
+    top: 50% !important;
+    transform: translateY(-50%) !important; /* Centrado perfecto */
+    left: 25px !important;
+    margin: 0 !important;
+    transition: all 0.2s ease-in-out !important;
+    pointer-events: none;
 }
 
-
-.wc-block-components-text-input:focus-within {
-    background: rgba(255, 255, 255, 0.1) !important;
-    border-color: rgba(255, 255, 255, 0.3) !important;
-    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+/* Cuando el label sube (campo activo) */
+.wc-block-components-text-input.is-active label,
+.wc-block-components-select-input.is-active label {
+    top: 0 !important;
+    transform: translateY(-120%) scale(0.85) !important; /* Sale del input hacia arriba */
+    background: #121212 !important; /* Color de fondo de tu web para que se lea bien */
+    padding: 0 8px !important;
+    border-radius: 4px;
 }
 
-
-.wc-block-components-text-input input {
+/* Quitar el estilo default del select de sistema */
+.wc-block-components-select-input__control {
     background: transparent !important;
     border: none !important;
     color: white !important;
-    outline: none !important;
-    padding: 10px 0 !important;
+    width: 100% !important;
+    appearance: none; /* Quita la flecha nativa fea */
 }
 
 
-.wc-block-components-text-input.is-active label {
-    transform: translateY(-12px) scale(0.8) !important;
-    color: #6200ee !important; 
+.wc-block-components-select-input__chevron {
+    fill: white !important; 
+    right: 20px !important;
+}
+
+.wc-block-components-text-input__input {
+    background: transparent !important;
+    border: none !important;
+    color: white !important;
+    width: 100% !important;
+    padding-top: 10px !important; 
 }
