@@ -1226,27 +1226,35 @@ text-align: center;
 @media (min-width: 768px) {
     .wc-block-cart-items__row {
         display: grid !important;
-        grid-template-columns: 200px 1fr 200px 200px !important; 
-        grid-template-areas: "image title price quantity" !important;
+        /* Definimos solo 3 columnas */
+        /* La imagen de 200px, el producto flexible, y el total de 200px */
+        grid-template-columns: 200px 1fr 200px !important; 
         
-        column-gap: 20px;
+        /* Solo 3 áreas en una sola fila */
+        grid-template-areas: "image product total" !important;
+        
+        column-gap: 30px; /* Un poco más de espacio entre ellos */
         align-items: center; 
-        padding: 15px 25px !important;
+        padding: 20px !important;
     }
 
+    /* 1. La Imagen */
     .wc-block-cart-item__image {
         grid-area: image;
+        display: flex;
+        justify-content: center;
     }
+
+    /* 2. El Producto (Info/Título) */
     .wc-block-cart-item__info {
-        grid-area: title;
+        grid-area: product;
     }
+
+    /* 3. El Total (Precio y quizás cantidad según tu configuración) */
     .wc-block-cart-item__totals {
-        grid-area: price;
-        justify-self: center; 
-    }
-    .wc-block-cart-item__quantity {
-        grid-area: quantity;
-        justify-self: end; 
+        grid-area: total;
+        justify-self: end; /* Pegado a la derecha de la card */
+        text-align: right;
     }
 }
 
@@ -1301,8 +1309,12 @@ max-width: 200px;
 }
 
 @media (max-width:828px) {
-.wc-block-components-sidebar-layout .wc-block-components-main, .wc-block-components-sidebar-layout .wc-block-components-sidebar {
+.wc-block-components-sidebar-layout .wc-block-components-main .wc-block-components-sidebar-layout .wc-block-components-sidebar {
     padding: 20px;
+    width: 100%;
+}
+.wc-block-components-sidebar .wc-block-cart__sidebar .wp-block-woocommerce-cart-totals-block {
+ padding: 20px;
     width: 100%;
 }
 }
