@@ -4,6 +4,13 @@ import './MediaQueries.css'
 import miImagenabout from "./assets/asset.svg"
 import ProductSearch from './components/ProductSearch.jsx' 
 import { CartIcon } from './components/CartIcon.jsx'
+import { PayPalScriptProvider } from "@paypal/react-paypal-js";
+
+
+const paypalOptions = {
+  "client-id": "TU_CLIENT_ID_DE_SANDBOX",
+  currency: "USD",
+};
 
 
 const MiTitulo = () => (
@@ -55,26 +62,27 @@ const ProductSearchTittle = () => (
 
 
 export const Header = () => (
-  <header id="main-site-header">
-    <nav className="nav-container">
-      <div className="logo">
-        <a href="https://reactappapplication.online/#home">TECH<span>AURA</span></a>
-      </div>
+ 
+  <PayPalScriptProvider options={paypalOptions}>
+    <header id="main-site-header">
+      <nav className="nav-container">
+        <div className="logo">
+          <a href="https://reactappapplication.online/#home">TECH<span>AURA</span></a>
+        </div>
 
-      <ul className="nav-links">
+        <ul className="nav-links">
+          <li><a href="https://reactappapplication.online/#home">Home</a></li>
+          <li><a href="#about-us">About Us</a></li>
+          <li><a href="#products">Products</a></li>
+          <li><a href="#benefits">Benefits</a></li>
+        </ul>
+
         
-        <li><a href="https://reactappapplication.online/#home">Home</a></li>
-        <li><a href="#about-us">About Us</a></li>
-        <li><a href="#products">Products</a></li>
-        <li><a href="#benefits">Benefits</a></li>
-    
-      </ul>
-
-        < CartIcon />
-    </nav>
-  </header>
+        <CartIcon />
+      </nav>
+    </header>
+  </PayPalScriptProvider>
 );
-
 
 
 export const Footer = () => {
