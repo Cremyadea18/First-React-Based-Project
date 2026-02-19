@@ -1223,12 +1223,22 @@ text-align: center;
     transition: background 0.3s ease;
 }
 
+.wc-block-cart-items__row {
+display: grid !important;
+        grid-template-columns: 200px 1fr !important;
+        grid-template-areas: 
+            "image title"
+            "image price"
+            "image quantity";
+        column-gap: 12px;
+        row-gap: 8px;
+}
 
 @media (max-width: 767px) {
     .is-mobile table.wc-block-cart-items .wc-block-cart-items__row,
     .is-small table.wc-block-cart-items .wc-block-cart-items__row {
         display: grid !important;
-        grid-template-columns: 80px 1fr !important;
+        grid-template-columns: 150px 1fr !important;
         grid-template-areas: 
             "image title"
             "image price"
