@@ -1,9 +1,11 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-// 1. Quitamos ProductSingleView de aquí (porque ya no vive en App.jsx)
+
+// 1. CORRECCIÓN: Quitamos ProductSingleView de las llaves de App.jsx
 import App, { Header, Footer, Hero, About, ProductsSection } from './App.jsx' 
 import './index.css'
-// 2. Lo traemos únicamente de su nueva ubicación
+
+// 2. IMPORTACIÓN ÚNICA: Desde su archivo independiente
 import { ProductSingleView } from './components/ProductSingleView';
 
 const initRoots = () => {
@@ -16,7 +18,6 @@ const initRoots = () => {
     { id: 'react-products', component: <ProductsSection /> },
     { id: 'react-footer', component: <Footer /> }, 
     { id: 'root-full-app', component: <App /> }
-    // Nota: ProductSingleView NO va aquí porque necesita datos dinámicos
   ];
 
   componentsToMount.forEach(({ id, component }) => {
@@ -34,6 +35,7 @@ const initRoots = () => {
     try {
       const productData = JSON.parse(productEl.dataset.product);
       console.log(`✅ Producto detectado. Montando ProductSingleView...`);
+      // Inyectamos el componente con sus datos
       mountComponent(productEl, <ProductSingleView data={productData} />);
     } catch (e) {
       console.error("❌ Error al parsear datos del producto:", e);

@@ -7,7 +7,12 @@ import { CartIcon } from './components/CartIcon.jsx'
 import { PayPalScriptProvider } from "@paypal/react-paypal-js";
 import { ProductSingleView } from './components/ProductSingleView';
 
-
+// 1. DEFINIR PAYPAL OPTIONS (Esto faltaba y causaba el error)
+const paypalOptions = {
+  "client-id": "TU_CLIENT_ID_AQUI", // Cambia esto por tu ID real
+  currency: "USD",
+  intent: "capture",
+};
 
 const MiTitulo = () => (
   <h1 className="hero__title animate"> 
@@ -56,9 +61,8 @@ const ProductSearchTittle = () => (
   <h2 className='about__title'>Our Products</h2>
 )
 
-
+// HEADER CORREGIDO
 export const Header = () => (
- 
   <PayPalScriptProvider options={paypalOptions}>
     <header id="main-site-header">
       <nav className="nav-container">
@@ -73,17 +77,13 @@ export const Header = () => (
           <li><a href="#benefits">Benefits</a></li>
         </ul>
 
-        
         <CartIcon />
       </nav>
     </header>
   </PayPalScriptProvider>
 );
 
-
 export const Footer = () => {
- 
-
   return (
     <footer className="footer_main_container">
       <div className="footer_content">
@@ -118,9 +118,6 @@ export const Footer = () => {
   );
 };
 
-
-
-
 export const Hero = () => (
   <section className="hero">
     <div className='hero__content'>
@@ -143,7 +140,6 @@ export const About = () => (
         <AboutTittle />
         <AboutText />
       </div>
-      
     </div>
   </section>
 )
@@ -161,12 +157,8 @@ export const ProductsSection = () => (
   </section>
 )
 
-
-
-
-
-
-
+// 2. EXPORTAR EL COMPONENTE IMPORTADO PARA main.jsx
+export { ProductSingleView };
 
 function App() {
   return (

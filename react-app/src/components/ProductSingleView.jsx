@@ -1,3 +1,6 @@
+import React from 'react'; // Siempre necesario
+import { PayPalScriptProvider } from "@paypal/react-paypal-js"; // ¡IMPORTANTE!
+
 const paypalOptions = {
   "client-id": "TU_CLIENT_ID_AQUI",
   currency: "USD",
@@ -5,12 +8,15 @@ const paypalOptions = {
 };
 
 export const ProductSingleView = ({ data }) => {
-  
+  // 1. Escudo de seguridad: si data es undefined, no rompemos la app
+  if (!data) {
+    return <div className="product_main_container">Cargando producto...</div>;
+  }
+
   const { titulo, precio, descripcion, imagen, stock } = data;
 
   const handleAddToCart = () => {
     console.log("Añadiendo al carrito:", titulo);
-    
   };
 
   return (
@@ -19,12 +25,11 @@ export const ProductSingleView = ({ data }) => {
         <div className="product-single-container">
           <div className="product-layout-grid">
             
-            {/* Imagen del producto */}
             <div className="product-image-wrapper">
-              <img src={imagen} alt={titulo} className="main-product-img" />
+              {/* Usamos un fallback por si no hay imagen */}
+              <img src={imagen || 'ruta/a/imagen-por-defecto.jpg'} alt={titulo} className="main-product-img" />
             </div>
 
-            {/* Información del producto */}
             <div className="product-info-wrapper">
               <h1 className="product-main-title">{titulo}</h1>
               
@@ -34,12 +39,10 @@ export const ProductSingleView = ({ data }) => {
               />
 
               <div className="product-main-description">
-                {/* Aquí se renderiza the_content() */}
                 <div dangerouslySetInnerHTML={{ __html: descripcion }} />
               </div>
 
               <div className="product-main-action">
-                {/* Aquí está el botón envuelto en el Provider */}
                 <div className="cart">
                   <button 
                     className="single_add_to_cart_button button alt"
@@ -47,7 +50,6 @@ export const ProductSingleView = ({ data }) => {
                   >
                     Add to cart
                   </button>
-                  {/* Aquí podrías poner también <PayPalButtons /> más adelante */}
                 </div>
               </div>
             </div>
