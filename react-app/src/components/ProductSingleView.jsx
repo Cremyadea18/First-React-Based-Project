@@ -2,7 +2,7 @@ import React from 'react';
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 
 const paypalOptions = {
-  "client-id": "TU_CLIENT_ID_AQUI", // RECUERDA: Pon tu ID real aquí
+  "client-id": "TU_CLIENT_ID_AQUI", 
   currency: "USD",
   intent: "capture",
 };
@@ -12,7 +12,7 @@ export const ProductSingleView = ({ data }) => {
 
   const { id, titulo, precio, descripcion, imagen, nonce } = data;
 
-  // Extraemos el valor numérico del precio (ej: de "$25.00" a "25.00")
+  
   const numericPrice = precio.replace(/[^\d.]/g, '');
 
   const handleAddToCart = async () => {
@@ -50,12 +50,12 @@ export const ProductSingleView = ({ data }) => {
 
             <div className="product-main-action animate_dos">
               <div className="cart">
-                {/* Botón de Carrito */}
+                
                 <button className="btn-secondary" onClick={handleAddToCart}>
                   Add to cart
                 </button>
 
-                {/* --- BOTONES DE PAYPAL --- */}
+               
                 <div className="paypal-button-container">
                   <PayPalButtons 
                     style={{ layout: "vertical", shape: "rect", label: "pay" }}

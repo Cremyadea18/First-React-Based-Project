@@ -4,7 +4,7 @@ get_header();
 while ( have_posts() ) : the_post();
     global $product;
     
-    // Preparamos los datos para React incluyendo el token de seguridad (Nonce)
+    
     $react_data = [
         'id'          => get_the_ID(),
         'titulo'      => get_the_title(),
@@ -12,7 +12,7 @@ while ( have_posts() ) : the_post();
         'descripcion' => apply_filters( 'the_content', get_the_content() ),
         'imagen'      => get_the_post_thumbnail_url(get_the_ID(), 'large'),
         'stock'       => $product->get_stock_quantity(),
-        // Generamos el código de seguridad para la Store API
+        
         'nonce'       => wp_create_nonce( 'wc_store_api' ) 
     ];
     ?>
