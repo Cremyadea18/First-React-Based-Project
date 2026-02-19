@@ -1223,7 +1223,7 @@ text-align: center;
     transition: background 0.3s ease;
 }
 
-@media (min-width:481px) {
+@media (min-width:691px) {
     .is-medium table.wc-block-cart-items .wc-block-cart-items__row, .is-mobile table.wc-block-cart-items .wc-block-cart-items__row, .is-small table.wc-block-cart-items .wc-block-cart-items__row {
     display: grid !important;
         
@@ -1258,7 +1258,7 @@ text-align: center;
 }
 
 
-@media (max-width: 480px) {
+@media (max-width: 690px) {
     .is-mobile table.wc-block-cart-items .wc-block-cart-items__row,
     .is-small table.wc-block-cart-items .wc-block-cart-items__row {
         display: flex !important; 
