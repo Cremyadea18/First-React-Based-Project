@@ -1395,3 +1395,11 @@ max-width: 1000px;
 display: flex;
 gap: 20px;
 }
+
+.product-image-wrapper-one {
+width: 50%;
+}
+
+.product-info-wrapper-two {
+width: 50%;
+}
