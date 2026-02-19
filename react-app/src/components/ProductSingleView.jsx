@@ -29,18 +29,18 @@ export const ProductSingleView = ({ data }) => {
             </div>
 
             <div className="product-info-wrapper-two">
-              <h1 className="product-main-title animate">{titulo}</h1>
+              <h1 className="product-main-title animate_dos">{titulo}</h1>
               
               <div 
-                className="product-main-price animate" 
+                className="product-main-price animate_dos" 
                 dangerouslySetInnerHTML={{ __html: precio }} 
               />
 
-              <div className="product-main-description animate">
+              <div className="product-main-description animate_dos">
                 <div dangerouslySetInnerHTML={{ __html: descripcion }} />
               </div>
 
-              <div className="product-main-action animate">
+              <div className="product-main-action ">
                 <div className="cart">
                   <button 
                     className="single_add_to_cart_button button alt"

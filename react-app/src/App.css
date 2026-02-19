@@ -289,6 +289,27 @@ font-family: "Inter", sans-serif;
   animation-fill-mode: forwards; 
 }
 
+
+@keyframes fadeInDownDos {
+  from {
+    opacity: 0;
+    transform: translateY(-60px); 
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);    
+  }
+}
+
+.animate_dos {
+  opacity: 0; 
+  animation-name: fadeInDownDos;
+  animation-duration: 2.2s; 
+  animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1); 
+  animation-fill-mode: forwards; 
+}
+
+
 .hero__title, 
 .hero_span, .about__title {
   animation-delay: 0.1s;
@@ -1469,7 +1490,7 @@ justify-content: flex-start;
 .product-main-description {
 display: inline-block;
 width: 80%;
-font-size: clamp(16px, 5vw, 18px);
+font-size: clamp(14px, 5vw, 16px);
 line-height: 1.7;
 font-weight: 400;
 color: #F8FAFC;
