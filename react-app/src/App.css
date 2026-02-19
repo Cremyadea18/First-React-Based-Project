@@ -1223,27 +1223,41 @@ text-align: center;
     transition: background 0.3s ease;
 }
 
-/* Ajuste para que los elementos no se colapsen a la izquierda */
-.is-medium table.wc-block-cart-items .wc-block-cart-items__row, 
-.is-mobile table.wc-block-cart-items .wc-block-cart-items__row, 
-.is-small table.wc-block-cart-items .wc-block-cart-items__row {
-    display: grid !important;
-    /* Cambiamos px por fr y permitimos que los elementos se posicionen mejor */
-    grid-template-columns: 100px 1fr !important; 
-    grid-template-areas: 
-        "image title"
-        "image details";
-    column-gap: 15px;
-    row-gap: 10px;
-    align-items: start;
+/* Para tablets y móviles grandes (Mantenemos el grid pero con más flexibilidad) */
+@media (max-width: 767px) {
+    .is-mobile table.wc-block-cart-items .wc-block-cart-items__row,
+    .is-small table.wc-block-cart-items .wc-block-cart-items__row {
+        display: grid !important;
+        grid-template-columns: 80px 1fr !important; /* Reducimos la imagen a 80px */
+        grid-template-areas: 
+            "image title"
+            "image price"
+            "image quantity";
+        column-gap: 12px;
+        row-gap: 8px;
+    }
 }
 
-/* Forzamos que la imagen ocupe su área */
-.wc-block-cart-item__image {
-    grid-area: image;
-}
+/* Para móviles pequeños (Donde se solapan los elementos) */
+@media (max-width: 480px) {
+    .is-mobile table.wc-block-cart-items .wc-block-cart-items__row,
+    .is-small table.wc-block-cart-items .wc-block-cart-items__row {
+        display: flex !important; /* Cambiamos a Flex para apilar */
+        flex-direction: column !important;
+        align-items: center; /* Centramos para que se vea como una card */
+        text-align: center;
+        padding: 20px 10px !important;
+    }
 
-/* Forzamos que la info ocupe su área */
-.wc-block-cart-item__info {
-    grid-area: title;
+    .wc-block-cart-item__image {
+        margin-bottom: 15px;
+        width: 120px !important; /* Imagen un poco más grande al estar sola */
+    }
+
+    .wc-block-cart-item__info, 
+    .wc-block-cart-item__totals,
+    .wc-block-cart-item__quantity {
+        width: 100% !important;
+        margin: 5px 0;
+    }
 }
