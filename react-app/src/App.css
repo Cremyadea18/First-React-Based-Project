@@ -1293,11 +1293,12 @@ max-width: 200px;
 }
 
 
-/* 1. AGREGAMOS LA CLASE FALTANTE AL ESTILO CRISTAL */
+/* 1. EL CONTENEDOR (CRISTAL PARA TODOS) */
+/* Agrupamos todos los posibles contenedores de WooCommerce Blocks */
 .wc-block-checkout__form .wc-block-components-text-input,
 .wc-block-checkout__form .wc-block-components-combobox,
 .wc-block-checkout__form .wc-block-components-select-input,
-.wc-block-checkout__form .wc-blocks-components-select__container { /* <--- La clase que encontraste */
+.wc-block-checkout__form .wc-blocks-components-select__container {
     background: rgba(255, 255, 255, 0.05) !important;
     backdrop-filter: blur(12px) !important;
     -webkit-backdrop-filter: blur(12px) !important;
@@ -1312,39 +1313,53 @@ max-width: 200px;
     overflow: visible !important;
 }
 
-/* 2. CORRECCIÓN PARA EL SELECT INTERNO */
-/* Estos campos suelen tener un <select> o un div que actúa como tal */
-.wc-blocks-components-select__container select,
-.wc-blocks-components-select__container .wc-block-components-select-input__control {
+/* 2. ELIMINAR FONDO BLANCO DE TODOS LOS HIJOS (INPUTS, SELECTS, TEXTAREAS) */
+/* Esta es la parte que evita que los campos vuelvan a blanco */
+.wc-block-checkout__form .wc-block-components-text-input input,
+.wc-block-checkout__form .wc-block-components-text-input__input,
+.wc-block-checkout__form .wc-block-components-select-input__control,
+.wc-block-checkout__form .wc-blocks-components-select__container select,
+.wc-block-checkout__form input,
+.wc-block-checkout__form select,
+.wc-block-checkout__form textarea {
     background: transparent !important;
     background-color: transparent !important;
-    border: none !important;
     color: white !important;
-    padding: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
+    outline: none !important;
     width: 100% !important;
-    appearance: none !important; /* Quita la flecha nativa del sistema */
+    appearance: none !important;
+    -webkit-appearance: none !important;
 }
 
-/* 3. ALINEACIÓN DEL LABEL EN ESTOS CONTENEDORES */
-.wc-blocks-components-select__container label {
+/* 3. LABELS (CENTRADOS Y FLOTANTES) */
+.wc-block-checkout__form .wc-block-components-text-input label,
+.wc-block-checkout__form .wc-block-components-select-input label,
+.wc-block-checkout__form .wc-blocks-components-select__container label {
     position: absolute !important;
     top: 50% !important;
     left: 25px !important;
     transform: translateY(-50%) !important;
     color: rgba(255, 255, 255, 0.5) !important;
+    background: transparent !important;
     transition: all 0.2s ease !important;
     pointer-events: none !important;
+    z-index: 5 !important;
+    margin: 0 !important;
 }
 
-/* 4. EFECTO CUANDO EL SELECT TIENE VALOR (is-active) */
-.wc-blocks-components-select__container.is-active label {
+/* 4. ESTADO ACTIVO (LABEL SUBE) */
+/* Aplicamos a todos los contenedores cuando tienen la clase is-active */
+.wc-block-checkout__form .is-active label {
     top: 0 !important;
     transform: translateY(-135%) scale(0.8) !important;
     color: #ffffff !important;
+    opacity: 1 !important;
 }
 
-/* 5. AJUSTE PARA LA FLECHITA (CHEVRON) */
-.wc-blocks-components-select__container .wc-block-components-select-input__chevron {
-    right: 20px !important;
-    fill: white !important;
+/* 5. FIX PARA EL COLOR DEL TEXTO SELECCIONADO EN LOS SELECTS */
+.wc-block-checkout__form select option {
+    background-color: #121212 !important; /* Fondo oscuro para que se lea el texto de la lista */
+    color: white !important;
 }
