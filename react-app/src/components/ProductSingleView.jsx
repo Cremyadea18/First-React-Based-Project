@@ -1,4 +1,4 @@
-import React, { useState } from 'react'; // Añadimos useState
+import React, { useState } from 'react'; 
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 
 const paypalOptions = {
@@ -8,7 +8,7 @@ const paypalOptions = {
 };
 
 export const ProductSingleView = ({ data }) => {
-  // Estado para saber si la petición está en curso
+  
   const [isAdding, setIsAdding] = useState(false);
 
   if (!data) return <div className="product_template_container">Cargando producto...</div>;
@@ -17,7 +17,7 @@ export const ProductSingleView = ({ data }) => {
   const numericPrice = precio.replace(/[^\d.]/g, '');
 
   const handleAddToCart = async () => {
-    setIsAdding(true); // Bloqueamos el botón y cambiamos el texto
+    setIsAdding(true); 
     
     try {
       const response = await fetch('/wp-json/wc/store/v1/cart/add-item', {
@@ -32,8 +32,7 @@ export const ProductSingleView = ({ data }) => {
       });
 
       if (response.ok) {
-        // --- AQUÍ ELIMINAMOS EL ALERT ---
-        // Solo lanzamos los eventos para que el CartIcon se entere
+       
         document.body.dispatchEvent(new CustomEvent('wc_fragment_refresh'));
         
         if (window.jQuery) {
@@ -44,7 +43,7 @@ export const ProductSingleView = ({ data }) => {
     } catch (error) {
       console.error("Error al añadir:", error);
     } finally {
-      // Después de 1 segundo volvemos a habilitar el botón
+    
       setTimeout(() => setIsAdding(false), 1000);
     }
   };
@@ -65,12 +64,12 @@ export const ProductSingleView = ({ data }) => {
 
             <div className="product-main-action animate_dos">
               <div className="cart">
-                {/* Botón dinámico que cambia de texto en lugar de mostrar alert */}
+               
                 <button 
                   className={`btn-secondary ${isAdding ? 'loading' : ''}`} 
                   onClick={handleAddToCart}
                   disabled={isAdding}
-                  style={{ marginBottom: '15px', width: '100%' }}
+                  style={{ marginBottom: '15px' }}
                 >
                   {isAdding ? 'Adding...' : 'Add to cart'}
                 </button>
@@ -88,7 +87,7 @@ export const ProductSingleView = ({ data }) => {
                     }}
                     onApprove={async (data, actions) => {
                       const order = await actions.order.capture();
-                      // Aquí podrías dejar un mensaje de agradecimiento si quieres
+                      
                       console.log("Pago exitoso", order);
                     }}
                   />
