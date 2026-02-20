@@ -11,26 +11,46 @@ export const ProductSingleView = ({ data }) => {
   if (!data) return <div className="product_template_container">Cargando producto...</div>;
 
   const { id, titulo, precio, descripcion, imagen, nonce } = data;
-
-  
   const numericPrice = precio.replace(/[^\d.]/g, '');
 
   const handleAddToCart = async () => {
+    // Debug para verificar que el nonce está llegando al componente
+    console.log("Intentando agregar ID:", id, "con Nonce:", nonce);
+
     try {
       const response = await fetch('/wp-json/wc/store/v1/cart/add-item', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          // CAMBIO 1: WooCommerce Store API a veces prefiere 'Nonce' a secas
+          'Nonce': nonce,
+          // CAMBIO 2: Mantener el X-WC-Store-API-Nonce por compatibilidad
           'X-WC-Store-API-Nonce': nonce 
         },
-        body: JSON.stringify({ id: id, quantity: 1 })
+        body: JSON.stringify({ id: id, quantity: 1 }),
+        // CAMBIO 3: Indispensable para que WordPress lea tu cookie de sesión
+        credentials: 'include' 
       });
+
+      const result = await response.json();
+
       if (response.ok) {
+        console.log("✅ Producto añadido:", result);
+        
+        // Disparar eventos para que el icono del carrito se entere
         document.body.dispatchEvent(new CustomEvent('wc_fragment_refresh'));
+        if (window.jQuery) {
+            window.jQuery(document.body).trigger('wc_fragment_refresh');
+            window.jQuery(document.body).trigger('added_to_cart');
+        }
+        
         alert(`¡${titulo} añadido al carrito!`);
+      } else {
+        console.error("❌ Error del servidor:", result);
+        alert("Error: " + (result.message || "No se pudo añadir al carrito"));
       }
     } catch (error) {
-      console.error("Error al añadir al carrito", error);
+      console.error("❌ Error de red:", error);
     }
   };
 
@@ -50,12 +70,10 @@ export const ProductSingleView = ({ data }) => {
 
             <div className="product-main-action animate_dos">
               <div className="cart">
-                
-                <button className="btn-secondary" onClick={handleAddToCart}>
+                <button className="btn-secondary" onClick={handleAddToCart} style={{ marginBottom: '15px', width: '100%' }}>
                   Add to cart
                 </button>
 
-               
                 <div className="paypal-button-container">
                   <PayPalButtons 
                     style={{ layout: "vertical", shape: "rect", label: "pay" }}
@@ -69,12 +87,10 @@ export const ProductSingleView = ({ data }) => {
                     }}
                     onApprove={async (data, actions) => {
                       const order = await actions.order.capture();
-                      console.log("Pago completado:", order);
                       alert("¡Gracias por tu compra, " + order.payer.name.given_name + "!");
                     }}
                   />
                 </div>
-                {/* ------------------------- */}
               </div>
             </div>
           </div>
