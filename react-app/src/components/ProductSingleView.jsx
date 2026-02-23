@@ -2,13 +2,43 @@ import React, { useState, useEffect } from 'react';
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 
 export const ProductSingleView = ({ data }) => {
-  // 1. Estado de moneda: Siempre dentro del componente
   const [activeCurrency, setActiveCurrency] = useState(() => {
     return localStorage.getItem('store_currency') || 'USD';
   });
   const [isAdding, setIsAdding] = useState(false);
 
-  // 2. Escuchar cambios de moneda
+  // --- NUEVO: EFECTO PARA TRANSPARENCIA Y COLOR SILVER ---
+  useEffect(() => {
+    const applyStyles = () => {
+      const containers = document.querySelectorAll('.paypal-button-container');
+      containers.forEach(container => {
+        // Forzamos fondo transparente
+        container.style.setProperty('background', 'transparent', 'important');
+        container.style.setProperty('background-color', 'transparent', 'important');
+        
+        // Simulamos el color Silver quitando el amarillo con escala de grises
+        // y subiendo el brillo para que parezca metálico
+        container.style.setProperty('filter', 'grayscale(100%) brightness(1.4)', 'important');
+      });
+    };
+
+    // Observador para detectar cuándo PayPal inyecta los botones en el DOM
+    const observer = new MutationObserver(() => {
+      applyStyles();
+    });
+
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true
+    });
+
+    // Ejecución inicial
+    applyStyles();
+
+    return () => observer.disconnect();
+  }, [activeCurrency]); // Se reinicia si cambia la moneda
+  // -------------------------------------------------------
+
   useEffect(() => {
     const handleCurrencyChange = () => {
       const newCurr = localStorage.getItem('store_currency') || 'USD';
@@ -18,17 +48,13 @@ export const ProductSingleView = ({ data }) => {
     return () => window.removeEventListener('currencyChange', handleCurrencyChange);
   }, []);
 
-  // 3. Validación de datos: Si no hay data, no renderizamos el resto
   if (!data) return <div className="product_template_container">Cargando producto...</div>;
 
   const { id, titulo, precio, descripcion, imagen, nonce } = data;
   
-  // 4. Función de limpieza de precio para PayPal
   const getNumericPrice = (priceInput) => {
     if (!priceInput) return "0.00";
-    // Eliminamos etiquetas HTML y símbolos de moneda, dejamos solo números y separadores
     const cleanString = String(priceInput).replace(/<[^>]*>/g, '').replace(/[^\d.,]/g, ''); 
-    // Convertimos coma en punto para formato estándar internacional
     const matched = cleanString.match(/[\d[.,]\d]*/g);
     const number = matched ? matched.join('').replace(',', '.') : "0.00";
     return number || "0.00";
@@ -36,7 +62,6 @@ export const ProductSingleView = ({ data }) => {
 
   const numericPrice = getNumericPrice(precio);
 
-  // 5. Función para añadir al carrito de WooCommerce
   const handleAddToCart = async () => {
     setIsAdding(true); 
     try {
@@ -74,7 +99,6 @@ export const ProductSingleView = ({ data }) => {
 
         <div className="product-info-wrapper-two">
           <h1 className="product-main-title animate_dos">{titulo}</h1>
-          {/* Precio visual de WordPress */}
           <div className="product-main-price animate_dos" dangerouslySetInnerHTML={{ __html: precio }} />
           <div className="product-main-description animate_dos" dangerouslySetInnerHTML={{ __html: descripcion }} />
 
@@ -84,15 +108,12 @@ export const ProductSingleView = ({ data }) => {
                 className={`btn-secondary ${isAdding ? 'loading' : ''}`} 
                 onClick={handleAddToCart}
                 disabled={isAdding}
-                style={{ marginBottom: '15px' }}
+                style={{ marginBottom: '15px', width: '100%' }}
               >
                 {isAdding ? 'Adding...' : 'Add to cart'}
               </button>
 
-              <div className="paypal-button-container">
-                {/* IMPORTANTE: Hemos movido 'options' directamente aquí.
-                  Esto evita errores de "not defined" durante el build.
-                */}
+              <div className="paypal-button-container" style={{ background: 'transparent' }}>
                 <PayPalScriptProvider 
                   key={activeCurrency} 
                   options={{
@@ -102,7 +123,12 @@ export const ProductSingleView = ({ data }) => {
                   }}
                 >
                   <PayPalButtons 
-                    style={{ layout: "vertical", shape: "rect", label: "pay" }}
+                    style={{ 
+                      layout: "vertical", 
+                      shape: "rect", 
+                      label: "pay",
+                      color: "silver" // Aunque el SDK a veces lo ignora, lo dejamos aquí
+                    }}
                     createOrder={(data, actions) => {
                       return actions.order.create({
                         purchase_units: [{
