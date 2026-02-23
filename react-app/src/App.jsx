@@ -6,6 +6,7 @@ import ProductSearch from './components/ProductSearch.jsx'
 import { CartIcon } from './components/CartIcon.jsx'
 import { PayPalScriptProvider } from "@paypal/react-paypal-js";
 import { ProductSingleView } from './components/ProductSingleView';
+import { CurrencyMonitor } from './components/CurrencyMonitor.jsx'
 
 // 1. DEFINIR PAYPAL OPTIONS (Esto faltaba y causaba el error)
 const paypalOptions = {
@@ -78,6 +79,7 @@ export const Header = () => (
         </ul>
 
         <CartIcon />
+        <CurrencyMonitor />
       </nav>
     </header>
   </PayPalScriptProvider>
