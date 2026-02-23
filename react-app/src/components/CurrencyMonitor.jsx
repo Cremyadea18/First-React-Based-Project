@@ -5,55 +5,64 @@ export const CurrencyMonitor = () => {
   const [activeCurrency, setActiveCurrency] = useState(localStorage.getItem('store_currency') || 'USD');
 
   useEffect(() => {
-    // 1. Teletransportar el switcher de YayCurrency
+    // 1. Mover el switcher original al contenedor de React
     const source = document.getElementById('yay-switcher-source');
     if (source && containerRef.current && !containerRef.current.contains(source.firstElementChild)) {
       containerRef.current.appendChild(source.firstElementChild);
     }
 
-    const updateCurrency = () => {
+    // 2. Función de actualización con control de "Recarga"
+    const updateCurrency = (isManualClick = false) => {
       const selectedOptionElement = document.querySelector('.yay-currency-selected-option');
       
       if (selectedOptionElement) {
-        // 🛠️ LIMPIEZA CLAVE: 
-        // Tomamos el texto, quitamos espacios y nos quedamos SOLO con las últimas 3 letras
-        // Esto evita que se guarde "USD EUR COP" si el DOM está sucio.
         const rawText = selectedOptionElement.innerText.trim();
+        // Limpiamos para obtener solo el código de 3 letras (USD, COP, etc.)
         const detectedCurrency = rawText.replace(/[^a-zA-Z]/g, '').slice(-3).toUpperCase();
         
         const validCurrencies = ['USD', 'EUR', 'COP'];
-        
-        if (validCurrencies.includes(detectedCurrency) && detectedCurrency !== activeCurrency) {
-          console.log("🎯 Moneda real detectada:", detectedCurrency);
+        const currentInStorage = localStorage.getItem('store_currency');
+
+        if (validCurrencies.includes(detectedCurrency) && detectedCurrency !== currentInStorage) {
+          console.log("🎯 Nueva moneda detectada:", detectedCurrency);
           
           localStorage.setItem('store_currency', detectedCurrency);
           setActiveCurrency(detectedCurrency);
           
-          // Avisar a ProductSearch
+          // Notificar a otros componentes (ProductSearch)
           window.dispatchEvent(new Event('currencyChange'));
 
-          // 🔄 RECARGA: Necesaria para que la sesión de PHP de WooCommerce se actualice
-          setTimeout(() => {
-            window.location.reload();
-          }, 150);
+          // 🔥 LA CLAVE: Solo recargamos si el usuario hizo clic.
+          // Si el cambio se detectó al cargar la página, NO recargamos para evitar el bucle.
+          if (isManualClick) {
+            console.log("🔄 Recarga manual activada por clic");
+            setTimeout(() => {
+              window.location.reload();
+            }, 100);
+          }
         }
       }
     };
 
-    const handleDocumentClick = () => {
-      // Damos tiempo a que el plugin de WP cambie el DOM antes de leerlo
-      setTimeout(updateCurrency, 200);
+    // 3. Escuchamos clics específicos en el switcher
+    const handleDocumentClick = (e) => {
+      // Verificamos si el clic fue en el selector de YayCurrency
+      if (e.target.closest('.yay-currency-switcher') || e.target.closest('.yay-currency-selected-option')) {
+        // Damos un tiempo a que el DOM del plugin se actualice antes de leerlo
+        setTimeout(() => updateCurrency(true), 350);
+      }
     };
 
     document.addEventListener('click', handleDocumentClick);
-    updateCurrency(); 
+    
+    // Sincronización inicial silenciosa (sin recarga)
+    updateCurrency(false); 
 
     return () => document.removeEventListener('click', handleDocumentClick);
   }, [activeCurrency]);
 
   return (
     <div className="react-currency-wrapper" ref={containerRef} style={{ display: 'inline-block', marginLeft: '10px' }}>
-      {/* El switcher de WP aparecerá aquí */}
     </div>
   );
 };
