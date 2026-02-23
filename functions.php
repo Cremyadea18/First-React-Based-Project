@@ -102,13 +102,22 @@ add_filter('woocommerce_rest_is_request_to_rest_api', function($is_rest_api) {
     return $is_rest_api;
 });
 
+/**
+ * FORZADO ULTRA-PRIORITARIO DE BOTONES PAYPAL
+ * Esto sobreescribe los ajustes del panel de administración
+ */
 add_filter('woocommerce_paypal_payments_product_button_config', function($config) {
+    // Forzamos el objeto style completo
     $config['style'] = [
         'layout' => 'vertical',
-        'color'  => 'black',
-        'shape'  => 'rect',
+        'color'  => 'black',    // Forzamos Negro
+        'shape'  => 'rect',     // Forzamos Rectangular
         'label'  => 'checkout',
-        'height' => 45
+        'height' => 45          // Altura ideal para botones modernos
     ];
+    
+    // Desactivamos el botón de "Pay Later" (opcional, para limpieza visual)
+    $config['disable-funding'] = ['paylater', 'venmo'];
+    
     return $config;
-}, 999, 1); // <--- Cambiamos 10 por 999
+}, 9999, 1); // Prioridad máxima para ganar a cualquier otro plugin
