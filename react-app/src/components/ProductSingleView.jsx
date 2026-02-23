@@ -2,13 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 
 export const ProductSingleView = ({ data }) => {
-  // 1. Estado de moneda con respaldo
+  // 1. EL ESTADO DEBE SER LO PRIMERO. Aquí nace 'activeCurrency'
   const [activeCurrency, setActiveCurrency] = useState(() => {
     return localStorage.getItem('store_currency') || 'USD';
   });
+  
   const [isAdding, setIsAdding] = useState(false);
 
-  // 2. Efecto de escucha
+  // 2. ESCUCHA DE EVENTOS
   useEffect(() => {
     const handleCurrencyChange = () => {
       const newCurr = localStorage.getItem('store_currency') || 'USD';
@@ -18,23 +19,19 @@ export const ProductSingleView = ({ data }) => {
     return () => window.removeEventListener('currencyChange', handleCurrencyChange);
   }, []);
 
-  // 3. Validación temprana (Si no hay data, no ejecutamos nada más)
+  // 3. VALIDACIÓN DE DATA (Si no hay data, devolvemos temprano para evitar errores)
   if (!data) return <div className="product_template_container">Cargando producto...</div>;
 
   const { id, titulo, precio, descripcion, imagen, nonce } = data;
-  
-  // 4. LIMPIEZA SEGURA: Si precio no es string, evitamos el error
-  const getNumericPrice = (priceInput) => {
-    if (!priceInput) return "0.00";
-    // Si el precio viene con HTML, extraemos solo el número
-    const cleanString = String(priceInput).replace(/<[^>]*>/g, ''); 
-    const matched = cleanString.match(/[\d[.,]\d]*/g);
-    const number = matched ? matched.join('').replace(',', '.') : "0.00";
-    return number || "0.00";
-  };
 
-  const numericPrice = getNumericPrice(precio);
+  // 4. LIMPIEZA DE PRECIO SEGURA
+  const numericPrice = String(precio || "0")
+    .replace(/<[^>]*>/g, '') // Quita HTML
+    .replace(/[^\d.,]/g, '') // Deja solo números, puntos y comas
+    .replace(',', '.');      // Convierte coma en punto para PayPal
 
+  // 5. LAS OPCIONES DE PAYPAL DENTRO DEL RENDER
+  // Al definirlas justo antes del return, nos aseguramos que activeCurrency ya existe
   const paypalOptions = {
     "client-id": "BAAyx1ha025RcHTNYyMJwsx0YoB4-Gz6metHJV8XVMVCxD5OHpTen1wzhmqNOanP3XrXwxmcH42MU-i8vY", 
     currency: activeCurrency, 
@@ -93,7 +90,9 @@ export const ProductSingleView = ({ data }) => {
               </button>
 
               <div className="paypal-button-container">
-                {/* Metemos el Provider SOLO alrededor de los botones para no romper el resto si falla */}
+                {/* EL PROVIDER USA LA KEY: 
+                  Si activeCurrency cambia, PayPal se reinicia solo.
+                */}
                 <PayPalScriptProvider options={paypalOptions} key={activeCurrency}>
                   <PayPalButtons 
                     style={{ layout: "vertical", shape: "rect", label: "pay" }}
