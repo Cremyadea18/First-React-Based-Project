@@ -61,7 +61,7 @@ const ProductSearchTittle = () => (
   <h2 className='about__title'>Our Products</h2>
 )
 
-// HEADER CORREGIDO
+
 export const Header = () => (
   <PayPalScriptProvider options={paypalOptions}>
     <header id="main-site-header">
