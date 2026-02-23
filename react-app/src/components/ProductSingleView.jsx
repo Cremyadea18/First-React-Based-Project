@@ -65,7 +65,6 @@ export const ProductSingleView = ({ data }) => {
                 className={`btn-secondary ${isAdding ? 'loading' : ''}`} 
                 onClick={handleAddToCart}
                 disabled={isAdding}
-                style={{ width: '100%', padding: '15px' }} 
               >
                 {isAdding ? 'Adding...' : 'Add to cart'}
               </button>
