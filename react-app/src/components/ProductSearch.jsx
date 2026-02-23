@@ -6,15 +6,14 @@ export default function ProductSearch() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   
-  // 1. Estado de la moneda
   const [activeCurrency, setActiveCurrency] = useState(() => {
     return localStorage.getItem('store_currency') || 'USD';
   });
 
-  // 2. Escuchar el evento del Header
   useEffect(() => {
     const handleCurrencyChange = () => {
       const newCurr = localStorage.getItem('store_currency') || 'USD';
+      console.log("🔄 Moneda detectada en Search:", newCurr); // Log para debug
       setActiveCurrency(newCurr);
     };
 
@@ -22,12 +21,13 @@ export default function ProductSearch() {
     return () => window.removeEventListener('currencyChange', handleCurrencyChange);
   }, []);
 
-  // 3. Cargar productos (con el truco del timestamp para evitar caché)
   useEffect(() => {
+    let isMounted = true; // Evita fugas de memoria
     setLoading(true);
     const timestamp = new Date().getTime();
-    // Forzamos la moneda en la URL
-    const apiUrl = `/wp-json/wc/v3/products?per_page=20&currency=${activeCurrency}&_=${timestamp}`;
+
+    // Enviamos 'currency' y 'alg_currency' para cubrir más plugins de WordPress
+    const apiUrl = `/wp-json/wc/v3/products?per_page=20&currency=${activeCurrency}&alg_currency=${activeCurrency}&_=${timestamp}`;
 
     fetch(apiUrl)
       .then(response => {
@@ -35,21 +35,26 @@ export default function ProductSearch() {
         return response.json();
       })
       .then(data => {
-        if (Array.isArray(data)) setProducts(data);
-        setLoading(false);
+        if (isMounted && Array.isArray(data)) {
+          setProducts(data);
+          setLoading(false);
+        }
       })
       .catch(err => {
-        setError(err.message);
-        setLoading(false);
+        if (isMounted) {
+          setError(err.message);
+          setLoading(false);
+        }
       });
+
+    return () => { isMounted = false; };
   }, [activeCurrency]);
 
-  // 4. Filtrado lógico
   const filteredProducts = products?.filter(product =>
     product?.name?.toLowerCase().includes(searchTerm.toLowerCase())
   ) || [];
 
-  if (loading) return <div className="loading-state">Cargando productos...</div>;
+  if (loading) return <div className="loading-state">Cargando productos en {activeCurrency}...</div>;
   if (error) return <div className="error-state">Error: {error}</div>;
 
   return (
@@ -58,7 +63,7 @@ export default function ProductSearch() {
         <input
           type="text"
           className="search-input"
-          placeholder="Search for your Digital product"
+          placeholder={`Search products in ${activeCurrency}`}
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
@@ -89,7 +94,7 @@ export default function ProductSearch() {
         ))}
       </div>
 
-      {filteredProducts.length === 0 && (
+      {filteredProducts.length === 0 && !loading && (
         <p className="no-results">No encontramos productos.</p>
       )}
     </div>
