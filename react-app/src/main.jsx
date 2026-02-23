@@ -1,11 +1,11 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 
-// 1. CORRECCIÓN: Quitamos ProductSingleView de las llaves de App.jsx
+
 import App, { Header, Footer, Hero, About, ProductsSection } from './App.jsx' 
 import './index.css'
 
-// 2. IMPORTACIÓN ÚNICA: Desde su archivo independiente
+
 import { ProductSingleView } from './components/ProductSingleView';
 
 const initRoots = () => {
