@@ -57,56 +57,59 @@ function mytheme_add_woocommerce_support() {
 add_action( 'after_setup_theme', 'mytheme_add_woocommerce_support' );
 
 /**
- * 5. CONVERSIÓN TOTAL PARA LA API (ABSOLUTA)
+ * 5. CONVERSIÓN MAESTRA E INDEPENDIENTE (SIN PLUGINS)
  */
 
-// Esta función maneja la conversión real
-function apply_currency_conversion_logic($price, $currency_param) {
-    if (!$price || !is_numeric($price)) return $price;
-    
-    $to_curr = strtoupper(sanitize_text_field($currency_param));
-    if ($to_curr === 'USD') return $price;
-
-    $rate = 3996.25; // Tasa base COP
-    if (class_exists('\YayCurrency\Internal\Helpers\CurrencyHelper')) {
-        $r = \YayCurrency\Internal\Helpers\CurrencyHelper::get_rate($to_curr);
-        if ($r) $rate = $r;
-    }
-
-    return (float)$price * (float)$rate;
-}
-
-// 1. Afectamos los datos crudos del producto en cualquier JSON de la API
-add_filter('woocommerce_rest_prepare_product_object', function($response, $product, $request) {
-    $currency = $request->get_param('currency');
-    if (!$currency) return $response;
-
-    $data = $response->get_data();
-    
-    // Convertimos los campos principales
-    $data['price']          = (string)apply_currency_conversion_logic($data['price'], $currency);
-    $data['regular_price']  = (string)apply_currency_conversion_logic($data['regular_price'], $currency);
-    $data['sale_price']     = (string)apply_currency_conversion_logic($data['sale_price'], $currency);
-    
-    $response->set_data($data);
-    return $response;
-}, 999, 3);
-
-// 2. IMPORTANTE: Forzamos el símbolo y la moneda global para la API
+// 1. Detectamos la moneda en la URL y la seteamos globalmente para la sesión API
 add_action('init', function() {
-    if (strpos($_SERVER['REQUEST_URI'], '/wp-json/') !== false && isset($_GET['currency'])) {
-        $to_curr = strtoupper(sanitize_text_field($_GET['currency']));
+    if (isset($_GET['currency'])) {
+        $requested_currency = strtoupper(sanitize_text_field($_GET['currency']));
         
-        add_filter('woocommerce_currency', function() use ($to_curr) {
-            return $to_curr;
-        }, 999);
-
-        add_filter('woocommerce_currency_symbol', function($symbol) use ($to_curr) {
-            switch($to_curr) {
-                case 'COP': return 'COP$ ';
-                case 'EUR': return '€';
-                default: return '$';
-            }
-        }, 999);
+        // Forzamos a WooCommerce a creer que esta es la moneda de la tienda
+        add_filter('woocommerce_currency', function() use ($requested_currency) {
+            return $requested_currency;
+        }, 9999);
     }
 });
+
+// 2. Interceptamos el objeto del producto antes de enviarlo a React
+add_filter('woocommerce_rest_prepare_product_object', function($response, $product, $request) {
+    $currency = $request->get_param('currency');
+    
+    // Si no hay moneda o es USD, enviamos el precio original
+    if (!$currency || strtoupper($currency) === 'USD') {
+        return $response;
+    }
+
+    $to_curr = strtoupper($currency);
+    $data = $response->get_data();
+
+    // --- TU TABLA DE CONVERSIÓN MANUAL ---
+    $rates = [
+        'COP' => 3996.25,
+        'EUR' => 0.84,
+        'MXN' => 17.10
+    ];
+
+    $rate = isset($rates[$to_curr]) ? $rates[$to_curr] : 1;
+
+    // Convertimos los valores
+    // Usamos el precio original del objeto $product para evitar multiplicaciones previas
+    $original_price = $product->get_regular_price();
+    $original_sale  = $product->get_sale_price();
+    
+    if ($original_price) {
+        $data['regular_price'] = (string)round($original_price * $rate, 2);
+    }
+    
+    if ($original_sale) {
+        $data['sale_price'] = (string)round($original_sale * $rate, 2);
+        $data['price']      = $data['sale_price'];
+    } else {
+        $data['price']      = $data['regular_price'];
+    }
+
+    // Actualizamos la respuesta
+    $response->set_data($data);
+    return $response;
+}, 9999, 3);
