@@ -2,14 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 
 export const ProductSingleView = ({ data }) => {
-  // 1. EL ESTADO DEBE SER LO PRIMERO. Aquí nace 'activeCurrency'
+  // 1. Estado de moneda: Siempre dentro del componente
   const [activeCurrency, setActiveCurrency] = useState(() => {
     return localStorage.getItem('store_currency') || 'USD';
   });
-  
   const [isAdding, setIsAdding] = useState(false);
 
-  // 2. ESCUCHA DE EVENTOS
+  // 2. Escuchar cambios de moneda
   useEffect(() => {
     const handleCurrencyChange = () => {
       const newCurr = localStorage.getItem('store_currency') || 'USD';
@@ -19,25 +18,25 @@ export const ProductSingleView = ({ data }) => {
     return () => window.removeEventListener('currencyChange', handleCurrencyChange);
   }, []);
 
-  // 3. VALIDACIÓN DE DATA (Si no hay data, devolvemos temprano para evitar errores)
+  // 3. Validación de datos: Si no hay data, no renderizamos el resto
   if (!data) return <div className="product_template_container">Cargando producto...</div>;
 
   const { id, titulo, precio, descripcion, imagen, nonce } = data;
-
-  // 4. LIMPIEZA DE PRECIO SEGURA
-  const numericPrice = String(precio || "0")
-    .replace(/<[^>]*>/g, '') // Quita HTML
-    .replace(/[^\d.,]/g, '') // Deja solo números, puntos y comas
-    .replace(',', '.');      // Convierte coma en punto para PayPal
-
-  // 5. LAS OPCIONES DE PAYPAL DENTRO DEL RENDER
-  // Al definirlas justo antes del return, nos aseguramos que activeCurrency ya existe
-  const paypalOptions = {
-    "client-id": "BAAyx1ha025RcHTNYyMJwsx0YoB4-Gz6metHJV8XVMVCxD5OHpTen1wzhmqNOanP3XrXwxmcH42MU-i8vY", 
-    currency: activeCurrency, 
-    intent: "capture",
+  
+  // 4. Función de limpieza de precio para PayPal
+  const getNumericPrice = (priceInput) => {
+    if (!priceInput) return "0.00";
+    // Eliminamos etiquetas HTML y símbolos de moneda, dejamos solo números y separadores
+    const cleanString = String(priceInput).replace(/<[^>]*>/g, '').replace(/[^\d.,]/g, ''); 
+    // Convertimos coma en punto para formato estándar internacional
+    const matched = cleanString.match(/[\d[.,]\d]*/g);
+    const number = matched ? matched.join('').replace(',', '.') : "0.00";
+    return number || "0.00";
   };
 
+  const numericPrice = getNumericPrice(precio);
+
+  // 5. Función para añadir al carrito de WooCommerce
   const handleAddToCart = async () => {
     setIsAdding(true); 
     try {
@@ -75,6 +74,7 @@ export const ProductSingleView = ({ data }) => {
 
         <div className="product-info-wrapper-two">
           <h1 className="product-main-title animate_dos">{titulo}</h1>
+          {/* Precio visual de WordPress */}
           <div className="product-main-price animate_dos" dangerouslySetInnerHTML={{ __html: precio }} />
           <div className="product-main-description animate_dos" dangerouslySetInnerHTML={{ __html: descripcion }} />
 
@@ -90,10 +90,17 @@ export const ProductSingleView = ({ data }) => {
               </button>
 
               <div className="paypal-button-container">
-                {/* EL PROVIDER USA LA KEY: 
-                  Si activeCurrency cambia, PayPal se reinicia solo.
+                {/* IMPORTANTE: Hemos movido 'options' directamente aquí.
+                  Esto evita errores de "not defined" durante el build.
                 */}
-                <PayPalScriptProvider options={paypalOptions} key={activeCurrency}>
+                <PayPalScriptProvider 
+                  key={activeCurrency} 
+                  options={{
+                    "client-id": "BAAyx1ha025RcHTNYyMJwsx0YoB4-Gz6metHJV8XVMVCxD5OHpTen1wzhmqNOanP3XrXwxmcH42MU-i8vY", 
+                    "currency": activeCurrency, 
+                    "intent": "capture"
+                  }}
+                >
                   <PayPalButtons 
                     style={{ layout: "vertical", shape: "rect", label: "pay" }}
                     createOrder={(data, actions) => {
