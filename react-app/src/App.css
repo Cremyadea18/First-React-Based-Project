@@ -63,10 +63,10 @@ min-height:800px;
 display: flex;
 align-items: center;
 justify-content: center;
-padding-top:clamp(20px,8vh,80px) ;
-padding-bottom:clamp(20px,8vh,80px) ;
-padding-left: clamp(20px,8vh,64px);
-padding-right: clamp(20px,8vh,64px);
+padding-top: clamp(20px, 7.5vw - 25px, 80px);
+padding-bottom: clamp(20px, 7.5vw - 25px, 80px);
+padding-left: clamp(20px, 5.5vw - 13px, 64px);
+padding-right: clamp(20px, 5.5vw - 13px, 64px);
 box-sizing: border-box;
 }
 
@@ -340,7 +340,8 @@ margin: 0 auto;
     max-width: 1200px;
     width: 100%;
     margin: 0 auto;
-    padding: 40px 20px;
+    padding-bottom: 40px ;
+    padding-top: 40px;
 }
 
 .search-bar-container {
