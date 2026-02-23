@@ -16,15 +16,16 @@ while ( have_posts() ) : the_post();
     ?>
 
     <style>
-        /* Contenedor de PayPal: Forzamos el ancho para que no se vea desproporcionado */
+        /* CSS enfocado SOLO en el contenedor de PayPal */
         .product_template_container [id^="ppc-button-"], 
         .product_template_container .paypal-button-container {
-            max-width: 400px !important; /* Ajusta según el ancho de tu botón de carrito */
+            width: 100% !important;
+            max-width: 400px !important; 
             margin: 20px 0 !important;
+            display: block !important;
         }
 
-        /* Si el botón es amarillo y lo quieres ocultar hasta que React lo maneje */
-        /* .paypal-buttons-loader { display: none; } */
+        /* Eliminamos cualquier estilo que altere los productos relacionados */
     </style>
 
     <div class="product_template_container">
@@ -38,27 +39,21 @@ while ( have_posts() ) : the_post();
     </div>
 
     <script>
-        // Intentamos interceptar la configuración del botón antes de que se renderice
-        document.addEventListener('DOMContentLoaded', function() {
-            if (window.jQuery) {
-                jQuery(document.body).on('wc_paypal_payments_buttons_init', function(event, config) {
-                    console.log("🛠️ PayPal Config detectada, forzando estilos negros...");
-                    config.style = {
-                        layout: 'vertical',
-                        color:  'silver',
-                        shape:  'rect',
-                        label:  'checkout',
-                        height: 45
-                    };
-                });
-            }
-        });
+        // Versión mejorada del script: Forzamos la configuración global de PayPal
+        (function($) {
+            $(document).on('wc_paypal_payments_buttons_init', function(event, config) {
+                if (config && config.style) {
+                    config.style.color = 'silver';
+                    config.style.shape = 'rect';
+                    config.style.layout = 'vertical';
+                }
+            });
+        })(window.jQuery);
     </script>
 
     <?php
 endwhile;
 
 wp_reset_postdata();
-
 get_footer();
 ?>
