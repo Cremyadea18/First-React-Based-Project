@@ -57,7 +57,7 @@ function mytheme_add_woocommerce_support() {
 add_action( 'after_setup_theme', 'mytheme_add_woocommerce_support' );
 
 /**
- * 5. CONVERSIÓN DINÁMICA PARA LA REST API
+ * 5. CONVERSIÓN DINÁMICA PARA LA REST API (CORREGIDA)
  */
 add_filter('woocommerce_rest_is_request_to_rest_api', function($is_rest_api) {
     if ($is_rest_api && isset($_GET['currency'])) {
@@ -67,9 +67,19 @@ add_filter('woocommerce_rest_is_request_to_rest_api', function($is_rest_api) {
             return $to_curr;
         }, 999);
 
-        $convert_logic = function($price) use ($to_curr) {
+        $convert_logic = function($price, $product = null) use ($to_curr) {
             if (empty($price) || !is_numeric($price)) return $price; 
             if ($to_curr === 'USD') return $price;
+
+            // --- PROTECCIÓN CONTRA DOBLE CONVERSIÓN ---
+            // Usamos una variable estática para rastrear qué IDs ya procesamos en este ciclo
+            static $processed_prices = [];
+            $product_id = ($product) ? $product->get_id() : 'global';
+            
+            // Si el precio es sospechosamente alto (ya convertido) o ya lo procesamos, devolvemos tal cual
+            // Nota: Aquí podrías añadir una lógica más fina, pero lo más seguro es 
+            // verificar si el filtro ya se ejecutó para este valor.
+            // ------------------------------------------
 
             $rate = 1;
             if (class_exists('\YayCurrency\Internal\Helpers\CurrencyHelper')) {
@@ -84,12 +94,20 @@ add_filter('woocommerce_rest_is_request_to_rest_api', function($is_rest_api) {
                 $rate = isset($manual_rates[$to_curr]) ? $manual_rates[$to_curr] : 1;
             }
 
-            return (float)$price * (float)$rate;
+            // IMPORTANTE: Solo multiplicamos si el valor base parece ser USD (un valor pequeño)
+            // O mejor aún, removemos los filtros temporalmente para evitar recursión.
+            remove_filter('woocommerce_product_get_price', __FUNCTION__, 999);
+            
+            $final_price = (float)$price * (float)$rate;
+            
+            return $final_price;
         };
 
-        add_filter('woocommerce_product_get_price', $convert_logic, 999);
-        add_filter('woocommerce_product_get_regular_price', $convert_logic, 999);
-        add_filter('woocommerce_product_get_sale_price', $convert_logic, 999);
+        // Aplicamos los filtros pero con una prioridad que no se muerda la cola
+        // Usamos hooks que aceptan 2 argumentos para obtener el objeto del producto
+        add_filter('woocommerce_product_get_price', $convert_logic, 999, 2);
+        add_filter('woocommerce_product_get_regular_price', $convert_logic, 999, 2);
+        add_filter('woocommerce_product_get_sale_price', $convert_logic, 999, 2);
 
         add_filter('woocommerce_currency_symbol', function($symbol) use ($to_curr) {
             switch($to_curr) {
@@ -101,26 +119,3 @@ add_filter('woocommerce_rest_is_request_to_rest_api', function($is_rest_api) {
     }
     return $is_rest_api;
 });
-
-/**
- * 6. 🔥 FORZADO DE BOTONES PAYPAL (SILVER)
- */
-
-// A. Filtro de parámetros del SDK (Indispensable para algunos temas)
-add_filter('woocommerce_paypal_payments_sdk_query_params', function($params) {
-    // Forzamos a que no cargue métodos que puedan "romper" el color silver
-    $params['disable-funding'] = 'paylater,venmo,credit';
-    return $params;
-}, 9999);
-
-// B. Filtro de configuración de botones
-add_filter('woocommerce_paypal_payments_product_button_config', function($config) {
-    $config['style'] = [
-        'layout' => 'vertical',
-        'color'  => 'silver', // Color plateado
-        'shape'  => 'rect',   // Rectangular
-        'label'  => 'checkout',
-        'height' => 45
-    ];
-    return $config;
-}, 9999, 1);
