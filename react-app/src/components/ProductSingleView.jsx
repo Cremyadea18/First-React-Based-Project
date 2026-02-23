@@ -7,18 +7,19 @@ export const ProductSingleView = ({ data }) => {
   });
   const [isAdding, setIsAdding] = useState(false);
 
-  // EFECTO ÚNICAMENTE PARA TRANSPARENCIA
+  // EFECTO PARA FORZAR EL COLOR DE FONDO #121212
   useEffect(() => {
-    const makeTransparent = () => {
+    const applyBackgroundColor = () => {
       const containers = document.querySelectorAll('.paypal-button-container');
       containers.forEach(container => {
-        container.style.setProperty('background', 'transparent', 'important');
-        container.style.setProperty('background-color', 'transparent', 'important');
+        // Aplicamos el color específico que solicitaste
+        container.style.setProperty('background', '#121212', 'important');
+        container.style.setProperty('background-color', '#121212', 'important');
       });
     };
 
     const observer = new MutationObserver(() => {
-      makeTransparent();
+      applyBackgroundColor();
     });
 
     observer.observe(document.body, {
@@ -26,7 +27,7 @@ export const ProductSingleView = ({ data }) => {
       subtree: true
     });
 
-    makeTransparent();
+    applyBackgroundColor();
     return () => observer.disconnect();
   }, [activeCurrency]);
 
@@ -99,12 +100,13 @@ export const ProductSingleView = ({ data }) => {
                 className={`btn-secondary ${isAdding ? 'loading' : ''}`} 
                 onClick={handleAddToCart}
                 disabled={isAdding}
-                style={{ marginBottom: '15px' }} // Eliminado width: 100% para respetar tu estilo original
+                style={{ marginBottom: '15px' }} 
               >
                 {isAdding ? 'Adding...' : 'Add to cart'}
               </button>
 
-              <div className="paypal-button-container">
+              {/* Contenedor con inline style preventivo */}
+              <div className="paypal-button-container" style={{ backgroundColor: '#121212' }}>
                 <PayPalScriptProvider 
                   key={activeCurrency} 
                   options={{
@@ -118,7 +120,7 @@ export const ProductSingleView = ({ data }) => {
                         layout: "vertical", 
                         shape: "rect", 
                         label: "pay",
-                        color: "silver" // Intentamos pedir silver de nuevo, pero sin filtros forzados
+                        color: "silver"
                     }}
                     createOrder={(data, actions) => {
                       return actions.order.create({
