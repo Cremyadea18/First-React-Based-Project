@@ -57,43 +57,49 @@ function mytheme_add_woocommerce_support() {
 add_action( 'after_setup_theme', 'mytheme_add_woocommerce_support' );
 
 /**
- * 5. 🔥 CORRECCIÓN DEFINITIVA: Forzar conversión matemática de precios
+ * 5. 🔥 CORRECCIÓN FINAL: Conversión Manual mediante Tasa de Cambio
  */
 add_filter('woocommerce_rest_is_request_to_rest_api', function($is_rest_api) {
     if ($is_rest_api && isset($_GET['currency'])) {
-        $requested_currency = strtoupper(sanitize_text_field($_GET['currency']));
+        $to_curr = strtoupper(sanitize_text_field($_GET['currency']));
         
-        // 1. Cambiamos la moneda base de la tienda para esta petición
-        add_filter('woocommerce_currency', function() use ($requested_currency) {
-            return $requested_currency;
+        // 1. Forzar moneda global
+        add_filter('woocommerce_currency', function() use ($to_curr) {
+            return $to_curr;
         }, 999);
 
-        // 2. FORZAR CONVERSIÓN DE VALORES
-        // Si el precio viene de la base de datos, lo interceptamos y lo multiplicamos
-        // por la tasa de cambio de YayCurrency
-        add_filter('woocommerce_product_get_price', 'convert_api_price', 999, 2);
-        add_filter('woocommerce_product_get_regular_price', 'convert_api_price', 999, 2);
-        add_filter('woocommerce_product_get_sale_price', 'convert_api_price', 999, 2);
+        // 2. Función maestra de conversión numérica
+        $convert_logic = function($price) use ($to_curr) {
+            if (empty($price) || !is_numeric($price)) return $price;
+            
+            // Si es USD, no convertimos (asumiendo que es la base)
+            if ($to_curr === 'USD') return $price;
 
-        function convert_api_price($price, $product) {
-            if (isset($_GET['currency']) && !empty($price)) {
-                $to_currency = strtoupper(sanitize_text_field($_GET['currency']));
-                
-                // Intentamos usar la función de conversión de YayCurrency
-                // Si la función anterior falló, usamos el método dinámico de filtros
-                if (class_exists('\YayCurrency\Internal\Helpers\CurrencyHelper')) {
-                    return \YayCurrency\Internal\Helpers\CurrencyHelper::convert_price($price, $to_currency);
-                }
-                
-                // Alternativa: Si YayCurrency usa filtros de WooCommerce
-                return apply_filters('raw_woocommerce_price', $price);
+            // Intentamos obtener la tasa de cambio de YayCurrency
+            // Si el plugin no nos da el valor, buscamos una tasa estimada 
+            // (Puedes ajustar estos números manualmente si la API de Yay falla)
+            $rate = 1;
+            if (class_exists('\YayCurrency\Internal\Helpers\CurrencyHelper')) {
+                $rate = \YayCurrency\Internal\Helpers\CurrencyHelper::get_rate($to_curr);
             }
-            return $price;
-        }
 
-        // 3. Sincronizar Símbolos
-        add_filter('woocommerce_currency_symbol', function($symbol) use ($requested_currency) {
-            switch($requested_currency) {
+            // Si no detecta tasa, ponemos unas de respaldo (Opcional)
+            if (!$rate || $rate == 1) {
+                if ($to_curr === 'COP') $rate = 4000; // Tasa ejemplo
+                if ($to_curr === 'EUR') $rate = 0.92;
+            }
+
+            return (float)$price * (float)$rate;
+        };
+
+        // 3. Aplicar a los precios brutos antes de generar el HTML
+        add_filter('woocommerce_product_get_price', $convert_logic, 999);
+        add_filter('woocommerce_product_get_regular_price', $convert_logic, 999);
+        add_filter('woocommerce_product_get_sale_price', $convert_logic, 999);
+
+        // 4. Asegurar que el símbolo sea el correcto
+        add_filter('woocommerce_currency_symbol', function($symbol) use ($to_curr) {
+            switch($to_curr) {
                 case 'COP': return 'COP$ ';
                 case 'EUR': return '€';
                 default: return '$';
