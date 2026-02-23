@@ -4,16 +4,11 @@ import './MediaQueries.css'
 import miImagenabout from "./assets/asset.svg"
 import ProductSearch from './components/ProductSearch.jsx' 
 import { CartIcon } from './components/CartIcon.jsx'
-import { PayPalScriptProvider } from "@paypal/react-paypal-js";
+// 1. Ya no necesitamos PayPalScriptProvider aquí, se maneja internamente en el componente de producto
 import { ProductSingleView } from './components/ProductSingleView';
 import { CurrencyMonitor } from './components/CurrencyMonitor.jsx'
 
-// 1. DEFINIR PAYPAL OPTIONS (Esto faltaba y causaba el error)
-const paypalOptions = {
-  "client-id": "BAAyx1ha025RcHTNYyMJwsx0YoB4-Gz6metHJV8XVMVCxD5OHpTen1wzhmqNOanP3XrXwxmcH42MU-i8vY", 
-  currency: activeCurrency,
-  intent: "capture",
-};
+// ❌ SE ELIMINÓ EL BLOQUE paypalOptions QUE CAUSABA EL ERROR DE "activeCurrency is not defined"
 
 const MiTitulo = () => (
   <h1 className="hero__title animate"> 
@@ -64,25 +59,24 @@ const ProductSearchTittle = () => (
 
 
 export const Header = () => (
-  <PayPalScriptProvider options={paypalOptions}>
-    <header id="main-site-header">
-      <nav className="nav-container">
-        <div className="logo">
-          <a href="https://reactappapplication.online/#home">TECH<span>AURA</span></a>
-        </div>
+  /* ❌ SE ELIMINÓ EL PayPalScriptProvider DE AQUÍ */
+  <header id="main-site-header">
+    <nav className="nav-container">
+      <div className="logo">
+        <a href="https://reactappapplication.online/#home">TECH<span>AURA</span></a>
+      </div>
 
-        <ul className="nav-links">
-          <li><a href="https://reactappapplication.online/#home">Home</a></li>
-          <li><a href="#about-us">About Us</a></li>
-          <li><a href="#products">Products</a></li>
-          <li><a href="#benefits">Benefits</a></li>
-        </ul>
+      <ul className="nav-links">
+        <li><a href="https://reactappapplication.online/#home">Home</a></li>
+        <li><a href="#about-us">About Us</a></li>
+        <li><a href="#products">Products</a></li>
+        <li><a href="#benefits">Benefits</a></li>
+      </ul>
 
-        <CartIcon />
-        <CurrencyMonitor />
-      </nav>
-    </header>
-  </PayPalScriptProvider>
+      <CartIcon />
+      <CurrencyMonitor />
+    </nav>
+  </header>
 );
 
 export const Footer = () => {
@@ -159,7 +153,6 @@ export const ProductsSection = () => (
   </section>
 )
 
-// 2. EXPORTAR EL COMPONENTE IMPORTADO PARA main.jsx
 export { ProductSingleView };
 
 function App() {
