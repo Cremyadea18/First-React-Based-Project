@@ -1,34 +1,10 @@
 import React, { useState, useEffect } from 'react'; 
-import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 
 export const ProductSingleView = ({ data }) => {
   const [activeCurrency, setActiveCurrency] = useState(() => {
     return localStorage.getItem('store_currency') || 'USD';
   });
   const [isAdding, setIsAdding] = useState(false);
-
-  // Mantengo el Observer para asegurar que el contenedor sea siempre #121212
-  useEffect(() => {
-    const applyBackgroundColor = () => {
-      const containers = document.querySelectorAll('.paypal-button-container');
-      containers.forEach(container => {
-        container.style.setProperty('background', '#121212', 'important');
-        container.style.setProperty('background-color', '#121212', 'important');
-      });
-    };
-
-    const observer = new MutationObserver(() => {
-      applyBackgroundColor();
-    });
-
-    observer.observe(document.body, {
-      childList: true,
-      subtree: true
-    });
-
-    applyBackgroundColor();
-    return () => observer.disconnect();
-  }, [activeCurrency]);
 
   useEffect(() => {
     const handleCurrencyChange = () => {
@@ -43,16 +19,6 @@ export const ProductSingleView = ({ data }) => {
 
   const { id, titulo, precio, descripcion, imagen, nonce } = data;
   
-  const getNumericPrice = (priceInput) => {
-    if (!priceInput) return "0.00";
-    const cleanString = String(priceInput).replace(/<[^>]*>/g, '').replace(/[^\d.,]/g, ''); 
-    const matched = cleanString.match(/[\d[.,]\d]*/g);
-    const number = matched ? matched.join('').replace(',', '.') : "0.00";
-    return number || "0.00";
-  };
-
-  const numericPrice = getNumericPrice(precio);
-
   const handleAddToCart = async () => {
     setIsAdding(true); 
     try {
@@ -82,20 +48,6 @@ export const ProductSingleView = ({ data }) => {
 
   return (
     <div className="product_template_container">
-      {/* --- BLOQUE DE ESTILOS PARA EL IFRAME REBELDE --- */}
-      <style dangerouslySetInnerHTML={{ __html: `
-        .paypal-button-container {
-          background-color: #121212 !important;
-          border: none !important;
-          overflow: hidden !important;
-        }
-        /* El truco de mezcla para ocultar el fondo del iframe */
-        .paypal-button-container iframe {
-          background-color: transparent !important;
-          mix-blend-mode: screen !important;
-        }
-      `}} />
-
       <div className="product_template_container_information">
         
         <div className="product-image-wrapper-one animate_dos">
@@ -113,41 +65,11 @@ export const ProductSingleView = ({ data }) => {
                 className={`btn-secondary ${isAdding ? 'loading' : ''}`} 
                 onClick={handleAddToCart}
                 disabled={isAdding}
-                style={{ marginBottom: '15px' }} 
+                style={{ width: '100%', padding: '15px' }} 
               >
                 {isAdding ? 'Adding...' : 'Add to cart'}
               </button>
-
-              <div className="paypal-button-container" style={{ backgroundColor: '#121212' }}>
-                <PayPalScriptProvider 
-                  key={activeCurrency} 
-                  options={{
-                    "client-id": "BAAyx1ha025RcHTNYyMJwsx0YoB4-Gz6metHJV8XVMVCxD5OHpTen1wzhmqNOanP3XrXwxmcH42MU-i8vY", 
-                    "currency": activeCurrency, 
-                    "intent": "capture"
-                  }}
-                >
-                  <PayPalButtons 
-                    style={{ 
-                        layout: "vertical", 
-                        shape: "rect", 
-                        label: "pay",
-                        color: "silver"
-                    }}
-                    createOrder={(data, actions) => {
-                      return actions.order.create({
-                        purchase_units: [{
-                          description: titulo,
-                          amount: { 
-                            value: numericPrice,
-                            currency_code: activeCurrency 
-                          }
-                        }]
-                      });
-                    }}
-                  />
-                </PayPalScriptProvider>
-              </div>
+              {/* Los botones de PayPal han sido eliminados de aquí */}
             </div>
           </div>
         </div>
