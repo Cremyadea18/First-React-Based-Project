@@ -5,9 +5,27 @@ export default function ProductSearch() {
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  
+  
+  const [activeCurrency, setActiveCurrency] = useState(localStorage.getItem('store_currency') || 'USD');
 
+  
   useEffect(() => {
-    fetch('/wp-json/wc/v3/products?per_page=20')
+    const handleCurrencyChange = () => {
+      setActiveCurrency(localStorage.getItem('store_currency'));
+    };
+    window.addEventListener('currencyChange', handleCurrencyChange);
+    return () => window.removeEventListener('currencyChange', handleCurrencyChange);
+  }, []);
+
+  
+  useEffect(() => {
+    setLoading(true); 
+    
+    
+    const apiUrl = `/wp-json/wc/v3/products?per_page=20&currency=${activeCurrency}`;
+
+    fetch(apiUrl)
       .then(response => {
         if (!response.ok) throw new Error('Error de conexión con la tienda');
         return response.json();
@@ -20,7 +38,7 @@ export default function ProductSearch() {
         setError(err.message);
         setLoading(false);
       });
-  }, []);
+  }, [activeCurrency]); 
 
   const filteredProducts = products?.filter(product =>
     product?.name?.toLowerCase().includes(searchTerm.toLowerCase())
@@ -53,9 +71,10 @@ export default function ProductSearch() {
             
             <div className="product-info">
               <h3 className="product-title">{product.name}</h3>
+              {/* Mostramos el precio que viene formateado de la API */}
               <div 
                 className="product-price" 
-                dangerouslySetInnerHTML={{ __html: product.price_html || `$${product.price}` }} 
+                dangerouslySetInnerHTML={{ __html: product.price_html }} 
               />
               <a href={product.permalink} className="product-button">
                 View Details
