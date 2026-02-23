@@ -57,76 +57,48 @@ function mytheme_add_woocommerce_support() {
 add_action( 'after_setup_theme', 'mytheme_add_woocommerce_support' );
 
 /**
- * 5. CONVERSIÓN DINÁMICA PARA LA REST API - VERSIÓN DE ÚNICO PASO
+ * 5. CONVERSIÓN ÚNICA AL FINAL DE LA REST API (MÉTODO SEGURO)
  */
-add_filter('woocommerce_rest_is_request_to_rest_api', function($is_rest_api) {
-    if ($is_rest_api && isset($_GET['currency'])) {
-        $to_curr = strtoupper(sanitize_text_field($_GET['currency']));
-        
-        add_filter('woocommerce_currency', function() use ($to_curr) {
-            return $to_curr;
-        }, 999);
+add_filter('woocommerce_rest_prepare_product', function($response, $post, $request) {
+    // Solo actuamos si el parámetro 'currency' está en la URL de la API
+    $currency = $request->get_param('currency');
+    if (!$currency) return $response;
 
-        // Definimos la lógica
-        $convert_logic = function($price, $product) use ($to_curr) {
-            // Si el precio es vacío o ya es USD, no hacer nada
-            if ('' === $price || $to_curr === 'USD') return $price;
+    $to_curr = strtoupper(sanitize_text_field($currency));
+    if ($to_curr === 'USD') return $response;
 
-            // Evitamos que YayCurrency u otros plugins interfieran en la tasa
-            $rate = 1;
-            if (class_exists('\YayCurrency\Internal\Helpers\CurrencyHelper')) {
-                $rate = \YayCurrency\Internal\Helpers\CurrencyHelper::get_rate($to_curr);
-            }
-
-            if (!$rate || $rate == 1) {
-                $manual_rates = [
-                    'COP' => 3996.25,
-                    'EUR' => 0.8468
-                ];
-                $rate = isset($manual_rates[$to_curr]) ? $manual_rates[$to_curr] : 1;
-            }
-
-            // --- EL TRUCO: REMOCIÓN TEMPORAL ---
-            // Removemos los filtros para que las llamadas internas de WC no vuelvan a entrar aquí
-            remove_filter('woocommerce_product_get_price', 'convert_logic_handler', 999);
-            remove_filter('woocommerce_product_get_regular_price', 'convert_logic_handler', 999);
-            remove_filter('woocommerce_product_get_sale_price', 'convert_logic_handler', 999);
-
-            $converted_price = (float)$price * (float)$rate;
-
-            return $converted_price;
-        };
-
-        // Para que remove_filter funcione, necesitamos una función nombrada o una variable
-        function convert_logic_handler($price, $product) {
-            // Accedemos a la moneda desde la URL
-            $to_curr = strtoupper(sanitize_text_field($_GET['currency']));
-            
-            // Si ya se ha convertido este producto en esta ejecución, lo marcamos
-            static $processed = [];
-            if (isset($processed[$product->get_id()])) return $price;
-
-            $rate = 3996.25; // Default para COP si Yay no carga
-            if (class_exists('\YayCurrency\Internal\Helpers\CurrencyHelper')) {
-                $r = \YayCurrency\Internal\Helpers\CurrencyHelper::get_rate($to_curr);
-                if($r) $rate = $r;
-            }
-
-            $processed[$product->get_id()] = true;
-            return (float)$price * (float)$rate;
-        }
-
-        add_filter('woocommerce_product_get_price', 'convert_logic_handler', 999, 2);
-        add_filter('woocommerce_product_get_regular_price', 'convert_logic_handler', 999, 2);
-        add_filter('woocommerce_product_get_sale_price', 'convert_logic_handler', 999, 2);
-
-        add_filter('woocommerce_currency_symbol', function($symbol) use ($to_curr) {
-            switch($to_curr) {
-                case 'COP': return 'COP$ ';
-                case 'EUR': return '€';
-                default: return '$';
-            }
-        }, 999);
+    // Obtener la tasa de cambio
+    $rate = 1;
+    if (class_exists('\YayCurrency\Internal\Helpers\CurrencyHelper')) {
+        $rate = \YayCurrency\Internal\Helpers\CurrencyHelper::get_rate($to_curr);
     }
-    return $is_rest_api;
-});
+
+    if (!$rate || $rate == 1) {
+        $manual_rates = ['COP' => 3996.25, 'EUR' => 0.8468];
+        $rate = isset($manual_rates[$to_curr]) ? $manual_rates[$to_curr] : 1;
+    }
+
+    // Obtenemos los datos actuales de la respuesta
+    $data = $response->get_data();
+
+    // Función interna para multiplicar con seguridad
+    $convert = function($price) use ($rate) {
+        if ( !is_numeric($price) || empty($price) ) return $price;
+        return (string)round((float)$price * (float)$rate, 2);
+    };
+
+    // Convertimos todos los campos de precio en el JSON final
+    $data['price']          = $convert($data['price']);
+    $data['regular_price']  = $convert($data['regular_price']);
+    $data['sale_price']     = $convert($data['sale_price']);
+
+    // También convertimos los precios dentro de las variaciones si existen
+    if (!empty($data['variations'])) {
+        // (Opcional si usas productos variables)
+    }
+
+    // Seteamos los nuevos datos convertidos en la respuesta
+    $response->set_data($data);
+
+    return $response;
+}, 10, 3);
