@@ -2,13 +2,34 @@ import React, { useState, useEffect } from 'react';
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 
 export const ProductSingleView = ({ data }) => {
-  // 1. Estado de moneda: Siempre dentro del componente
   const [activeCurrency, setActiveCurrency] = useState(() => {
     return localStorage.getItem('store_currency') || 'USD';
   });
   const [isAdding, setIsAdding] = useState(false);
 
-  // 2. Escuchar cambios de moneda
+  // EFECTO ÚNICAMENTE PARA TRANSPARENCIA
+  useEffect(() => {
+    const makeTransparent = () => {
+      const containers = document.querySelectorAll('.paypal-button-container');
+      containers.forEach(container => {
+        container.style.setProperty('background', 'transparent', 'important');
+        container.style.setProperty('background-color', 'transparent', 'important');
+      });
+    };
+
+    const observer = new MutationObserver(() => {
+      makeTransparent();
+    });
+
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true
+    });
+
+    makeTransparent();
+    return () => observer.disconnect();
+  }, [activeCurrency]);
+
   useEffect(() => {
     const handleCurrencyChange = () => {
       const newCurr = localStorage.getItem('store_currency') || 'USD';
@@ -18,17 +39,13 @@ export const ProductSingleView = ({ data }) => {
     return () => window.removeEventListener('currencyChange', handleCurrencyChange);
   }, []);
 
-  // 3. Validación de datos: Si no hay data, no renderizamos el resto
   if (!data) return <div className="product_template_container">Cargando producto...</div>;
 
   const { id, titulo, precio, descripcion, imagen, nonce } = data;
   
-  // 4. Función de limpieza de precio para PayPal
   const getNumericPrice = (priceInput) => {
     if (!priceInput) return "0.00";
-    // Eliminamos etiquetas HTML y símbolos de moneda, dejamos solo números y separadores
     const cleanString = String(priceInput).replace(/<[^>]*>/g, '').replace(/[^\d.,]/g, ''); 
-    // Convertimos coma en punto para formato estándar internacional
     const matched = cleanString.match(/[\d[.,]\d]*/g);
     const number = matched ? matched.join('').replace(',', '.') : "0.00";
     return number || "0.00";
@@ -36,7 +53,6 @@ export const ProductSingleView = ({ data }) => {
 
   const numericPrice = getNumericPrice(precio);
 
-  // 5. Función para añadir al carrito de WooCommerce
   const handleAddToCart = async () => {
     setIsAdding(true); 
     try {
@@ -74,7 +90,6 @@ export const ProductSingleView = ({ data }) => {
 
         <div className="product-info-wrapper-two">
           <h1 className="product-main-title animate_dos">{titulo}</h1>
-          {/* Precio visual de WordPress */}
           <div className="product-main-price animate_dos" dangerouslySetInnerHTML={{ __html: precio }} />
           <div className="product-main-description animate_dos" dangerouslySetInnerHTML={{ __html: descripcion }} />
 
@@ -84,15 +99,12 @@ export const ProductSingleView = ({ data }) => {
                 className={`btn-secondary ${isAdding ? 'loading' : ''}`} 
                 onClick={handleAddToCart}
                 disabled={isAdding}
-                style={{ marginBottom: '15px' }}
+                style={{ marginBottom: '15px' }} // Eliminado width: 100% para respetar tu estilo original
               >
                 {isAdding ? 'Adding...' : 'Add to cart'}
               </button>
 
               <div className="paypal-button-container">
-                {/* IMPORTANTE: Hemos movido 'options' directamente aquí.
-                  Esto evita errores de "not defined" durante el build.
-                */}
                 <PayPalScriptProvider 
                   key={activeCurrency} 
                   options={{
@@ -102,7 +114,12 @@ export const ProductSingleView = ({ data }) => {
                   }}
                 >
                   <PayPalButtons 
-                    style={{ layout: "vertical", shape: "rect", label: "pay" }}
+                    style={{ 
+                        layout: "vertical", 
+                        shape: "rect", 
+                        label: "pay",
+                        color: "silver" // Intentamos pedir silver de nuevo, pero sin filtros forzados
+                    }}
                     createOrder={(data, actions) => {
                       return actions.order.create({
                         purchase_units: [{
