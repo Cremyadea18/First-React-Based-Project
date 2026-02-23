@@ -57,48 +57,56 @@ function mytheme_add_woocommerce_support() {
 add_action( 'after_setup_theme', 'mytheme_add_woocommerce_support' );
 
 /**
- * 5. CONVERSIÓN ÚNICA AL FINAL DE LA REST API (MÉTODO SEGURO)
+ * 5. CONVERSIÓN TOTAL PARA LA API (ABSOLUTA)
  */
-add_filter('woocommerce_rest_prepare_product', function($response, $post, $request) {
-    // Solo actuamos si el parámetro 'currency' está en la URL de la API
+
+// Esta función maneja la conversión real
+function apply_currency_conversion_logic($price, $currency_param) {
+    if (!$price || !is_numeric($price)) return $price;
+    
+    $to_curr = strtoupper(sanitize_text_field($currency_param));
+    if ($to_curr === 'USD') return $price;
+
+    $rate = 3996.25; // Tasa base COP
+    if (class_exists('\YayCurrency\Internal\Helpers\CurrencyHelper')) {
+        $r = \YayCurrency\Internal\Helpers\CurrencyHelper::get_rate($to_curr);
+        if ($r) $rate = $r;
+    }
+
+    return (float)$price * (float)$rate;
+}
+
+// 1. Afectamos los datos crudos del producto en cualquier JSON de la API
+add_filter('woocommerce_rest_prepare_product_object', function($response, $product, $request) {
     $currency = $request->get_param('currency');
     if (!$currency) return $response;
 
-    $to_curr = strtoupper(sanitize_text_field($currency));
-    if ($to_curr === 'USD') return $response;
-
-    // Obtener la tasa de cambio
-    $rate = 1;
-    if (class_exists('\YayCurrency\Internal\Helpers\CurrencyHelper')) {
-        $rate = \YayCurrency\Internal\Helpers\CurrencyHelper::get_rate($to_curr);
-    }
-
-    if (!$rate || $rate == 1) {
-        $manual_rates = ['COP' => 3996.25, 'EUR' => 0.8468];
-        $rate = isset($manual_rates[$to_curr]) ? $manual_rates[$to_curr] : 1;
-    }
-
-    // Obtenemos los datos actuales de la respuesta
     $data = $response->get_data();
-
-    // Función interna para multiplicar con seguridad
-    $convert = function($price) use ($rate) {
-        if ( !is_numeric($price) || empty($price) ) return $price;
-        return (string)round((float)$price * (float)$rate, 2);
-    };
-
-    // Convertimos todos los campos de precio en el JSON final
-    $data['price']          = $convert($data['price']);
-    $data['regular_price']  = $convert($data['regular_price']);
-    $data['sale_price']     = $convert($data['sale_price']);
-
-    // También convertimos los precios dentro de las variaciones si existen
-    if (!empty($data['variations'])) {
-        // (Opcional si usas productos variables)
-    }
-
-    // Seteamos los nuevos datos convertidos en la respuesta
+    
+    // Convertimos los campos principales
+    $data['price']          = (string)apply_currency_conversion_logic($data['price'], $currency);
+    $data['regular_price']  = (string)apply_currency_conversion_logic($data['regular_price'], $currency);
+    $data['sale_price']     = (string)apply_currency_conversion_logic($data['sale_price'], $currency);
+    
     $response->set_data($data);
-
     return $response;
-}, 10, 3);
+}, 999, 3);
+
+// 2. IMPORTANTE: Forzamos el símbolo y la moneda global para la API
+add_action('init', function() {
+    if (strpos($_SERVER['REQUEST_URI'], '/wp-json/') !== false && isset($_GET['currency'])) {
+        $to_curr = strtoupper(sanitize_text_field($_GET['currency']));
+        
+        add_filter('woocommerce_currency', function() use ($to_curr) {
+            return $to_curr;
+        }, 999);
+
+        add_filter('woocommerce_currency_symbol', function($symbol) use ($to_curr) {
+            switch($to_curr) {
+                case 'COP': return 'COP$ ';
+                case 'EUR': return '€';
+                default: return '$';
+            }
+        }, 999);
+    }
+});
