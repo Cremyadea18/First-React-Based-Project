@@ -7,12 +7,11 @@ export const ProductSingleView = ({ data }) => {
   });
   const [isAdding, setIsAdding] = useState(false);
 
-  // EFECTO PARA FORZAR EL COLOR DE FONDO #121212
+  // Mantengo el Observer para asegurar que el contenedor sea siempre #121212
   useEffect(() => {
     const applyBackgroundColor = () => {
       const containers = document.querySelectorAll('.paypal-button-container');
       containers.forEach(container => {
-        // Aplicamos el color específico que solicitaste
         container.style.setProperty('background', '#121212', 'important');
         container.style.setProperty('background-color', '#121212', 'important');
       });
@@ -83,6 +82,20 @@ export const ProductSingleView = ({ data }) => {
 
   return (
     <div className="product_template_container">
+      {/* --- BLOQUE DE ESTILOS PARA EL IFRAME REBELDE --- */}
+      <style dangerouslySetInnerHTML={{ __html: `
+        .paypal-button-container {
+          background-color: #121212 !important;
+          border: none !important;
+          overflow: hidden !important;
+        }
+        /* El truco de mezcla para ocultar el fondo del iframe */
+        .paypal-button-container iframe {
+          background-color: transparent !important;
+          mix-blend-mode: screen !important;
+        }
+      `}} />
+
       <div className="product_template_container_information">
         
         <div className="product-image-wrapper-one animate_dos">
@@ -105,7 +118,6 @@ export const ProductSingleView = ({ data }) => {
                 {isAdding ? 'Adding...' : 'Add to cart'}
               </button>
 
-              {/* Contenedor con inline style preventivo */}
               <div className="paypal-button-container" style={{ backgroundColor: '#121212' }}>
                 <PayPalScriptProvider 
                   key={activeCurrency} 
