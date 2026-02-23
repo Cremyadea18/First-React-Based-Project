@@ -1513,3 +1513,9 @@ display: flex;
 flex-direction: row;
 gap: 6px;
 }
+
+@media (max-width:720px) {
+.nav-container-elements {
+display: none;
+}
+}
