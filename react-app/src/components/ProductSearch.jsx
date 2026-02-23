@@ -6,23 +6,22 @@ export default function ProductSearch() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   
-  
+  // 1. Estado de la moneda
   const [activeCurrency, setActiveCurrency] = useState(localStorage.getItem('store_currency') || 'USD');
 
-  
+  // 2. Escuchar el evento del Header
   useEffect(() => {
     const handleCurrencyChange = () => {
-      setActiveCurrency(localStorage.getItem('store_currency'));
+      const newCurr = localStorage.getItem('store_currency');
+      setActiveCurrency(newCurr);
     };
     window.addEventListener('currencyChange', handleCurrencyChange);
     return () => window.removeEventListener('currencyChange', handleCurrencyChange);
   }, []);
 
-  
+  // 3. Cargar productos cuando cambie la moneda
   useEffect(() => {
-    setLoading(true); 
-    
-    
+    setLoading(true);
     const apiUrl = `/wp-json/wc/v3/products?per_page=20&currency=${activeCurrency}`;
 
     fetch(apiUrl)
@@ -38,8 +37,9 @@ export default function ProductSearch() {
         setError(err.message);
         setLoading(false);
       });
-  }, [activeCurrency]); 
+  }, [activeCurrency]);
 
+  // 4. Filtrado lógico
   const filteredProducts = products?.filter(product =>
     product?.name?.toLowerCase().includes(searchTerm.toLowerCase())
   ) || [];
@@ -71,10 +71,9 @@ export default function ProductSearch() {
             
             <div className="product-info">
               <h3 className="product-title">{product.name}</h3>
-              {/* Mostramos el precio que viene formateado de la API */}
               <div 
                 className="product-price" 
-                dangerouslySetInnerHTML={{ __html: product.price_html }} 
+                dangerouslySetInnerHTML={{ __html: product.price_html || `$${product.price}` }} 
               />
               <a href={product.permalink} className="product-button">
                 View Details
@@ -89,4 +88,4 @@ export default function ProductSearch() {
       )}
     </div>
   );
-}
+} // <--- Asegúrate de que esta llave cierre el componente
