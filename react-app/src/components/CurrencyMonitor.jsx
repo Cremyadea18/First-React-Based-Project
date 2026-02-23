@@ -5,37 +5,38 @@ export const CurrencyMonitor = () => {
   const [activeCurrency, setActiveCurrency] = useState(localStorage.getItem('store_currency') || 'USD');
 
   useEffect(() => {
-    // 1. Mover el switcher original al contenedor de React
+    // 1. TELETRANSPORTAR CON SEGURIDAD (Aquí estaba el error)
     const source = document.getElementById('yay-switcher-source');
-    if (source && containerRef.current && !containerRef.current.contains(source.firstElementChild)) {
-      containerRef.current.appendChild(source.firstElementChild);
+    
+    // Verificamos: 1. Que exista el origen, 2. Que exista el destino (ref), 
+    // 3. Que el origen tenga un hijo para mover.
+    if (source && containerRef.current && source.firstElementChild) {
+      // Solo movemos si el contenedor de React está vacío
+      if (containerRef.current.childNodes.length === 0) {
+        try {
+          containerRef.current.appendChild(source.firstElementChild);
+        } catch (err) {
+          console.warn("No se pudo mover el switcher de moneda:", err);
+        }
+      }
     }
 
-    // 2. Función de actualización con control de "Recarga"
     const updateCurrency = (isManualClick = false) => {
       const selectedOptionElement = document.querySelector('.yay-currency-selected-option');
       
       if (selectedOptionElement) {
         const rawText = selectedOptionElement.innerText.trim();
-        // Limpiamos para obtener solo el código de 3 letras (USD, COP, etc.)
         const detectedCurrency = rawText.replace(/[^a-zA-Z]/g, '').slice(-3).toUpperCase();
         
         const validCurrencies = ['USD', 'EUR', 'COP'];
         const currentInStorage = localStorage.getItem('store_currency');
 
         if (validCurrencies.includes(detectedCurrency) && detectedCurrency !== currentInStorage) {
-          console.log("🎯 Nueva moneda detectada:", detectedCurrency);
-          
           localStorage.setItem('store_currency', detectedCurrency);
           setActiveCurrency(detectedCurrency);
-          
-          // Notificar a otros componentes (ProductSearch)
           window.dispatchEvent(new Event('currencyChange'));
 
-          // 🔥 LA CLAVE: Solo recargamos si el usuario hizo clic.
-          // Si el cambio se detectó al cargar la página, NO recargamos para evitar el bucle.
           if (isManualClick) {
-            console.log("🔄 Recarga manual activada por clic");
             setTimeout(() => {
               window.location.reload();
             }, 100);
@@ -44,25 +45,28 @@ export const CurrencyMonitor = () => {
       }
     };
 
-    // 3. Escuchamos clics específicos en el switcher
     const handleDocumentClick = (e) => {
-      // Verificamos si el clic fue en el selector de YayCurrency
-      if (e.target.closest('.yay-currency-switcher') || e.target.closest('.yay-currency-selected-option')) {
-        // Damos un tiempo a que el DOM del plugin se actualice antes de leerlo
+      // Usamos una verificación más segura para el clic
+      if (e.target && (e.target.closest('.yay-currency-switcher') || e.target.closest('.yay-currency-selected-option'))) {
         setTimeout(() => updateCurrency(true), 350);
       }
     };
 
     document.addEventListener('click', handleDocumentClick);
-    
-    // Sincronización inicial silenciosa (sin recarga)
     updateCurrency(false); 
 
-    return () => document.removeEventListener('click', handleDocumentClick);
+    return () => {
+      document.removeEventListener('click', handleDocumentClick);
+    };
   }, [activeCurrency]);
 
   return (
-    <div className="react-currency-wrapper" ref={containerRef} style={{ display: 'inline-block', marginLeft: '10px' }}>
+    <div 
+      className="react-currency-wrapper" 
+      ref={containerRef} 
+      style={{ display: 'inline-block', marginLeft: '10px', minWidth: '50px', minHeight: '20px' }}
+    >
+      {/* El switcher se inyectará aquí de forma segura */}
     </div>
   );
 };
