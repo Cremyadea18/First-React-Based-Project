@@ -6,28 +6,41 @@ export default function ProductSearch() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   
+  // 1. Estado de la moneda con limpieza inmediata
   const [activeCurrency, setActiveCurrency] = useState(() => {
-    return localStorage.getItem('store_currency') || 'USD';
+    const saved = localStorage.getItem('store_currency') || 'USD';
+    // Limpiamos: dejamos solo letras y tomamos las últimas 3 (por si viene "USD EUR COP")
+    return saved.replace(/[^a-zA-Z]/g, '').slice(-3).toUpperCase();
   });
 
+  // 2. Escuchar el evento del Header
   useEffect(() => {
     const handleCurrencyChange = () => {
-      const newCurr = localStorage.getItem('store_currency') || 'USD';
-      console.log("🔄 Moneda detectada en Search:", newCurr); // Log para debug
-      setActiveCurrency(newCurr);
+      const rawCurr = localStorage.getItem('store_currency') || 'USD';
+      // Limpieza de seguridad: extrae solo el código de 3 letras
+      const cleanCurr = rawCurr.replace(/[^a-zA-Z]/g, '').slice(-3).toUpperCase();
+      
+      console.log("🔄 Moneda limpia detectada:", cleanCurr);
+      setActiveCurrency(cleanCurr);
     };
 
     window.addEventListener('currencyChange', handleCurrencyChange);
     return () => window.removeEventListener('currencyChange', handleCurrencyChange);
   }, []);
 
+  // 3. Cargar productos
   useEffect(() => {
-    let isMounted = true; // Evita fugas de memoria
+    let isMounted = true;
     setLoading(true);
+    
+    // Obtenemos el valor más fresco del storage para la URL
+    const freshCurrency = localStorage.getItem('store_currency') || activeCurrency;
+    const cleanCurrency = freshCurrency.replace(/[^a-zA-Z]/g, '').slice(-3).toUpperCase();
+    
     const timestamp = new Date().getTime();
 
-    // Enviamos 'currency' y 'alg_currency' para cubrir más plugins de WordPress
-    const apiUrl = `/wp-json/wc/v3/products?per_page=20&currency=${activeCurrency}&alg_currency=${activeCurrency}&_=${timestamp}`;
+    // URL con moneda limpia
+    const apiUrl = `/wp-json/wc/v3/products?per_page=20&currency=${cleanCurrency}&_=${timestamp}`;
 
     fetch(apiUrl)
       .then(response => {
