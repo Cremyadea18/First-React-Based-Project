@@ -1,24 +1,38 @@
-import React, { useState } from 'react'; 
+import React, { useState, useEffect } from 'react'; 
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
-
-const paypalOptions = {
-  "client-id": "TU_CLIENT_ID_AQUI", 
-  currency: "USD",
-  intent: "capture",
-};
 
 export const ProductSingleView = ({ data }) => {
   
+  const [activeCurrency, setActiveCurrency] = useState(localStorage.getItem('store_currency') || 'USD');
   const [isAdding, setIsAdding] = useState(false);
+
+  
+  const paypalOptions = {
+    "client-id": "TU_CLIENT_ID_AQUI", 
+    currency: activeCurrency, 
+    intent: "capture",
+  };
+
+ 
+  useEffect(() => {
+    const handleCurrencyChange = () => {
+      const newCurr = localStorage.getItem('store_currency');
+      setActiveCurrency(newCurr);
+    };
+
+    window.addEventListener('currencyChange', handleCurrencyChange);
+    return () => window.removeEventListener('currencyChange', handleCurrencyChange);
+  }, []);
 
   if (!data) return <div className="product_template_container">Cargando producto...</div>;
 
   const { id, titulo, precio, descripcion, imagen, nonce } = data;
+  
+  
   const numericPrice = precio.replace(/[^\d.]/g, '');
 
   const handleAddToCart = async () => {
     setIsAdding(true); 
-    
     try {
       const response = await fetch('/wp-json/wc/store/v1/cart/add-item', {
         method: 'POST',
@@ -32,9 +46,7 @@ export const ProductSingleView = ({ data }) => {
       });
 
       if (response.ok) {
-       
         document.body.dispatchEvent(new CustomEvent('wc_fragment_refresh'));
-        
         if (window.jQuery) {
             window.jQuery(document.body).trigger('wc_fragment_refresh');
             window.jQuery(document.body).trigger('added_to_cart');
@@ -43,13 +55,13 @@ export const ProductSingleView = ({ data }) => {
     } catch (error) {
       console.error("Error al añadir:", error);
     } finally {
-    
       setTimeout(() => setIsAdding(false), 1000);
     }
   };
 
   return (
-    <PayPalScriptProvider options={paypalOptions}>
+    
+    <PayPalScriptProvider options={paypalOptions} key={activeCurrency}>
       <div className="product_template_container">
         <div className="product_template_container_information">
           
@@ -81,13 +93,15 @@ export const ProductSingleView = ({ data }) => {
                       return actions.order.create({
                         purchase_units: [{
                           description: titulo,
-                          amount: { value: numericPrice }
+                          amount: { 
+                            value: numericPrice,
+                            currency_code: activeCurrency 
+                          }
                         }]
                       });
                     }}
                     onApprove={async (data, actions) => {
                       const order = await actions.order.capture();
-                      
                       console.log("Pago exitoso", order);
                     }}
                   />
