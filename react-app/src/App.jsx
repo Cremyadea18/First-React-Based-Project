@@ -11,7 +11,7 @@ import { CurrencyMonitor } from './components/CurrencyMonitor.jsx'
 // 1. DEFINIR PAYPAL OPTIONS (Esto faltaba y causaba el error)
 const paypalOptions = {
   "client-id": "BAAyx1ha025RcHTNYyMJwsx0YoB4-Gz6metHJV8XVMVCxD5OHpTen1wzhmqNOanP3XrXwxmcH42MU-i8vY", 
-  currency: "USD",
+  currency: activeCurrency,
   intent: "capture",
 };
 
