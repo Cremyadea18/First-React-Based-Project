@@ -40,14 +40,20 @@ export const Header = () => (
       <div className="logo">
         <a href="https://reactappapplication.online/#home">TECH<span>AURA</span></a>
       </div>
-      <ul className="nav-links">
+      <div>
+   <ul className="nav-links">
         <li><a href="https://reactappapplication.online/#home">Home</a></li>
         <li><a href="#about-us">About Us</a></li>
         <li><a href="#products">Products</a></li>
         <li><a href="#benefits">Benefits</a></li>
       </ul>
+      </div>
+      
+      <div>
       <CartIcon />
       <CurrencyMonitor />
+      </div>
+     
     </nav>
   </header>
 );
