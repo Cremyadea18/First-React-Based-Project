@@ -103,21 +103,24 @@ add_filter('woocommerce_rest_is_request_to_rest_api', function($is_rest_api) {
 });
 
 /**
- * FORZADO ULTRA-PRIORITARIO DE BOTONES PAYPAL
- * Esto sobreescribe los ajustes del panel de administración
+ * 6. 🔥 FORZADO DE BOTONES PAYPAL (SILVER)
  */
+
+// A. Filtro de parámetros del SDK (Indispensable para algunos temas)
+add_filter('woocommerce_paypal_payments_sdk_query_params', function($params) {
+    // Forzamos a que no cargue métodos que puedan "romper" el color silver
+    $params['disable-funding'] = 'paylater,venmo,credit';
+    return $params;
+}, 9999);
+
+// B. Filtro de configuración de botones
 add_filter('woocommerce_paypal_payments_product_button_config', function($config) {
-    // Forzamos el objeto style completo
     $config['style'] = [
         'layout' => 'vertical',
-        'color'  => 'silver',    // Forzamos Negro
-        'shape'  => 'rect',     // Forzamos Rectangular
+        'color'  => 'silver', // Color plateado
+        'shape'  => 'rect',   // Rectangular
         'label'  => 'checkout',
-        'height' => 45          // Altura ideal para botones modernos
+        'height' => 45
     ];
-    
-    // Desactivamos el botón de "Pay Later" (opcional, para limpieza visual)
-    $config['disable-funding'] = ['paylater', 'venmo'];
-    
     return $config;
-}, 9999, 1); // Prioridad máxima para ganar a cualquier otro plugin
+}, 9999, 1);
