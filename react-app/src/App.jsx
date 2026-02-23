@@ -8,10 +8,10 @@ import { PayPalScriptProvider } from "@paypal/react-paypal-js";
 import { ProductSingleView } from './components/ProductSingleView';
 import { CurrencyMonitor } from './components/CurrencyMonitor.jsx'
 
-
+// 1. DEFINIR PAYPAL OPTIONS (Esto faltaba y causaba el error)
 const paypalOptions = {
-  "client-id": "BAAyx1ha025RcHTNYyMJwsx0YoB4-Gz6metHJV8XVMVCxD5OHpTen1wzhmqNOanP3XrXwxmcH42MU-i8vY", 
-  currency: activeCurrency, 
+  "client-id": "TU_CLIENT_ID_AQUI", // Cambia esto por tu ID real
+  currency: "USD",
   intent: "capture",
 };
 
