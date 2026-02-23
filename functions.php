@@ -57,7 +57,7 @@ function mytheme_add_woocommerce_support() {
 add_action( 'after_setup_theme', 'mytheme_add_woocommerce_support' );
 
 /**
- * 5. CONVERSIÓN DINÁMICA PARA LA REST API - VERSIÓN ANTIBUCLE
+ * 5. CONVERSIÓN DINÁMICA PARA LA REST API - VERSIÓN DE ÚNICO PASO
  */
 add_filter('woocommerce_rest_is_request_to_rest_api', function($is_rest_api) {
     if ($is_rest_api && isset($_GET['currency'])) {
@@ -67,24 +67,12 @@ add_filter('woocommerce_rest_is_request_to_rest_api', function($is_rest_api) {
             return $to_curr;
         }, 999);
 
-        // Definimos la lógica de conversión con un candado interno
+        // Definimos la lógica
         $convert_logic = function($price, $product) use ($to_curr) {
-            // Si no hay precio o es USD, no hacemos nada
-            if (empty($price) || !is_numeric($price) || $to_curr === 'USD') {
-                return $price;
-            }
+            // Si el precio es vacío o ya es USD, no hacer nada
+            if ('' === $price || $to_curr === 'USD') return $price;
 
-            // --- EL CANDADO DEFINITIVO ---
-            // Guardamos los IDs procesados para no repetir la multiplicación
-            static $converted_ids = [];
-            $product_id = $product->get_id();
-
-            // Si este producto ya pasó por aquí en esta carga de página, devolvemos el precio actual
-            if (isset($converted_ids[$product_id])) {
-                return $price;
-            }
-            // -----------------------------
-
+            // Evitamos que YayCurrency u otros plugins interfieran en la tasa
             $rate = 1;
             if (class_exists('\YayCurrency\Internal\Helpers\CurrencyHelper')) {
                 $rate = \YayCurrency\Internal\Helpers\CurrencyHelper::get_rate($to_curr);
@@ -98,16 +86,39 @@ add_filter('woocommerce_rest_is_request_to_rest_api', function($is_rest_api) {
                 $rate = isset($manual_rates[$to_curr]) ? $manual_rates[$to_curr] : 1;
             }
 
-            // Marcamos como convertido ANTES de devolver el valor
-            $converted_ids[$product_id] = true;
+            // --- EL TRUCO: REMOCIÓN TEMPORAL ---
+            // Removemos los filtros para que las llamadas internas de WC no vuelvan a entrar aquí
+            remove_filter('woocommerce_product_get_price', 'convert_logic_handler', 999);
+            remove_filter('woocommerce_product_get_regular_price', 'convert_logic_handler', 999);
+            remove_filter('woocommerce_product_get_sale_price', 'convert_logic_handler', 999);
 
-            return (float)$price * (float)$rate;
+            $converted_price = (float)$price * (float)$rate;
+
+            return $converted_price;
         };
 
-        // Importante: Usamos 2 argumentos ($price y $product) para tener el ID
-        add_filter('woocommerce_product_get_price', $convert_logic, 999, 2);
-        add_filter('woocommerce_product_get_regular_price', $convert_logic, 999, 2);
-        add_filter('woocommerce_product_get_sale_price', $convert_logic, 999, 2);
+        // Para que remove_filter funcione, necesitamos una función nombrada o una variable
+        function convert_logic_handler($price, $product) {
+            // Accedemos a la moneda desde la URL
+            $to_curr = strtoupper(sanitize_text_field($_GET['currency']));
+            
+            // Si ya se ha convertido este producto en esta ejecución, lo marcamos
+            static $processed = [];
+            if (isset($processed[$product->get_id()])) return $price;
+
+            $rate = 3996.25; // Default para COP si Yay no carga
+            if (class_exists('\YayCurrency\Internal\Helpers\CurrencyHelper')) {
+                $r = \YayCurrency\Internal\Helpers\CurrencyHelper::get_rate($to_curr);
+                if($r) $rate = $r;
+            }
+
+            $processed[$product->get_id()] = true;
+            return (float)$price * (float)$rate;
+        }
+
+        add_filter('woocommerce_product_get_price', 'convert_logic_handler', 999, 2);
+        add_filter('woocommerce_product_get_regular_price', 'convert_logic_handler', 999, 2);
+        add_filter('woocommerce_product_get_sale_price', 'convert_logic_handler', 999, 2);
 
         add_filter('woocommerce_currency_symbol', function($symbol) use ($to_curr) {
             switch($to_curr) {
