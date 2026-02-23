@@ -6,21 +6,17 @@ export default function ProductSearch() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   
-  // 1. Estado de la moneda con limpieza inmediata
   const [activeCurrency, setActiveCurrency] = useState(() => {
     const saved = localStorage.getItem('store_currency') || 'USD';
-    // Limpiamos: dejamos solo letras y tomamos las últimas 3 (por si viene "USD EUR COP")
     return saved.replace(/[^a-zA-Z]/g, '').slice(-3).toUpperCase();
   });
 
-  // 2. Escuchar el evento del Header
   useEffect(() => {
     const handleCurrencyChange = () => {
       const rawCurr = localStorage.getItem('store_currency') || 'USD';
-      // Limpieza de seguridad: extrae solo el código de 3 letras
       const cleanCurr = rawCurr.replace(/[^a-zA-Z]/g, '').slice(-3).toUpperCase();
       
-      console.log("🔄 Moneda limpia detectada:", cleanCurr);
+      console.log("1. 🔄 EVENTO DETECTADO - Nueva moneda en Monitor:", cleanCurr);
       setActiveCurrency(cleanCurr);
     };
 
@@ -28,19 +24,17 @@ export default function ProductSearch() {
     return () => window.removeEventListener('currencyChange', handleCurrencyChange);
   }, []);
 
-  // 3. Cargar productos
   useEffect(() => {
     let isMounted = true;
     setLoading(true);
     
-    // Obtenemos el valor más fresco del storage para la URL
     const freshCurrency = localStorage.getItem('store_currency') || activeCurrency;
     const cleanCurrency = freshCurrency.replace(/[^a-zA-Z]/g, '').slice(-3).toUpperCase();
-    
     const timestamp = new Date().getTime();
 
-    // URL con moneda limpia
+    // 🚩 LOG DE PETICIÓN
     const apiUrl = `/wp-json/wc/v3/products?per_page=20&currency=${cleanCurrency}&_=${timestamp}`;
+    console.log("2. 📡 PETICIÓN API - Generando URL:", apiUrl);
 
     fetch(apiUrl)
       .then(response => {
@@ -49,12 +43,20 @@ export default function ProductSearch() {
       })
       .then(data => {
         if (isMounted && Array.isArray(data)) {
+          // 🚩 LOG DE RESPUESTA DEL SERVIDOR
+          console.log("3. ✅ RESPUESTA RECIBIDA - Datos crudos del servidor:", data);
+          
+          if (data.length > 0) {
+            console.log("🔍 Ejemplo del primer producto (price_html):", data[0].price_html);
+          }
+          
           setProducts(data);
           setLoading(false);
         }
       })
       .catch(err => {
         if (isMounted) {
+          console.error("❌ ERROR EN FETCH:", err);
           setError(err.message);
           setLoading(false);
         }
@@ -62,6 +64,9 @@ export default function ProductSearch() {
 
     return () => { isMounted = false; };
   }, [activeCurrency]);
+
+  // 🚩 LOG DE RENDERIZADO
+  console.log("4. 🎨 RENDER - Moneda activa actual:", activeCurrency);
 
   const filteredProducts = products?.filter(product =>
     product?.name?.toLowerCase().includes(searchTerm.toLowerCase())
