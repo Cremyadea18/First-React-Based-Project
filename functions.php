@@ -102,19 +102,13 @@ add_filter('woocommerce_rest_is_request_to_rest_api', function($is_rest_api) {
     return $is_rest_api;
 });
 
-/**
- * 6. 🔥 PERSONALIZACIÓN DE BOTONES PAYPAL
- * Ajusta los estilos del botón inteligente de PayPal en la página de producto
- */
 add_filter('woocommerce_paypal_payments_product_button_config', function($config) {
-    // Definimos el estilo personalizado
     $config['style'] = [
-        'layout' => 'vertical', // vertical muestra botones de tarjeta abajo, horizontal los pone al lado
-        'color'  => 'black',    // Opciones: gold, blue, silver, white, black
-        'shape'  => 'rect',     // Opciones: pill (redondeado), rect (cuadrado)
-        'label'  => 'checkout', // Opciones: checkout, pay, buynow, paypal
-        'height' => 45          // Altura en píxeles (25 a 55)
+        'layout' => 'vertical',
+        'color'  => 'black',
+        'shape'  => 'rect',
+        'label'  => 'checkout',
+        'height' => 45
     ];
-    
     return $config;
-}, 10, 1);
+}, 999, 1); // <--- Cambiamos 10 por 999
