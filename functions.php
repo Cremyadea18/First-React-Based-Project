@@ -110,7 +110,7 @@ add_filter('woocommerce_paypal_payments_product_button_config', function($config
     // Forzamos el objeto style completo
     $config['style'] = [
         'layout' => 'vertical',
-        'color'  => 'black',    // Forzamos Negro
+        'color'  => 'silver',    // Forzamos Negro
         'shape'  => 'rect',     // Forzamos Rectangular
         'label'  => 'checkout',
         'height' => 45          // Altura ideal para botones modernos

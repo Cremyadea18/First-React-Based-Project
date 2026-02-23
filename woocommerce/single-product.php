@@ -16,15 +16,22 @@ while ( have_posts() ) : the_post();
     ?>
 
     <style>
-        /* Contenedor de PayPal: Forzamos el ancho para que no se vea desproporcionado */
+        /* Ajustes visuales para el contenedor de PayPal */
         .product_template_container [id^="ppc-button-"], 
         .product_template_container .paypal-button-container {
-            max-width: 400px !important; /* Ajusta según el ancho de tu botón de carrito */
-            margin: 20px 0 !important;
+            width: 100% !important;
+            max-width: 450px !important; /* Un poco más ancho para que luzca el color silver */
+            margin: 30px 0 !important; /* Más espacio arriba y abajo */
+            display: block !important;
         }
 
-        /* Si el botón es amarillo y lo quieres ocultar hasta que React lo maneje */
-        /* .paypal-buttons-loader { display: none; } */
+        /* Centrado opcional: si tu diseño es centrado, descomenta la siguiente línea */
+        /* .paypal-button-container { margin-left: auto !important; margin-right: auto !important; } */
+
+        .related-products-container {
+            border-top: 1px solid #eee;
+            background-color: #f9f9f9;
+        }
     </style>
 
     <div class="product_template_container">
@@ -32,23 +39,25 @@ while ( have_posts() ) : the_post();
              data-product="<?php echo esc_attr( json_encode( $react_data ) ); ?>">
         </div>
 
-        <div class="related-products-container" style="margin-top: 80px; padding: 40px;">
+        <div class="related-products-container" style="margin-top: 80px; padding: 60px 40px;">
             <?php woocommerce_output_related_products(); ?>
         </div>
     </div>
 
     <script>
-        // Intentamos interceptar la configuración del botón antes de que se renderice
         document.addEventListener('DOMContentLoaded', function() {
+            // Escuchamos el evento específico del plugin de PayPal para WooCommerce
             if (window.jQuery) {
                 jQuery(document.body).on('wc_paypal_payments_buttons_init', function(event, config) {
-                    console.log("🛠️ PayPal Config detectada, forzando estilos negros...");
+                    console.log("🎨 Aplicando estilo Silver al botón de PayPal...");
+                    
+                    // Sobreescribimos la configuración del SDK de PayPal
                     config.style = {
                         layout: 'vertical',
-                        color:  'black',
-                        shape:  'rect',
-                        label:  'checkout',
-                        height: 45
+                        color:  'silver',   // El color plateado que pediste
+                        shape:  'rect',     // Forma rectangular moderna
+                        label:  'checkout', // Texto del botón
+                        height: 45          // Altura balanceada
                     };
                 });
             }
