@@ -2,21 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 
 export const ProductSingleView = ({ data }) => {
-  
+  // 1. Estado de la moneda (se inicializa con lo que haya en localStorage o USD)
   const [activeCurrency, setActiveCurrency] = useState(localStorage.getItem('store_currency') || 'USD');
   const [isAdding, setIsAdding] = useState(false);
 
-  
-  const paypalOptions = {
-    "client-id": "TU_CLIENT_ID_AQUI", 
-    currency: activeCurrency, 
-    intent: "capture",
-  };
-
- 
+  // 2. Escuchar cambios de moneda desde el Header
   useEffect(() => {
     const handleCurrencyChange = () => {
-      const newCurr = localStorage.getItem('store_currency');
+      const newCurr = localStorage.getItem('store_currency') || 'USD';
+      console.log("🪙 PayPal detectó nueva moneda:", newCurr);
       setActiveCurrency(newCurr);
     };
 
@@ -24,12 +18,19 @@ export const ProductSingleView = ({ data }) => {
     return () => window.removeEventListener('currencyChange', handleCurrencyChange);
   }, []);
 
+  // 3. Configuración de PayPal (IMPORTANTE: Con tu ID real y comillas)
+  const paypalOptions = {
+    "client-id": "BAAyx1ha025RcHTNYyMJwsx0YoB4-Gz6metHJV8XVMVCxD5OHpTen1wzhmqNOanP3XrXwxmcH42MU-i8vY", 
+    currency: activeCurrency, 
+    intent: "capture",
+  };
+
   if (!data) return <div className="product_template_container">Cargando producto...</div>;
 
   const { id, titulo, precio, descripcion, imagen, nonce } = data;
   
-  
-  const numericPrice = precio.replace(/[^\d.]/g, '');
+  // 4. Limpieza de precio mejorada: asegura que solo queden números y un punto decimal
+  const numericPrice = precio.replace(/[^\d.,]/g, '').replace(',', '.');
 
   const handleAddToCart = async () => {
     setIsAdding(true); 
@@ -60,7 +61,7 @@ export const ProductSingleView = ({ data }) => {
   };
 
   return (
-    
+    /* La prop 'key' obliga al SDK de PayPal a reiniciarse cuando la moneda cambia */
     <PayPalScriptProvider options={paypalOptions} key={activeCurrency}>
       <div className="product_template_container">
         <div className="product_template_container_information">
@@ -89,6 +90,7 @@ export const ProductSingleView = ({ data }) => {
                 <div className="paypal-button-container">
                   <PayPalButtons 
                     style={{ layout: "vertical", shape: "rect", label: "pay" }}
+                    forceReRender={[activeCurrency, numericPrice]} // Sincronización extra
                     createOrder={(data, actions) => {
                       return actions.order.create({
                         purchase_units: [{
@@ -103,6 +105,10 @@ export const ProductSingleView = ({ data }) => {
                     onApprove={async (data, actions) => {
                       const order = await actions.order.capture();
                       console.log("Pago exitoso", order);
+                      alert("¡Gracias por tu compra!");
+                    }}
+                    onError={(err) => {
+                      console.error("Error en el botón de PayPal:", err);
                     }}
                   />
                 </div>
