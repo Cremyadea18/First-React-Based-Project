@@ -1511,3 +1511,17 @@ font-weight: 400;
 color: #F8FAFC;
 font-family: "Inter", sans-serif;
 }
+
+/* Usamos el ID del padre para darle más fuerza al selector */
+#react-single-product-root .paypal-button-container {
+    background: transparent !important;
+    background-color: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+}
+
+/* También es común que el plugin use este ID */
+#react-single-product-root [id^="ppc-button-"] {
+    background: transparent !important;
+}
