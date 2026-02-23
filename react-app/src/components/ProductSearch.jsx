@@ -7,26 +7,31 @@ export default function ProductSearch() {
   const [error, setError] = useState(null);
   
   // 1. Estado de la moneda
-  const [activeCurrency, setActiveCurrency] = useState(localStorage.getItem('store_currency') || 'USD');
+  const [activeCurrency, setActiveCurrency] = useState(() => {
+    return localStorage.getItem('store_currency') || 'USD';
+  });
 
   // 2. Escuchar el evento del Header
   useEffect(() => {
     const handleCurrencyChange = () => {
-      const newCurr = localStorage.getItem('store_currency');
+      const newCurr = localStorage.getItem('store_currency') || 'USD';
       setActiveCurrency(newCurr);
     };
+
     window.addEventListener('currencyChange', handleCurrencyChange);
     return () => window.removeEventListener('currencyChange', handleCurrencyChange);
   }, []);
 
-  // 3. Cargar productos cuando cambie la moneda
+  // 3. Cargar productos (con el truco del timestamp para evitar caché)
   useEffect(() => {
     setLoading(true);
-    const apiUrl = `/wp-json/wc/v3/products?per_page=20&currency=${activeCurrency}`;
+    const timestamp = new Date().getTime();
+    // Forzamos la moneda en la URL
+    const apiUrl = `/wp-json/wc/v3/products?per_page=20&currency=${activeCurrency}&_=${timestamp}`;
 
     fetch(apiUrl)
       .then(response => {
-        if (!response.ok) throw new Error('Error de conexión con la tienda');
+        if (!response.ok) throw new Error('Error de conexión');
         return response.json();
       })
       .then(data => {
@@ -54,6 +59,7 @@ export default function ProductSearch() {
           type="text"
           className="search-input"
           placeholder="Search for your Digital product"
+          value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
       </div>
@@ -73,7 +79,7 @@ export default function ProductSearch() {
               <h3 className="product-title">{product.name}</h3>
               <div 
                 className="product-price" 
-                dangerouslySetInnerHTML={{ __html: product.price_html || `$${product.price}` }} 
+                dangerouslySetInnerHTML={{ __html: product.price_html }} 
               />
               <a href={product.permalink} className="product-button">
                 View Details
@@ -84,8 +90,8 @@ export default function ProductSearch() {
       </div>
 
       {filteredProducts.length === 0 && (
-        <p className="no-results">No encontramos productos que coincidan con tu búsqueda.</p>
+        <p className="no-results">No encontramos productos.</p>
       )}
     </div>
   );
-} // <--- Asegúrate de que esta llave cierre el componente
+}
