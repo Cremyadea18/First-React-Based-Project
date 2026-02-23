@@ -49,7 +49,7 @@ export const Header = () => (
       </ul>
       </div>
       
-      <div>
+      <div className='nav-container-elements'>
       <CartIcon />
       <CurrencyMonitor />
       </div>

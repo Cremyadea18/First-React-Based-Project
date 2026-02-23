@@ -1512,14 +1512,7 @@ color: #F8FAFC;
 font-family: "Inter", sans-serif;
 }
 
-/* Esto obliga al contenedor a cortar cualquier fondo que se salga de los bordes del botón */
-.paypal-button-container {
-    background-color: #121212 !important;
-    overflow: hidden !important;
-    border-radius: 4px !important; /* Para que coincida con la forma rect */
-}
-
-/* Forzamos a que el iframe sea transparente (algunos navegadores lo permiten) */
-.paypal-button-container iframe {
-    background-color: transparent !important;
+.nav-container-elements {
+display: flex;
+flex-direction: row;
 }
