@@ -53,7 +53,7 @@ add_filter('woocommerce_rest_is_request_to_rest_api', function($is_rest_api) {
     if ($is_rest_api && isset($_GET['currency'])) {
         $to_curr = strtoupper(sanitize_text_field($_GET['currency']));
         
-      
+        
         add_filter('woocommerce_currency', function() use ($to_curr) {
             return $to_curr;
         }, 999);
@@ -62,15 +62,21 @@ add_filter('woocommerce_rest_is_request_to_rest_api', function($is_rest_api) {
         $convert_logic = function($price) use ($to_curr) {
             if (empty($price) || !is_numeric($price)) return $price; 
             if ($to_curr === 'USD') return $price;
+
             $rate = 1;
+
+            
             if (class_exists('\YayCurrency\Internal\Helpers\CurrencyHelper')) {
                 $rate = \YayCurrency\Internal\Helpers\CurrencyHelper::get_rate($to_curr);
             }
 
             
             if (!$rate || $rate == 1) {
-                if ($to_curr === 'COP') $rate = 3996.25; 
-                if ($to_curr === 'EUR') $rate = 0.8468;
+                $manual_rates = [
+                    'COP' => 3996.25,
+                    'EUR' => 0.8468
+                ];
+                $rate = isset($manual_rates[$to_curr]) ? $manual_rates[$to_curr] : 1;
             }
 
             return (float)$price * (float)$rate;
