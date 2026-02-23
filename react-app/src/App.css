@@ -1515,4 +1515,5 @@ font-family: "Inter", sans-serif;
 .nav-container-elements {
 display: flex;
 flex-direction: row;
+gap: 6px;
 }
