@@ -57,22 +57,20 @@ function mytheme_add_woocommerce_support() {
 add_action( 'after_setup_theme', 'mytheme_add_woocommerce_support' );
 
 /**
- * 5. INTEGRACIÓN TOTAL CON FOX CURRENCY (SIN CÁLCULOS MANUALES)
+ * 5. INTEGRACIÓN TOTAL CON FOX CURRENCY (WOOCS) PARA LA API
  */
+
+// A. Cambiar la moneda global del sistema al detectar el parámetro en la URL
 add_filter('woocommerce_rest_is_request_to_rest_api', function($is_rest_api) {
     if ($is_rest_api && isset($_GET['currency'])) {
         $to_curr = strtoupper(sanitize_text_field($_GET['currency']));
         
-        // Accedemos a la instancia global de FOX (WOOCS)
         global $WOOCS;
-        
         if ($WOOCS) {
-            // El plugin hace TODA la magia aquí: 
-            // Cambia tasas, símbolos y formatos automáticamente
             $WOOCS->set_currency($to_curr);
         }
 
-        // Ajuste opcional para asegurar el símbolo correcto en la API
+        // Asegurar que el símbolo sea el correcto
         add_filter('woocommerce_currency_symbol', function($symbol) use ($to_curr) {
             switch($to_curr) {
                 case 'EUR': return '€';
@@ -84,22 +82,37 @@ add_filter('woocommerce_rest_is_request_to_rest_api', function($is_rest_api) {
     return $is_rest_api;
 });
 
+// B. Forzar la moneda en la consulta de productos (Especial para el Buscador)
+add_filter('woocommerce_rest_product_query', function($args, $request) {
+    $currency = $request->get_param('currency');
+    if ($currency) {
+        global $WOOCS;
+        if ($WOOCS) {
+            $WOOCS->set_currency(strtoupper(sanitize_text_field($currency)));
+        }
+    }
+    return $args;
+}, 999, 2);
+
 /**
- * 6. LIMPIEZA DE DATOS PARA REACT
- * Esto asegura que los precios lleguen como números limpios y convertidos por FOX
+ * 6. PREPARACIÓN DE DATOS CONVERTIDOS PARA REACT
  */
 add_filter('woocommerce_rest_prepare_product_object', function($response, $product, $request) {
-    if (!isset($_GET['currency'])) return $response;
-
-    $data = $response->get_data();
+    $currency = $request->get_param('currency');
     
-    // Usamos las funciones nativas de WooCommerce. 
-    // Como FOX ya cambió la moneda global en el paso anterior, 
-    // estas funciones devolverán el precio YA convertido por el plugin.
-    $data['price']          = (string)wc_get_price_to_display($product);
-    $data['regular_price']  = (string)wc_get_price_to_display($product, array('price' => $product->get_regular_price()));
-    $data['sale_price']     = (string)wc_get_price_to_display($product, array('price' => $product->get_sale_price()));
+    if ($currency) {
+        $data = $response->get_data();
+        
+        // 1. Convertimos los precios numéricos
+        $data['price']          = (string)wc_get_price_to_display($product);
+        $data['regular_price']  = (string)wc_get_price_to_display($product, array('price' => $product->get_regular_price()));
+        $data['sale_price']     = (string)wc_get_price_to_display($product, array('price' => $product->get_sale_price()));
 
-    $response->set_data($data);
+        // 2. REGENERAMOS EL HTML DEL PRECIO (Vital para el Buscador)
+        // Esto hace que el product.price_html que usa tu React ya traiga el símbolo correcto
+        $data['price_html'] = $product->get_price_html();
+
+        $response->set_data($data);
+    }
     return $response;
 }, 999, 3);
