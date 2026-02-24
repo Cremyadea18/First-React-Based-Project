@@ -9,57 +9,66 @@ export default function ProductSearch() {
   // 1. Estado inicial de moneda con log
   const [activeCurrency, setActiveCurrency] = useState(() => {
     const saved = localStorage.getItem('store_currency') || 'USD';
-    console.log("初期 (Initial) - Moneda cargada de localStorage:", saved);
+    console.log("🚀 ProductSearch: Moneda inicial cargada:", saved);
     return saved;
   });
 
-  // Escuchar el cambio de moneda desde el CurrencyMonitor
+  // 2. EFECTO DE ESCUCHA: Detectar cambios del CurrencyMonitor
   useEffect(() => {
-    const handleCurrencyChange = () => {
+    const syncCurrency = () => {
       const newCurr = localStorage.getItem('store_currency') || 'USD';
-      console.log("🔄 EVENTO DETECTADO - Nueva moneda recibida en Buscador:", newCurr);
+      console.log("🔄 SYNC detectado - Actualizando estado a:", newCurr);
       setActiveCurrency(newCurr);
     };
 
-    window.addEventListener('currencyChange', handleCurrencyChange);
-    return () => window.removeEventListener('currencyChange', handleCurrencyChange);
+    // Escuchamos el evento personalizado que dispara tu CurrencyMonitor
+    window.addEventListener('currencyChange', syncCurrency);
+    
+    // También escuchamos el evento 'storage' por si se cambia en otra pestaña
+    window.addEventListener('storage', syncCurrency);
+
+    // Ejecución inmediata por si hubo un cambio justo antes del montaje
+    syncCurrency();
+
+    return () => {
+      window.removeEventListener('currencyChange', syncCurrency);
+      window.removeEventListener('storage', syncCurrency);
+    };
   }, []);
 
+  // 3. EFECTO DE CARGA: Petición a la API cuando cambia activeCurrency
   useEffect(() => {
     let isMounted = true;
     setLoading(true);
     
-    const timestamp = new Date().getTime();
-    // Forzamos la lectura más fresca posible para la URL
+    // Forzamos la lectura más fresca posible del localStorage para la petición
     const freshCurrency = localStorage.getItem('store_currency') || activeCurrency;
+    const timestamp = new Date().getTime();
 
-    // 📡 URL de la API con logs de control
     const apiUrl = `/wp-json/wc/v3/products?per_page=20&currency=${freshCurrency}&_=${timestamp}`;
     
     console.log("--- 📡 INICIANDO FETCH API ---");
-    console.log("Target Currency:", freshCurrency);
-    console.log("Full API URL:", apiUrl);
+    console.log("Moneda en URL:", freshCurrency);
+    console.log("URL Completa:", apiUrl);
 
     fetch(apiUrl)
       .then(response => {
-        console.log("HTTP Response Status:", response.status);
+        console.log("Status Servidor:", response.status);
         if (!response.ok) throw new Error('Error al conectar con la tienda');
         return response.json();
       })
       .then(data => {
         if (isMounted && Array.isArray(data)) {
-          console.log(`✅ RESPUESTA EXITOSA - ${data.length} productos recibidos.`);
+          console.log(`✅ EXITO: ${data.length} productos recibidos en ${freshCurrency}`);
           
-          // Log del primer producto para verificar si el PHP está enviando el debug_info
           if (data.length > 0) {
-            console.log("🔍 INSPECCIÓN PRIMER PRODUCTO:");
-            console.log("Nombre:", data[0].name);
-            console.log("Price HTML recibido:", data[0].price_html);
-            // Si añadiste el bloque de debug en functions.php, esto aparecerá:
+            console.log("🔍 INSPECCIÓN DE DATOS:");
+            console.log("Precio HTML:", data[0].price_html);
+            // Revisamos el debug que inyectamos en functions.php
             if (data[0].debug_info) {
-              console.log("⚙️ Debug del Servidor (PHP):", data[0].debug_info);
+              console.log("⚙️ Debug PHP:", data[0].debug_info);
             } else {
-              console.warn("⚠️ Advertencia: No se detectó 'debug_info'. ¿Actualizaste el functions.php?");
+              console.warn("⚠️ No se recibió 'debug_info'. Revisa tu functions.php");
             }
           }
 
@@ -70,27 +79,33 @@ export default function ProductSearch() {
       })
       .catch(err => {
         if (isMounted) {
-          console.error("❌ ERROR CRÍTICO EN FETCH:", err);
+          console.error("❌ ERROR EN FETCH:", err);
           setError(err.message);
           setLoading(false);
         }
       });
 
     return () => { isMounted = false; };
-  }, [activeCurrency]); 
+  }, [activeCurrency]); // Este array de dependencia es la clave
 
   const filteredProducts = products?.filter(product =>
     product?.name?.toLowerCase().includes(searchTerm.toLowerCase())
   ) || [];
 
-  if (loading) return <div className="loading-state">Updating prices to {activeCurrency}...</div>;
+  if (loading) return (
+    <div className="loading-state">
+      <p>Actualizando precios a {activeCurrency}...</p>
+    </div>
+  );
+
   if (error) return <div className="error-state">Error: {error}</div>;
 
   return (
     <div className="search-section">
       <div className="search-bar-container">
-        <div style={{fontSize: '10px', color: 'gray', marginBottom: '5px'}}>
-          DEBUG: Moneda actual en estado: {activeCurrency}
+        {/* Etiqueta de debug visual temporal */}
+        <div style={{fontSize: '10px', color: '#ff4400', fontWeight: 'bold'}}>
+          ACTUALMENTE PIDIENDO: {activeCurrency}
         </div>
         <input
           type="text"
@@ -114,6 +129,7 @@ export default function ProductSearch() {
             
             <div className="product-info">
               <h3 className="product-title">{product.name}</h3>
+              {/* Aquí se renderiza el precio que FOX ya convirtió en el backend */}
               <div 
                 className="product-price" 
                 dangerouslySetInnerHTML={{ __html: product.price_html }} 
