@@ -57,42 +57,33 @@ function mytheme_add_woocommerce_support() {
 add_action( 'after_setup_theme', 'mytheme_add_woocommerce_support' );
 
 /**
- * 5. INTEGRACIÓN DEFINITIVA CON FOX (WOOCS) - CORRECCIÓN PARA LISTAS/BUSCADOR
+ * 5. INTEGRACIÓN FOX + DEBUG LOGS
  */
-
-// A. Inicialización global de la moneda para cualquier petición API
 add_action('init', function() {
+    // Detectamos si es una petición de la API
     if (strpos($_SERVER['REQUEST_URI'], '/wp-json/') !== false && isset($_GET['currency'])) {
         $to_curr = strtoupper(sanitize_text_field($_GET['currency']));
         
         global $WOOCS;
+        
+        // LOG PARA PHP (Ver en error_log del servidor)
+        error_log("API REQUEST DETECTED: Moneda solicitada -> " . $to_curr);
+
         if ($WOOCS) {
             $WOOCS->set_currency($to_curr);
+            error_log("FOX: Moneda global establecida a " . $WOOCS->current_currency);
+        } else {
+            error_log("FOX ERROR: No se encontró la variable global WOOCS");
         }
 
-        // B. FORZADO INDIVIDUAL (Este es el que arregla el Buscador)
-        // Obligamos a WC a devolver el precio convertido por FOX en cada llamada
-        add_filter('woocommerce_product_get_price', function($price, $product) use ($to_curr) {
-            global $WOOCS;
-            if ($WOOCS && $WOOCS->current_currency !== $WOOCS->default_currency) {
-                return $WOOCS->woocs_exchange_value($price);
-            }
-            return $price;
-        }, 999, 2);
-
-        // Forzamos el símbolo correcto
         add_filter('woocommerce_currency_symbol', function($symbol) use ($to_curr) {
-            switch($to_curr) {
-                case 'EUR': return '€';
-                case 'USD': return '$';
-                default: return $symbol;
-            }
+            return ($to_curr === 'EUR') ? '€' : (($to_curr === 'USD') ? '$' : $symbol);
         }, 999);
     }
 });
 
 /**
- * 6. PREPARACIÓN DE RESPUESTA JSON PARA REACT
+ * 6. PREPARACIÓN DE RESPUESTA + HEADER DE DEBUG
  */
 add_filter('woocommerce_rest_prepare_product_object', function($response, $product, $request) {
     $currency = $request->get_param('currency');
@@ -100,14 +91,18 @@ add_filter('woocommerce_rest_prepare_product_object', function($response, $produ
     if ($currency) {
         $data = $response->get_data();
         
-        // Regeneramos el HTML del precio para que tome la moneda del filtro anterior
-        // Esto es lo que pinta el buscador en React
-        $data['price_html'] = $product->get_price_html();
+        // Log interno para ver qué precio está calculando WC
+        $debug_price = wc_get_price_to_display($product);
         
-        // Precios numéricos limpios
-        $data['price']          = (string)wc_get_price_to_display($product);
-        $data['regular_price']  = (string)wc_get_price_to_display($product, array('price' => $product->get_regular_price()));
-        $data['sale_price']     = (string)wc_get_price_to_display($product, array('price' => $product->get_sale_price()));
+        $data['price_html'] = $product->get_price_html();
+        $data['price'] = (string)$debug_price;
+        
+        // Inyectamos un campo de debug que verás en el console.log de React
+        $data['debug_info'] = [
+            'currency_requested' => $currency,
+            'current_fox_currency' => isset($GLOBALS['WOOCS']) ? $GLOBALS['WOOCS']->current_currency : 'no_fox',
+            'calculated_price' => $debug_price
+        ];
 
         $response->set_data($data);
     }
