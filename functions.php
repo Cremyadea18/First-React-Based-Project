@@ -85,7 +85,7 @@ add_action('init', function() {
 }, 1); // Prioridad 1 para que sea lo primero que ocurra
 
 /**
- * 6. RESPUESTA API CON TRANSFORMACIÓN DE FOX
+ * 6. RESPUESTA API CON CONVERSIÓN MATEMÁTICA FORZADA
  */
 add_filter('woocommerce_rest_prepare_product_object', function($response, $product, $request) {
     $currency = $request->get_param('currency');
@@ -95,20 +95,32 @@ add_filter('woocommerce_rest_prepare_product_object', function($response, $produ
         $data = $response->get_data();
         
         global $WOOCS;
-        $price = $product->get_price();
+        
+        // 1. Obtener el precio original (en la moneda base, ej: USD)
+        $raw_price = $product->get_price();
+        $final_price = $raw_price;
 
-        // Si FOX existe, convertimos el precio manualmente para asegurar
+        // 2. FORZAR CONVERSIÓN MATEMÁTICA
         if ($WOOCS) {
-            $price = $WOOCS->woocs_exchange_value($price);
-            $symbol = get_woocommerce_currency_symbol($currency);
-            // Re-escribimos el HTML del precio para React
-            $data['price_html'] = '<span class="woocommerce-Price-amount amount"><bdi><span class="woocommerce-Price-currencySymbol">'.$symbol.'</span>'.number_format($price, 2).'</bdi></span>';
+            // Esta función de FOX hace la magia de la multiplicación (Ej: 100 * 0.92)
+            $final_price = $WOOCS->woocs_exchange_value($raw_price);
         }
 
+        // 3. OBTENER SÍMBOLO
+        $symbol = get_woocommerce_currency_symbol($currency);
+
+        // 4. RECONSTRUIR EL HTML DEL PRECIO (Lo que ve el usuario)
+        // Usamos number_format para que el número se vea limpio
+        $formatted_price = number_format($final_price, 2, '.', ',');
+        
+        $data['price_html'] = '<span class="woocommerce-Price-amount amount"><bdi><span class="woocommerce-Price-currencySymbol">'.$symbol.'</span>'.$formatted_price.'</bdi></span>';
+        
+        // 5. DEBUG PARA CONSOLA
         $data['debug_info'] = [
-            'requested' => $currency,
-            'fox_active' => class_exists('WOOCS') ? 'Si' : 'No',
-            'final_price' => $price
+            'moneda_solicitada' => $currency,
+            'precio_original' => $raw_price,
+            'precio_convertido' => $final_price,
+            'tasa_cambio_usada' => ($raw_price > 0) ? ($final_price / $raw_price) : 1
         ];
 
         $response->set_data($data);
