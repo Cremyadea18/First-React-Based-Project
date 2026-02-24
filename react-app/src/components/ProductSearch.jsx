@@ -6,18 +6,17 @@ export default function ProductSearch() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   
+  // 1. Simplificamos la detección inicial de moneda
   const [activeCurrency, setActiveCurrency] = useState(() => {
-    const saved = localStorage.getItem('store_currency') || 'USD';
-    return saved.replace(/[^a-zA-Z]/g, '').slice(-3).toUpperCase();
+    return localStorage.getItem('store_currency') || 'USD';
   });
 
+  // Escuchar el cambio de moneda desde el CurrencyMonitor (FOX)
   useEffect(() => {
     const handleCurrencyChange = () => {
-      const rawCurr = localStorage.getItem('store_currency') || 'USD';
-      const cleanCurr = rawCurr.replace(/[^a-zA-Z]/g, '').slice(-3).toUpperCase();
-      
-      console.log("1. 🔄 EVENTO DETECTADO - Nueva moneda en Monitor:", cleanCurr);
-      setActiveCurrency(cleanCurr);
+      const newCurr = localStorage.getItem('store_currency') || 'USD';
+      console.log("🔄 Cambio de moneda detectado en Buscador:", newCurr);
+      setActiveCurrency(newCurr);
     };
 
     window.addEventListener('currencyChange', handleCurrencyChange);
@@ -28,51 +27,43 @@ export default function ProductSearch() {
     let isMounted = true;
     setLoading(true);
     
-    const freshCurrency = localStorage.getItem('store_currency') || activeCurrency;
-    const cleanCurrency = freshCurrency.replace(/[^a-zA-Z]/g, '').slice(-3).toUpperCase();
+    // Agregamos un timestamp para evitar que el navegador guarde en caché precios viejos
     const timestamp = new Date().getTime();
 
-    // 🚩 LOG DE PETICIÓN
-    const apiUrl = `/wp-json/wc/v3/products?per_page=20&currency=${cleanCurrency}&_=${timestamp}`;
-    console.log("2. 📡 PETICIÓN API - Generando URL:", apiUrl);
+    // 📡 PETICIÓN API - Usamos la moneda activa directamente
+    // El backend (functions.php + FOX) interceptará este parámetro 'currency'
+    const apiUrl = `/wp-json/wc/v3/products?per_page=20&currency=${activeCurrency}&_=${timestamp}`;
+    
+    console.log("📡 Buscando productos en:", activeCurrency);
 
     fetch(apiUrl)
       .then(response => {
-        if (!response.ok) throw new Error('Error de conexión');
+        if (!response.ok) throw new Error('Error al conectar con la tienda');
         return response.json();
       })
       .then(data => {
         if (isMounted && Array.isArray(data)) {
-          // 🚩 LOG DE RESPUESTA DEL SERVIDOR
-          console.log("3. ✅ RESPUESTA RECIBIDA - Datos crudos del servidor:", data);
-          
-          if (data.length > 0) {
-            console.log("🔍 Ejemplo del primer producto (price_html):", data[0].price_html);
-          }
-          
+          console.log(`✅ ${data.length} productos recibidos en ${activeCurrency}`);
           setProducts(data);
           setLoading(false);
         }
       })
       .catch(err => {
         if (isMounted) {
-          console.error("❌ ERROR EN FETCH:", err);
+          console.error("❌ Error en la carga:", err);
           setError(err.message);
           setLoading(false);
         }
       });
 
     return () => { isMounted = false; };
-  }, [activeCurrency]);
-
-  // 🚩 LOG DE RENDERIZADO
-  console.log("4. 🎨 RENDER - Moneda activa actual:", activeCurrency);
+  }, [activeCurrency]); // Se dispara cada vez que cambie la moneda
 
   const filteredProducts = products?.filter(product =>
     product?.name?.toLowerCase().includes(searchTerm.toLowerCase())
   ) || [];
 
-  if (loading) return <div className="loading-state">Cargando productos en {activeCurrency}...</div>;
+  if (loading) return <div className="loading-state">Updating prices to {activeCurrency}...</div>;
   if (error) return <div className="error-state">Error: {error}</div>;
 
   return (
@@ -94,16 +85,20 @@ export default function ProductSearch() {
               {product.images?.[0] ? (
                 <img src={product.images[0].src} alt={product.name} className="product-image" />
               ) : (
-                <div className="no-image">Sin imagen</div>
+                <div className="no-image">No image available</div>
               )}
             </div>
             
             <div className="product-info">
               <h3 className="product-title">{product.name}</h3>
+              
+              {/* FOX + Functions.php ya nos mandan el price_html listo 
+                  con el símbolo (€ / $) y el valor convertido */}
               <div 
                 className="product-price" 
                 dangerouslySetInnerHTML={{ __html: product.price_html }} 
               />
+              
               <a href={product.permalink} className="product-button">
                 View Details
               </a>
@@ -113,7 +108,7 @@ export default function ProductSearch() {
       </div>
 
       {filteredProducts.length === 0 && !loading && (
-        <p className="no-results">No encontramos productos.</p>
+        <p className="no-results">No products found matching your search.</p>
       )}
     </div>
   );

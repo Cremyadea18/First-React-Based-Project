@@ -57,36 +57,49 @@ function mytheme_add_woocommerce_support() {
 add_action( 'after_setup_theme', 'mytheme_add_woocommerce_support' );
 
 /**
- * 5. CAMPO PERSONALIZADO DE PRECIO PARA REACT (SOLUCIÓN ATÓMICA)
+ * 5. INTEGRACIÓN TOTAL CON FOX CURRENCY (SIN CÁLCULOS MANUALES)
  */
-add_action('rest_api_init', function() {
-    register_rest_field('product', 'precio_limpio', array(
-        'get_callback' => function($product_data, $field_name, $request) {
-            $product = wc_get_product($product_data['id']);
-            $currency = $request->get_param('currency') ?: 'USD';
-            $to_curr = strtoupper(sanitize_text_field($currency));
-            
-            // Valor base en USD (limpio de la DB)
-            $base_price = (float)$product->get_regular_price();
-            $sale_price = (float)$product->get_sale_price();
-            $current_price = $sale_price > 0 ? $sale_price : $base_price;
+add_filter('woocommerce_rest_is_request_to_rest_api', function($is_rest_api) {
+    if ($is_rest_api && isset($_GET['currency'])) {
+        $to_curr = strtoupper(sanitize_text_field($_GET['currency']));
+        
+        // Accedemos a la instancia global de FOX (WOOCS)
+        global $WOOCS;
+        
+        if ($WOOCS) {
+            // El plugin hace TODA la magia aquí: 
+            // Cambia tasas, símbolos y formatos automáticamente
+            $WOOCS->set_currency($to_curr);
+        }
 
-            // Tabla de conversión manual (100% controlada por ti)
-            $rates = [
-                'USD' => 1,
-                'COP' => 3996.25,
-                'EUR' => 0.84
-            ];
-
-            $rate = isset($rates[$to_curr]) ? $rates[$to_curr] : 1;
-            
-            return [
-                'monto' => round($current_price * $rate, 2),
-                'moneda' => $to_curr,
-                'simbolo' => ($to_curr === 'COP' ? 'COP$ ' : ($to_curr === 'EUR' ? '€' : '$'))
-            ];
-        },
-        'update_callback' => null,
-        'schema'          => null,
-    ));
+        // Ajuste opcional para asegurar el símbolo correcto en la API
+        add_filter('woocommerce_currency_symbol', function($symbol) use ($to_curr) {
+            switch($to_curr) {
+                case 'EUR': return '€';
+                case 'USD': return '$';
+                default: return $symbol;
+            }
+        }, 999);
+    }
+    return $is_rest_api;
 });
+
+/**
+ * 6. LIMPIEZA DE DATOS PARA REACT
+ * Esto asegura que los precios lleguen como números limpios y convertidos por FOX
+ */
+add_filter('woocommerce_rest_prepare_product_object', function($response, $product, $request) {
+    if (!isset($_GET['currency'])) return $response;
+
+    $data = $response->get_data();
+    
+    // Usamos las funciones nativas de WooCommerce. 
+    // Como FOX ya cambió la moneda global en el paso anterior, 
+    // estas funciones devolverán el precio YA convertido por el plugin.
+    $data['price']          = (string)wc_get_price_to_display($product);
+    $data['regular_price']  = (string)wc_get_price_to_display($product, array('price' => $product->get_regular_price()));
+    $data['sale_price']     = (string)wc_get_price_to_display($product, array('price' => $product->get_sale_price()));
+
+    $response->set_data($data);
+    return $response;
+}, 999, 3);

@@ -5,68 +5,85 @@ export const CurrencyMonitor = () => {
   const [activeCurrency, setActiveCurrency] = useState(localStorage.getItem('store_currency') || 'USD');
 
   useEffect(() => {
-    // 1. TELETRANSPORTAR CON SEGURIDAD (Aquí estaba el error)
-    const source = document.getElementById('yay-switcher-source');
+    // 1. TELETRANSPORTAR EL SELECTOR DE FOX
+    // FOX suele generar un contenedor con la clase .woocs_visitor_view_default o similar
+    // Buscamos el origen que viene del PHP (asegúrate de que en tu PHP el ID sea 'fox-switcher-source')
+    const source = document.getElementById('fox-switcher-source');
     
-    // Verificamos: 1. Que exista el origen, 2. Que exista el destino (ref), 
-    // 3. Que el origen tenga un hijo para mover.
     if (source && containerRef.current && source.firstElementChild) {
-      // Solo movemos si el contenedor de React está vacío
       if (containerRef.current.childNodes.length === 0) {
         try {
           containerRef.current.appendChild(source.firstElementChild);
         } catch (err) {
-          console.warn("No se pudo mover el switcher de moneda:", err);
+          console.warn("No se pudo mover el switcher de moneda FOX:", err);
         }
       }
     }
 
-    const updateCurrency = (isManualClick = false) => {
-      const selectedOptionElement = document.querySelector('.yay-currency-selected-option');
+    // 2. DETECTAR EL CAMBIO DE MONEDA
+    const updateCurrency = () => {
+      // FOX guarda la moneda seleccionada en un atributo o en el valor del select
+      // Buscamos el select que inyecta FOX
+      const woocsSelect = document.querySelector('.woocs_visitor_view_default select, .woocs_visitor_view_default');
       
-      if (selectedOptionElement) {
-        const rawText = selectedOptionElement.innerText.trim();
-        const detectedCurrency = rawText.replace(/[^a-zA-Z]/g, '').slice(-3).toUpperCase();
-        
-        const validCurrencies = ['USD', 'EUR', 'COP'];
-        const currentInStorage = localStorage.getItem('store_currency');
+      let detectedCurrency = '';
 
-        if (validCurrencies.includes(detectedCurrency) && detectedCurrency !== currentInStorage) {
+      if (woocsSelect) {
+        // Si es un <select> estándar
+        if (woocsSelect.tagName === 'SELECT') {
+          detectedCurrency = woocsSelect.value;
+        } else {
+          // Si es la vista personalizada de FOX, suele tener un data-currency
+          detectedCurrency = woocsSelect.getAttribute('data-currency') || '';
+        }
+      }
+
+      // Si no detectamos nada arriba, intentamos por la clase 'woocs_current_currency_informer'
+      if (!detectedCurrency) {
+        const informer = document.querySelector('.woocs_current_currency_informer');
+        if (informer) detectedCurrency = informer.innerText.trim();
+      }
+
+      const validCurrencies = ['USD', 'EUR', 'COP'];
+      const currentInStorage = localStorage.getItem('store_currency');
+
+      if (detectedCurrency && validCurrencies.includes(detectedCurrency)) {
+        if (detectedCurrency !== currentInStorage) {
           localStorage.setItem('store_currency', detectedCurrency);
           setActiveCurrency(detectedCurrency);
+          // Avisamos a los demás componentes (ProductSingleView, buscador, etc)
           window.dispatchEvent(new Event('currencyChange'));
-
-          if (isManualClick) {
-            setTimeout(() => {
-              window.location.reload();
-            }, 100);
-          }
+          
+          // Recargamos para que el backend de FOX procese el cambio de sesión
+          window.location.reload();
         }
       }
     };
 
-    const handleDocumentClick = (e) => {
-      // Usamos una verificación más segura para el clic
-      if (e.target && (e.target.closest('.yay-currency-switcher') || e.target.closest('.yay-currency-selected-option'))) {
-        setTimeout(() => updateCurrency(true), 350);
+    // FOX usa eventos de cambio en su select
+    const handleFoxChange = (e) => {
+      // Si el clic o cambio ocurre dentro de nuestro contenedor
+      if (containerRef.current && containerRef.current.contains(e.target)) {
+        setTimeout(updateCurrency, 100);
       }
     };
 
-    document.addEventListener('click', handleDocumentClick);
-    updateCurrency(false); 
+    document.addEventListener('change', handleFoxChange);
+    document.addEventListener('click', handleFoxChange);
 
     return () => {
-      document.removeEventListener('click', handleDocumentClick);
+      document.removeEventListener('change', handleFoxChange);
+      document.removeEventListener('click', handleFoxChange);
     };
-  }, [activeCurrency]);
+  }, []);
 
   return (
     <div 
-      className="react-currency-wrapper" 
+      className="react-currency-wrapper fox-monitor" 
       ref={containerRef} 
-      style={{ display: 'inline-block', marginLeft: '10px', minWidth: '50px', minHeight: '20px' }}
+      style={{ display: 'inline-block', marginLeft: '10px', minWidth: '80px' }}
     >
-      {/* El switcher se inyectará aquí de forma segura */}
+      {/* El switcher de FOX se inyectará aquí */}
     </div>
   );
 };

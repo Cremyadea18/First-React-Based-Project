@@ -16,9 +16,11 @@
 
 <header id="main-site-header">
     <div id="react-header"></div>
-    <div id="yay-switcher-source" style="display:none;">
-    <?php echo do_shortcode('[yaycurrency-switcher]'); ?>
-</div>
+
+    <div id="fox-switcher-source" style="display:none;">
+        <?php echo do_shortcode('[woocs]'); ?>
+    </div>
+
     <?php /*
     wp_nav_menu( array(
         'theme_location' => 'menu-1',
