@@ -115,3 +115,19 @@ add_filter('woocommerce_rest_prepare_product_object', function($response, $produ
     }
     return $response;
 }, 9999, 3);
+
+/**
+ * PASAR LA MONEDA ACTUAL DE FOX A REACT AUTOMÁTICAMENTE
+ */
+add_action('wp_head', function() {
+    global $WOOCS;
+    if ($WOOCS) {
+        $current = $WOOCS->current_currency;
+        echo "<script>
+            window.foxConfig = {
+                currentCurrency: '" . esc_js($current) . "'
+            };
+            console.log('PHP a JS: Moneda enviada -> " . esc_js($current) . "');
+        </script>";
+    }
+});

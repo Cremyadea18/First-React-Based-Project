@@ -12,71 +12,83 @@ export const CurrencyMonitor = () => {
       if (containerRef.current.childNodes.length === 0) {
         try {
           containerRef.current.appendChild(source.firstElementChild);
-          console.log("✅ Selector de FOX movido al Header de React");
+          console.log("✅ Selector de FOX movido al Header");
         } catch (err) {
-          console.warn("❌ No se pudo mover el switcher de moneda FOX:", err);
+          console.warn("❌ Error al mover switcher:", err);
         }
       }
     }
 
-    // 2. LÓGICA DE DETECCIÓN Y ACTUALIZACIÓN
+    // 2. FUNCIÓN DE DETECCIÓN MULTINIVEL
     const updateCurrency = () => {
-      // Buscamos el elemento de FOX que contiene la moneda activa
-      const woocsSelect = document.querySelector('.woocs_visitor_view_default select, select.woocs_visitor_view_default, .woocs_visitor_view_default');
-      
       let detectedCurrency = '';
 
-      if (woocsSelect) {
-        if (woocsSelect.tagName === 'SELECT') {
-          detectedCurrency = woocsSelect.value;
-        } else {
-          detectedCurrency = woocsSelect.getAttribute('data-currency') || '';
+      // Nivel 1: Variable Global inyectada desde functions.php (La más precisa)
+      if (window.foxConfig && window.foxConfig.currentCurrency) {
+        detectedCurrency = window.foxConfig.currentCurrency;
+        console.log("📡 FOX Monitor: Detectado vía PHP Global ->", detectedCurrency);
+      } 
+
+      // Nivel 2: Cookie nativa de FOX (Si falla la global)
+      if (!detectedCurrency) {
+        const cookieValue = document.cookie
+          .split('; ')
+          .find(row => row.trim().startsWith('woocs_current_currency='))
+          ?.split('=')[1];
+        if (cookieValue) {
+          detectedCurrency = cookieValue;
+          console.log("🍪 FOX Monitor: Detectado vía Cookie ->", detectedCurrency);
         }
       }
 
-      // Respaldo: Intentar leer el texto del informador si lo anterior falla
+      // Nivel 3: Lectura del DOM (Como respaldo visual)
       if (!detectedCurrency) {
-        const informer = document.querySelector('.woocs_current_currency_informer');
-        if (informer) detectedCurrency = informer.innerText.trim();
+        const woocsSelect = document.querySelector('.woocs_visitor_view_default select, select.woocs_visitor_view_default, .woocs_visitor_view_default');
+        if (woocsSelect) {
+          detectedCurrency = woocsSelect.tagName === 'SELECT' ? woocsSelect.value : woocsSelect.getAttribute('data-currency');
+        }
+        console.log("🔍 FOX Monitor: Detectado vía DOM ->", detectedCurrency);
       }
-
-      console.log("🔍 FOX Monitor - Moneda detectada en el DOM:", detectedCurrency);
 
       const validCurrencies = ['USD', 'EUR', 'COP'];
       const currentInStorage = localStorage.getItem('store_currency');
 
+      // 3. ACTUALIZACIÓN Y SINCRONIZACIÓN
       if (detectedCurrency && validCurrencies.includes(detectedCurrency)) {
         if (detectedCurrency !== currentInStorage) {
-          console.log(`💾 Guardando nueva moneda: ${detectedCurrency} (Antes era: ${currentInStorage})`);
+          console.log(`💾 Guardando en Storage: ${detectedCurrency}`);
           
-          // GUARDADO CRÍTICO: Esto es lo que lee el buscador
           localStorage.setItem('store_currency', detectedCurrency);
           setActiveCurrency(detectedCurrency);
           
-          // EVENTO CRÍTICO: Esto despierta a los componentes de React
+          // Despertar al ProductSearch
           window.dispatchEvent(new Event('currencyChange'));
           
-          // RECARGA: Necesaria para que FOX asiente la cookie en PHP
-          console.log("🔄 Recargando página para sincronizar PHP...");
-          window.location.reload();
+          // Solo recargamos si el cambio viene de una interacción real del usuario
+          // para evitar bucles infinitos en la carga inicial
         }
       }
     };
 
-    // FOX usa eventos de cambio en su select o clics en sus diseños personalizados
+    // 4. MANEJO DE INTERACCIONES
     const handleFoxInteraction = (e) => {
-      // Si la interacción es dentro de nuestro contenedor de moneda
+      // Si el usuario hace clic o cambia algo en el selector de monedas
       if (containerRef.current && containerRef.current.contains(e.target)) {
-        // Damos un pequeño delay para que el plugin de FOX termine de cambiar su propio estado
-        setTimeout(updateCurrency, 150);
+        console.log("🖱️ Interacción detectada en el selector...");
+        // Damos tiempo a FOX para que actualice sus cookies/estado
+        setTimeout(() => {
+            updateCurrency();
+            // Forzamos recarga tras interacción para que el buscador haga fetch nuevo
+            window.location.reload();
+        }, 150);
       }
     };
 
     document.addEventListener('change', handleFoxInteraction);
     document.addEventListener('click', handleFoxInteraction);
 
-    // Ejecución inicial por si el plugin cargó después que React
-    const initialCheck = setTimeout(updateCurrency, 1000);
+    // Chequeo inicial (delay para asegurar que PHP/Cookies estén listos)
+    const initialCheck = setTimeout(updateCurrency, 500);
 
     return () => {
       document.removeEventListener('change', handleFoxInteraction);
@@ -96,7 +108,7 @@ export const CurrencyMonitor = () => {
         minHeight: '30px' 
       }}
     >
-      {/* El switcher de FOX se inyectará aquí de forma automática */}
+      {/* El switcher de FOX se inyectará aquí */}
     </div>
   );
 };

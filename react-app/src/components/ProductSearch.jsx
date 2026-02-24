@@ -6,70 +6,62 @@ export default function ProductSearch() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   
-  // 1. Estado inicial de moneda con log
+  // 1. Estado inicial inteligente
   const [activeCurrency, setActiveCurrency] = useState(() => {
-    const saved = localStorage.getItem('store_currency') || 'USD';
-    console.log("🚀 ProductSearch: Moneda inicial cargada:", saved);
-    return saved;
+    // PRIORIDAD: 1. Variable Global PHP, 2. LocalStorage, 3. Default USD
+    const globalCurr = window.foxConfig ? window.foxConfig.currentCurrency : null;
+    const saved = localStorage.getItem('store_currency');
+    const finalInitial = globalCurr || saved || 'USD';
+    
+    console.log("🚀 ProductSearch: Moneda inicial determinada:", finalInitial);
+    return finalInitial;
   });
 
-  // 2. EFECTO DE ESCUCHA: Detectar cambios del CurrencyMonitor
+  // 2. EFECTO DE ESCUCHA: Sincronizar con el Monitor
   useEffect(() => {
     const syncCurrency = () => {
-      const newCurr = localStorage.getItem('store_currency') || 'USD';
-      console.log("🔄 SYNC detectado - Actualizando estado a:", newCurr);
-      setActiveCurrency(newCurr);
+      const newCurr = localStorage.getItem('store_currency') || (window.foxConfig ? window.foxConfig.currentCurrency : 'USD');
+      if (newCurr !== activeCurrency) {
+        console.log("🔄 SYNC detectado - Actualizando estado a:", newCurr);
+        setActiveCurrency(newCurr);
+      }
     };
 
-    // Escuchamos el evento personalizado que dispara tu CurrencyMonitor
     window.addEventListener('currencyChange', syncCurrency);
-    
-    // También escuchamos el evento 'storage' por si se cambia en otra pestaña
     window.addEventListener('storage', syncCurrency);
 
-    // Ejecución inmediata por si hubo un cambio justo antes del montaje
+    // Verificación inmediata al montar
     syncCurrency();
 
     return () => {
       window.removeEventListener('currencyChange', syncCurrency);
       window.removeEventListener('storage', syncCurrency);
     };
-  }, []);
+  }, [activeCurrency]);
 
-  // 3. EFECTO DE CARGA: Petición a la API cuando cambia activeCurrency
+  // 3. EFECTO DE CARGA: Petición a la API
   useEffect(() => {
     let isMounted = true;
     setLoading(true);
     
-    // Forzamos la lectura más fresca posible del localStorage para la petición
-    const freshCurrency = localStorage.getItem('store_currency') || activeCurrency;
     const timestamp = new Date().getTime();
-
-    const apiUrl = `/wp-json/wc/v3/products?per_page=20&currency=${freshCurrency}&_=${timestamp}`;
+    // Usamos el activeCurrency del estado de React que ya está sincronizado
+    const apiUrl = `/wp-json/wc/v3/products?per_page=20&currency=${activeCurrency}&_=${timestamp}`;
     
     console.log("--- 📡 INICIANDO FETCH API ---");
-    console.log("Moneda en URL:", freshCurrency);
-    console.log("URL Completa:", apiUrl);
+    console.log("Moneda en URL:", activeCurrency);
 
     fetch(apiUrl)
       .then(response => {
-        console.log("Status Servidor:", response.status);
         if (!response.ok) throw new Error('Error al conectar con la tienda');
         return response.json();
       })
       .then(data => {
         if (isMounted && Array.isArray(data)) {
-          console.log(`✅ EXITO: ${data.length} productos recibidos en ${freshCurrency}`);
+          console.log(`✅ EXITO: ${data.length} productos en ${activeCurrency}`);
           
-          if (data.length > 0) {
-            console.log("🔍 INSPECCIÓN DE DATOS:");
-            console.log("Precio HTML:", data[0].price_html);
-            // Revisamos el debug que inyectamos en functions.php
-            if (data[0].debug_info) {
-              console.log("⚙️ Debug PHP:", data[0].debug_info);
-            } else {
-              console.warn("⚠️ No se recibió 'debug_info'. Revisa tu functions.php");
-            }
+          if (data.length > 0 && data[0].debug_info) {
+            console.log("⚙️ Debug PHP:", data[0].debug_info);
           }
 
           setProducts(data);
@@ -86,14 +78,14 @@ export default function ProductSearch() {
       });
 
     return () => { isMounted = false; };
-  }, [activeCurrency]); // Este array de dependencia es la clave
+  }, [activeCurrency]); 
 
   const filteredProducts = products?.filter(product =>
     product?.name?.toLowerCase().includes(searchTerm.toLowerCase())
   ) || [];
 
   if (loading) return (
-    <div className="loading-state">
+    <div className="loading-state" style={{padding: '20px', textAlign: 'center'}}>
       <p>Actualizando precios a {activeCurrency}...</p>
     </div>
   );
@@ -103,9 +95,8 @@ export default function ProductSearch() {
   return (
     <div className="search-section">
       <div className="search-bar-container">
-        {/* Etiqueta de debug visual temporal */}
-        <div style={{fontSize: '10px', color: '#ff4400', fontWeight: 'bold'}}>
-          ACTUALMENTE PIDIENDO: {activeCurrency}
+        <div style={{fontSize: '10px', color: '#ff4400', fontWeight: 'bold', marginBottom: '5px'}}>
+          MONEDA ACTIVA: {activeCurrency}
         </div>
         <input
           type="text"
@@ -129,7 +120,6 @@ export default function ProductSearch() {
             
             <div className="product-info">
               <h3 className="product-title">{product.name}</h3>
-              {/* Aquí se renderiza el precio que FOX ya convirtió en el backend */}
               <div 
                 className="product-price" 
                 dangerouslySetInnerHTML={{ __html: product.price_html }} 
