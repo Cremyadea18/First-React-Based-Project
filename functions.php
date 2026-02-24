@@ -85,58 +85,55 @@ add_action('init', function() {
 }, 1);
 
 /**
- * 6. RESPUESTA API - CONVERSIÓN MANUAL (CON RECOLECCIÓN DE TASAS DE EMERGENCIA)
+ * 6. RESPUESTA API - CONVERSIÓN MANUAL GARANTIZADA (SIN ERRORES 500)
  */
 add_filter('woocommerce_rest_prepare_product_object', function($response, $product, $request) {
+    // Evitar errores si no estamos en una petición de producto
+    if (!is_object($product)) return $response;
+
     $currency = $request->get_param('currency');
+    if (!$currency) return $response;
+
+    $currency = strtoupper(sanitize_text_field($currency));
+    $data = $response->get_data();
     
-    if ($currency) {
-        $currency = strtoupper(sanitize_text_field($currency));
-        $data = $response->get_data();
-        global $WOOCS;
-        
-        $raw_price = (float)$product->get_price();
-        $final_price = $raw_price;
-        $rate = 1;
-
-        if ($WOOCS) {
-            // 1. Intentamos obtener tasas de la forma oficial
-            $currencies = $WOOCS->get_currencies();
-            
-            // 2. Si la tasa es 1 o no existe, intentamos extraerla de la base de datos directamente
-            if (!isset($currencies[$currency]) || (float)$currencies[$currency]['rate'] == 1) {
-                $woocs_options = get_option('woocs', array());
-                if (!empty($woocs_options['currencies'])) {
-                    $currencies = $woocs_options['currencies'];
-                }
-            }
-
-            if (isset($currencies[$currency])) {
-                $rate = (float)$currencies[$currency]['rate'];
-                $final_price = $raw_price * $rate;
-            }
-        }
-
-        $symbol = get_woocommerce_currency_symbol($currency);
-        $formatted_price = number_format($final_price, 2, '.', ',');
-        
-        // Inyectamos el HTML dinámico
-        $data['price_html'] = '<span class="price"><span class="woocommerce-Price-amount amount"><bdi><span class="woocommerce-Price-currencySymbol">'.$symbol.'</span>'.$formatted_price.'</bdi></span></span>';
-        
-        // Debug para confirmar en consola
-        $data['debug_info'] = [
-            'moneda' => $currency,
-            'precio_base' => $raw_price,
-            'tasa_leida' => $rate,
-            'precio_final' => $final_price,
-            'usó_backup_db' => (!isset($WOOCS->get_currencies()[$currency])) ? 'Sí' : 'No'
-        ];
-
-        $response->set_data($data);
+    // 1. Obtener el precio base de forma segura
+    $raw_price = (float)$product->get_regular_price();
+    if ($product->is_on_sale()) {
+        $raw_price = (float)$product->get_sale_price();
     }
+    
+    $final_price = $raw_price;
+    $rate = 1;
+
+    // 2. Obtener la tasa de FOX directamente de las opciones guardadas (Más seguro que la global)
+    $woocs_options = get_option('woocs', array());
+    if (!empty($woocs_options['currencies']) && isset($woocs_options['currencies'][$currency])) {
+        $rate = (float)$woocs_options['currencies'][$currency]['rate'];
+        $final_price = $raw_price * $rate;
+    }
+
+    // 3. Formateo de salida
+    $symbol = get_woocommerce_currency_symbol($currency);
+    $formatted_value = number_format($final_price, 2, '.', ',');
+    
+    // Sobreescribir el HTML para el componente React
+    $data['price_html'] = sprintf(
+        '<span class="price"><span class="woocommerce-Price-amount amount"><bdi><span class="woocommerce-Price-currencySymbol">%s</span>%s</bdi></span></span>',
+        $symbol,
+        $formatted_value
+    );
+
+    // Debug para la consola de React
+    $data['debug_info'] = [
+        'moneda' => $currency,
+        'tasa_aplicada' => $rate,
+        'precio_final' => $final_price
+    ];
+
+    $response->set_data($data);
     return $response;
 }, 9999, 3);
-
 /**
  * 7. PASAR LA MONEDA ACTUAL DE FOX A REACT AUTOMÁTICAMENTE
  */
