@@ -85,7 +85,7 @@ add_action('init', function() {
 }, 1);
 
 /**
- * 6. RESPUESTA API - CONVERSIÓN MANUAL (EXTRAYENDO TASA DE FOX)
+ * 6. RESPUESTA API - CONVERSIÓN MANUAL (CON RECOLECCIÓN DE TASAS DE EMERGENCIA)
  */
 add_filter('woocommerce_rest_prepare_product_object', function($response, $product, $request) {
     $currency = $request->get_param('currency');
@@ -100,11 +100,19 @@ add_filter('woocommerce_rest_prepare_product_object', function($response, $produ
         $rate = 1;
 
         if ($WOOCS) {
-            // Accedemos directamente a la tabla de monedas guardada en el plugin
+            // 1. Intentamos obtener tasas de la forma oficial
             $currencies = $WOOCS->get_currencies();
+            
+            // 2. Si la tasa es 1 o no existe, intentamos extraerla de la base de datos directamente
+            if (!isset($currencies[$currency]) || (float)$currencies[$currency]['rate'] == 1) {
+                $woocs_options = get_option('woocs', array());
+                if (!empty($woocs_options['currencies'])) {
+                    $currencies = $woocs_options['currencies'];
+                }
+            }
+
             if (isset($currencies[$currency])) {
                 $rate = (float)$currencies[$currency]['rate'];
-                // HACEMOS LA MATEMÁTICA NOSOTROS PARA ASEGURARNOS
                 $final_price = $raw_price * $rate;
             }
         }
@@ -112,15 +120,16 @@ add_filter('woocommerce_rest_prepare_product_object', function($response, $produ
         $symbol = get_woocommerce_currency_symbol($currency);
         $formatted_price = number_format($final_price, 2, '.', ',');
         
-        // Sobreescribimos el HTML para React
+        // Inyectamos el HTML dinámico
         $data['price_html'] = '<span class="price"><span class="woocommerce-Price-amount amount"><bdi><span class="woocommerce-Price-currencySymbol">'.$symbol.'</span>'.$formatted_price.'</bdi></span></span>';
         
-        // Debug para que verifiques en la consola de React
+        // Debug para confirmar en consola
         $data['debug_info'] = [
             'moneda' => $currency,
             'precio_base' => $raw_price,
             'tasa_leida' => $rate,
-            'precio_final' => $final_price
+            'precio_final' => $final_price,
+            'usó_backup_db' => (!isset($WOOCS->get_currencies()[$currency])) ? 'Sí' : 'No'
         ];
 
         $response->set_data($data);
