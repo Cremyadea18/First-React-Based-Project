@@ -57,11 +57,10 @@ function mytheme_add_woocommerce_support() {
 add_action( 'after_setup_theme', 'mytheme_add_woocommerce_support' );
 
 /**
- * 5. INTEGRACIÓN FORZADA CON FOX (WOOCS)
+ * 5. INTEGRACIÓN FORZADA CON FOX (WOOCS) - CORRECCIÓN API
  */
 add_action('init', function() {
     if (strpos($_SERVER['REQUEST_URI'], '/wp-json/') !== false) {
-        // 1. Detectar moneda de la URL o de la Cookie de FOX
         $currency = isset($_GET['currency']) ? strtoupper(sanitize_text_field($_GET['currency'])) : null;
         
         if (!$currency && isset($_COOKIE['woocs_current_currency'])) {
@@ -70,10 +69,11 @@ add_action('init', function() {
 
         if ($currency) {
             global $WOOCS;
-            // Si la global falla, intentamos instanciarla o usar el método estático
             if (class_exists('WOOCS')) {
-                global $wp_query;
-                $WOOCS = new WOOCS(); // Forzamos instancia si no existe
+                // Importante: No re-instanciar con 'new' si ya existe la global
+                if (!$WOOCS) {
+                    $WOOCS = new WOOCS();
+                }
                 $WOOCS->set_currency($currency);
             }
 
@@ -82,10 +82,10 @@ add_action('init', function() {
             }, 9999);
         }
     }
-}, 1); // Prioridad 1 para que sea lo primero que ocurra
+}, 1);
 
 /**
- * 6. RESPUESTA API CON CONVERSIÓN MATEMÁTICA FORZADA
+ * 6. RESPUESTA API - CONVERSIÓN MANUAL (EXTRAYENDO TASA DE FOX)
  */
 add_filter('woocommerce_rest_prepare_product_object', function($response, $product, $request) {
     $currency = $request->get_param('currency');
@@ -93,34 +93,34 @@ add_filter('woocommerce_rest_prepare_product_object', function($response, $produ
     if ($currency) {
         $currency = strtoupper(sanitize_text_field($currency));
         $data = $response->get_data();
-        
         global $WOOCS;
         
-        // 1. Obtener el precio original (en la moneda base, ej: USD)
-        $raw_price = $product->get_price();
+        $raw_price = (float)$product->get_price();
         $final_price = $raw_price;
+        $rate = 1;
 
-        // 2. FORZAR CONVERSIÓN MATEMÁTICA
         if ($WOOCS) {
-            // Esta función de FOX hace la magia de la multiplicación (Ej: 100 * 0.92)
-            $final_price = $WOOCS->woocs_exchange_value($raw_price);
+            // Accedemos directamente a la tabla de monedas guardada en el plugin
+            $currencies = $WOOCS->get_currencies();
+            if (isset($currencies[$currency])) {
+                $rate = (float)$currencies[$currency]['rate'];
+                // HACEMOS LA MATEMÁTICA NOSOTROS PARA ASEGURARNOS
+                $final_price = $raw_price * $rate;
+            }
         }
 
-        // 3. OBTENER SÍMBOLO
         $symbol = get_woocommerce_currency_symbol($currency);
-
-        // 4. RECONSTRUIR EL HTML DEL PRECIO (Lo que ve el usuario)
-        // Usamos number_format para que el número se vea limpio
         $formatted_price = number_format($final_price, 2, '.', ',');
         
-        $data['price_html'] = '<span class="woocommerce-Price-amount amount"><bdi><span class="woocommerce-Price-currencySymbol">'.$symbol.'</span>'.$formatted_price.'</bdi></span>';
+        // Sobreescribimos el HTML para React
+        $data['price_html'] = '<span class="price"><span class="woocommerce-Price-amount amount"><bdi><span class="woocommerce-Price-currencySymbol">'.$symbol.'</span>'.$formatted_price.'</bdi></span></span>';
         
-        // 5. DEBUG PARA CONSOLA
+        // Debug para que verifiques en la consola de React
         $data['debug_info'] = [
-            'moneda_solicitada' => $currency,
-            'precio_original' => $raw_price,
-            'precio_convertido' => $final_price,
-            'tasa_cambio_usada' => ($raw_price > 0) ? ($final_price / $raw_price) : 1
+            'moneda' => $currency,
+            'precio_base' => $raw_price,
+            'tasa_leida' => $rate,
+            'precio_final' => $final_price
         ];
 
         $response->set_data($data);
@@ -129,17 +129,26 @@ add_filter('woocommerce_rest_prepare_product_object', function($response, $produ
 }, 9999, 3);
 
 /**
- * PASAR LA MONEDA ACTUAL DE FOX A REACT AUTOMÁTICAMENTE
+ * 7. PASAR LA MONEDA ACTUAL DE FOX A REACT AUTOMÁTICAMENTE
  */
 add_action('wp_head', function() {
     global $WOOCS;
-    if ($WOOCS) {
+    // Intentamos obtener la moneda de la global o de la instancia directa
+    $current = '';
+    if (isset($WOOCS) && !empty($WOOCS->current_currency)) {
         $current = $WOOCS->current_currency;
+    } elseif (class_exists('WOOCS')) {
+        $WOOCS_LOCAL = new WOOCS();
+        $current = $WOOCS_LOCAL->current_currency;
+    }
+
+    if ($current) {
         echo "<script>
             window.foxConfig = {
                 currentCurrency: '" . esc_js($current) . "'
             };
-            console.log('PHP a JS: Moneda enviada -> " . esc_js($current) . "');
+            console.log('--- FOX PHP DEBUG ---');
+            console.log('Moneda detectada en PHP: " . esc_js($current) . "');
         </script>";
     }
 });
