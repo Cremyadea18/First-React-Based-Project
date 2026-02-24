@@ -85,10 +85,9 @@ add_action('init', function() {
 }, 1);
 
 /**
- * 6. RESPUESTA API - CONVERSIÓN MANUAL GARANTIZADA (SIN ERRORES 500)
+ * 6. RESPUESTA API - CONVERSIÓN DINÁMICA (YAHOO FINANCE / FOX)
  */
 add_filter('woocommerce_rest_prepare_product_object', function($response, $product, $request) {
-    // Evitar errores si no estamos en una petición de producto
     if (!is_object($product)) return $response;
 
     $currency = $request->get_param('currency');
@@ -97,38 +96,42 @@ add_filter('woocommerce_rest_prepare_product_object', function($response, $produ
     $currency = strtoupper(sanitize_text_field($currency));
     $data = $response->get_data();
     
-    // 1. Obtener el precio base de forma segura
-    $raw_price = (float)$product->get_regular_price();
-    if ($product->is_on_sale()) {
-        $raw_price = (float)$product->get_sale_price();
-    }
+    // Precio base (USD)
+    $raw_price = (float)$product->get_price();
     
-    $final_price = $raw_price;
-    $rate = 1;
+    $rate = 1.0; // Valor por defecto
 
-    // 2. Obtener la tasa de FOX directamente de las opciones guardadas (Más seguro que la global)
-    $woocs_options = get_option('woocs', array());
-    if (!empty($woocs_options['currencies']) && isset($woocs_options['currencies'][$currency])) {
-        $rate = (float)$woocs_options['currencies'][$currency]['rate'];
-        $final_price = $raw_price * $rate;
+    // Intentamos sacar la tasa que FOX obtuvo de Yahoo Finance
+    global $WOOCS;
+    if ($WOOCS) {
+        $currencies = $WOOCS->get_currencies();
+        if (isset($currencies[$currency]) && (float)$currencies[$currency]['rate'] > 0) {
+            $rate = (float)$currencies[$currency]['rate'];
+        }
     }
 
-    // 3. Formateo de salida
+    // Si la tasa sigue siendo 1 y no es USD, es que FOX/Yahoo falló. 
+    // Opcional: Podrías poner una tasa de respaldo aquí
+    if ($rate == 1.0 && $currency === 'EUR') {
+        $rate = 0.92; // Respaldo manual solo si falla la conexión
+    }
+
+    $final_price = $raw_price * $rate;
+
+    // Formateo para React
     $symbol = get_woocommerce_currency_symbol($currency);
     $formatted_value = number_format($final_price, 2, '.', ',');
     
-    // Sobreescribir el HTML para el componente React
     $data['price_html'] = sprintf(
         '<span class="price"><span class="woocommerce-Price-amount amount"><bdi><span class="woocommerce-Price-currencySymbol">%s</span>%s</bdi></span></span>',
         $symbol,
         $formatted_value
     );
 
-    // Debug para la consola de React
     $data['debug_info'] = [
         'moneda' => $currency,
-        'tasa_aplicada' => $rate,
-        'precio_final' => $final_price
+        'tasa_usada' => $rate,
+        'fuente' => ($rate != 0.92) ? 'Yahoo/FOX' : 'Respaldo Manual'
     ];
 
     $response->set_data($data);
