@@ -51,7 +51,6 @@ export const Header = () => (
       
       <div className='nav-container-elements'>
       <CartIcon />
-      <CurrencyMonitor />
       </div>
      
     </nav>
