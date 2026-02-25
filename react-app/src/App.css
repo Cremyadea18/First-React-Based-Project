@@ -50,9 +50,9 @@ min-height:auto;
 display: flex;
 align-items: center;
 justify-content: center;
-padding-top:clamp(20px,8vh,80px) ;
-padding-left: clamp(20px,8vh,64px);
-padding-right: clamp(20px,8vh,64px);
+padding-top:clamp(20px,8,5vh,80px) ;
+padding-left: clamp(20px,8,5vh,64px);
+padding-right: clamp(20px,8,5vh,64px);
 box-sizing: border-box;
 }
 
