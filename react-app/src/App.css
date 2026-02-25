@@ -1520,15 +1520,9 @@ display: none;
 }
 }
 
-header .woocs_switcher.woocs-style-2 {
-  width: 250px !important;
-  max-width: 250px !important;
-  background-color: red;
-}
-
-header .woocs_switcher.woocs-style-2 .dd-selected {
+html body header .woocs_switcher.woocs-style-2 {
+max-width: 250px !important;
   width: 100% !important;
-  padding: 12px 18px !important;
-  font-size: 16px !important;
-  background-color: red;
+  min-width: 120px !important;
+  background: red;
 }
