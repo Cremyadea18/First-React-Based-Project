@@ -1520,13 +1520,13 @@ display: none;
 }
 }
 
-.woocs_switcher.woocs-style-2 {
-  width: 100% !important;
-  max-width: 100% !important;
-  min-width: 120px;
-}
-
-.woocs_switcher.woocs-style-2 select,
-.woocs_switcher.woocs-style-2 .dd-selected {
-  width: 100% !important;
+.woocs-style-2-drop-down {
+    background: red;
+    border-radius: 16px;
+    height: 32px;
+    overflow: hidden;
+    min-width: 120px;
+    max-width: 300px;
+    -webkit-tap-highlight-color: transparent;
+    transition: width 300ms cubic-bezier(0.4, 0.0, 0.2, 1), height 300ms cubic-bezier(0.4, 0.0, 0.2, 1), box-shadow 300ms cubic-bezier(0.4, 0.0, 0.2, 1), border-radius 300ms cubic-bezier(0.4, 0.0, 0.2, 1);
 }
