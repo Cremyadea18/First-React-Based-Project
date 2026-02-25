@@ -1519,3 +1519,14 @@ gap: 6px;
 display: none;
 }
 }
+
+.woocs_switcher.woocs-style-2 {
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 120px;
+}
+
+.woocs_switcher.woocs-style-2 select,
+.woocs_switcher.woocs-style-2 .dd-selected {
+  width: 100% !important;
+}
