@@ -5,7 +5,7 @@ import miImagenabout from "./assets/asset.svg"
 import ProductSearch from './components/ProductSearch.jsx' 
 import { CartIcon } from './components/CartIcon.jsx'
 import { ProductSingleView } from './components/ProductSingleView';
-import { CurrencyMonitor } from './components/CurrencyMonitor.jsx'
+
 
 // Componentes auxiliares
 const MiTitulo = () => (
