@@ -1465,6 +1465,13 @@ flex-direction: column;
 justify-content: flex-start;
 }
 
+.product-info-wrapper-two-container {
+background: white;
+padding: 20px;
+border: 1px solid rgba(255, 255, 255, 0.1) !important;
+border-radius: 22px;
+}
+
 @media (max-width: 1000px) {
     .product_template_container_information {
         flex-direction: column; 
@@ -1520,9 +1527,3 @@ display: none;
 }
 }
 
-html body header .woocs_switcher.woocs-style-2 {
-max-width: 250px !important;
-  width: 100% !important;
-  min-width: 120px !important;
-  background: red;
-}

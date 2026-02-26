@@ -50,22 +50,19 @@ export const ProductSingleView = ({ data }) => {
       
       <div className="product_template_container_information">
 
-        {/* Bloque de Imagen */}
+       
         <div className="product-image-wrapper-one">
           <img src={imagen} alt={titulo} />
         </div>
 
         {/* Bloque de Información */}
         <div className="product-info-wrapper-two">
-          <h1>{titulo}</h1>
-          
-          {/* Precio: Si el símbolo sale atrás, es por la configuración de WooCommerce */}
-          <div className="product-price" dangerouslySetInnerHTML={{ __html: precio }} />
-
-          {/* Descripción del Producto: Ahora se renderiza aquí */}
+          <div className='product-info-wrapper-two-container'>
+           <h1>{titulo}</h1>
+          <div className="product-main-description" dangerouslySetInnerHTML={{ __html: precio }} />
           {descripcion && (
             <div 
-              className="product-description" 
+              className="product-main-description" 
               dangerouslySetInnerHTML={{ __html: descripcion }} 
             />
           )}
@@ -88,6 +85,8 @@ export const ProductSingleView = ({ data }) => {
               </div>
             </div>
           </div>
+          </div>
+          
 
         </div>
       </div>
