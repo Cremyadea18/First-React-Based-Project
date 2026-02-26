@@ -1,4 +1,6 @@
 ---
 deployment:
   tasks:
-    - /bin/cp -R * /home1/juanurrego/reactappapplication.online/wp-content/themes/PersonalThemeNew
+    - export DEPLOYPATH=/home1/juanurrego/public_html/reactappapplication.online/wp-content/themes/PersonalThemeNew
+    - /bin/mkdir -p $DEPLOYPATH
+    - /bin/cp -R * $DEPLOYPATH
