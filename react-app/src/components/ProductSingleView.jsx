@@ -68,7 +68,7 @@ export const ProductSingleView = ({ data }) => {
             
             <div className="cart">
               <button 
-                style={{ background: 'black', color: 'white', width: '100%', marginBottom: '10px' }}
+                style={{ background: 'black', width: '100%', marginBottom: '10px' }}
                 onClick={handleAddToCart}
               >
                 {isAdding ? 'Adding...' : 'Add to cart'}
