@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react' // Añadimos hooks
+import React, { useState, useEffect } from 'react'
 import './App.css'
 import './MediaQueries.css'
 import miImagenabout from "./assets/asset.svg"
@@ -6,8 +6,8 @@ import ProductSearch from './components/ProductSearch.jsx'
 import { CartIcon } from './components/CartIcon.jsx'
 import { ProductSingleView } from './components/ProductSingleView';
 
+// --- COMPONENTES AUXILIARES INTERNOS ---
 
-// Componentes auxiliares
 const MiTitulo = () => (
   <h1 className="hero__title animate"> 
     <span className='hero_span animate'>AI-Powered Solutions </span>for <br /> 
@@ -17,7 +17,7 @@ const MiTitulo = () => (
 
 const MiTexto = () => (
   <p className="hero__text animate">
-    Transform the way you work with inteligent tools built to optimize operations elevate efficency and unlock scalable growth 
+    Transform the way you work with intelligent tools built to optimize operations elevate efficiency and unlock scalable growth 
   </p>
 )
 
@@ -30,10 +30,11 @@ const BtnSecondary = () => (
 );
 
 const AboutTittle = () => <h2 className='about__title animate '>Simplify Complex Business Operations with AI</h2>
-const AboutText = () => <p className='about_text animate'>Intelligent automation helps you eliminate repetitive task, reduce constly errors and optimize every step of your workflow for greater accuracy and efficency.</p>
+const AboutText = () => <p className='about_text animate'>Intelligent automation helps you eliminate repetitive task, reduce costly errors and optimize every step of your workflow for greater accuracy and efficiency.</p>
 const ProductSearchTittle = () => <h2 className='about__title'>Our Products</h2>
 
-// HEADER: Sin PayPalScriptProvider para evitar errores de scope
+// --- COMPONENTES EXPORTADOS (REQUERIDOS POR MAIN.JSX) ---
+
 export const Header = () => (
   <header id="main-site-header">
     <nav className="nav-container">
@@ -41,18 +42,16 @@ export const Header = () => (
         <a href="https://reactappapplication.online/#home">TECH<span>AURA</span></a>
       </div>
       <div>
-   <ul className="nav-links">
-        <li><a href="https://reactappapplication.online/#home">Home</a></li>
-        <li><a href="#about-us">About Us</a></li>
-        <li><a href="#products">Products</a></li>
-        <li><a href="#benefits">Benefits</a></li>
-      </ul>
+        <ul className="nav-links">
+          <li><a href="https://reactappapplication.online/#home">Home</a></li>
+          <li><a href="#about-us">About Us</a></li>
+          <li><a href="#products">Products</a></li>
+          <li><a href="#benefits">Benefits</a></li>
+        </ul>
       </div>
-      
       <div className='nav-container-elements'>
-      <CartIcon />
+        <CartIcon />
       </div>
-     
     </nav>
   </header>
 );
@@ -109,7 +108,6 @@ export const About = () => (
   </section>
 )
 
-// SECCIÓN DE PRODUCTOS: Ahora recibe la key para refrescarse
 export const ProductsSection = ({ currentCurrency }) => (
   <section className='main_container_structure'>
     <div className='main_container_structure_content'>
@@ -117,21 +115,31 @@ export const ProductsSection = ({ currentCurrency }) => (
         <ProductSearchTittle />
       </div>
       <div className='filter_section_search'> 
-        {/* La KEY aquí es vital para que React reinicie el buscador */}
         <ProductSearch key={currentCurrency} />
       </div>  
     </div>
   </section>
 )
 
-export { ProductSingleView };
+// --- COMPONENTE PRINCIPAL APP ---
 
 function App() {
-  // 1. Creamos un estado para la moneda en la raíz de la App
   const [currency, setCurrency] = useState(localStorage.getItem('store_currency') || 'USD');
+  const [singleProductData, setSingleProductData] = useState(null);
 
-  // 2. Escuchamos el evento que lanza el CurrencyMonitor
   useEffect(() => {
+    // 1. Buscamos si el div de WordPress tiene los datos del producto
+    const container = document.getElementById('react-single-product-root');
+    if (container && container.dataset.product) {
+      try {
+        const parsedData = JSON.parse(container.dataset.product);
+        setSingleProductData(parsedData);
+      } catch (error) {
+        console.error("Error al parsear datos del producto:", error);
+      }
+    }
+
+    // 2. Sincronización de moneda
     const handleSync = () => {
       const updatedCurr = localStorage.getItem('store_currency') || 'USD';
       setCurrency(updatedCurr);
@@ -141,14 +149,22 @@ function App() {
     return () => window.removeEventListener('currencyChange', handleSync);
   }, []);
 
+  // RENDERIZADO CONDICIONAL
+  // Si hay datos de producto (estamos en single-product.php), mostramos la vista de producto
+  if (singleProductData) {
+    return (
+      <ProductSingleView data={singleProductData} />
+    );
+  }
+
+  // Por defecto (Home), mostramos la estructura completa de la página de inicio
   return (
     <> 
       <Hero />
       <About />
-      {/* 3. Pasamos la moneda como prop para usarla de Key */}
       <ProductsSection currentCurrency={currency} />
     </> 
   )
 }
 
-export default App
+export default App;
