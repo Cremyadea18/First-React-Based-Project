@@ -13,10 +13,10 @@ export const ProductSingleView = ({ data }) => {
       setActiveCurrency(newCurr);
     };
     window.addEventListener('currencyChange', handleCurrencyChange);
-    return () => window.removeEventListener('currencyChange', handleSync); // Nota: Cambié handleSync por handleCurrencyChange para consistencia
+    return () => window.removeEventListener('currencyChange', handleCurrencyChange);
   }, []);
 
-  if (!data) return <div className="product_template_container">Cargando producto...</div>;
+  if (!data) return <div style={{background: 'orange', padding: '20px'}}>Cargando producto (Data es null)...</div>;
 
   const { id, titulo, precio, descripcion, imagen, nonce, raw_price } = data;
   
@@ -35,10 +35,6 @@ export const ProductSingleView = ({ data }) => {
       });
       if (response.ok) {
         document.body.dispatchEvent(new CustomEvent('wc_fragment_refresh'));
-        if (window.jQuery) {
-            window.jQuery(document.body).trigger('wc_fragment_refresh');
-            window.jQuery(document.body).trigger('added_to_cart');
-        }
       } 
     } catch (error) {
       console.error("Error al añadir:", error);
@@ -47,50 +43,45 @@ export const ProductSingleView = ({ data }) => {
     }
   };
 
-  // LOG UBICADO CORRECTAMENTE
-  console.log("DEBUG PAYPAL:", { raw_price, currency: window.foxConfig?.currentCurrency });
+  // LOG PARA CONSOLA
+  console.log("DEBUG DATA:", data);
 
   return (
-    <div className="product_template_container">
-      <div className="product_template_container_information">
-        
-        <div className="product-image-wrapper-one animate_dos">
-          <img src={imagen || 'https://via.placeholder.com/600'} alt={titulo} className="main-product-img" />
+    <div className="product_template_container" style={{ border: '5px solid blue', padding: '10px' }}>
+      <h2 style={{ background: 'blue', color: 'white', fontSize: '12px' }}>CONTENEDOR PRINCIPAL (AZUL)</h2>
+      
+      <div className="product_template_container_information" style={{ border: '3px solid green' }}>
+        <h2 style={{ background: 'green', color: 'white', fontSize: '12px' }}>INFO WRAPPER (VERDE)</h2>
+
+        <div className="product-image-wrapper-one">
+          <img src={imagen} alt={titulo} style={{ border: '2px solid purple' }} />
         </div>
 
-        <div className="product-info-wrapper-two">
-          <h1 className="product-main-title animate_dos" style={{ color: '#00ffcc' }}>{titulo}</h1> {/* TEST COLOR */}
+        <div className="product-info-wrapper-two" style={{ background: '#f0f0f0', padding: '20px' }}>
+          <h1 style={{ color: 'red' }}>{titulo} (Título en Rojo)</h1>
           
-          <div className="product-main-price animate_dos" dangerouslySetInnerHTML={{ __html: precio }} />
-          
-          <div className="product-main-description animate_dos" dangerouslySetInnerHTML={{ __html: descripcion }} />
+          <div style={{ borderBottom: '2px dashed black', padding: '10px' }} 
+               dangerouslySetInnerHTML={{ __html: precio }} />
 
-          <div className="product-main-action animate_dos">
-            <div className="cart" style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          <div className="product-main-action" style={{ border: '4px solid yellow', padding: '15px', marginTop: '20px' }}>
+            <h2 style={{ color: 'black', fontSize: '12px' }}>SECCIÓN DE BOTONES (AMARILLO)</h2>
+            
+            <div className="cart">
               <button 
-                className={`btn-secondary ${isAdding ? 'loading' : ''}`} 
+                style={{ background: 'black', color: 'white', width: '100%', marginBottom: '10px' }}
                 onClick={handleAddToCart}
-                disabled={isAdding}
-                style={{ cursor: isAdding ? 'not-allowed' : 'pointer' }}
               >
                 {isAdding ? 'Adding...' : 'Add to cart'}
               </button>
 
-              {/* CONTENEDOR DE PRUEBA VISUAL */}
-              <div style={{ 
-                border: '3px solid #ff4444', 
-                padding: '15px', 
-                borderRadius: '10px',
-                background: '#1a1a1a',
-                minHeight: '150px' 
-              }}>
-                <h4 style={{ color: 'white', fontSize: '12px', marginBottom: '10px' }}>PayPal Container Test</h4>
+              {/* Aquí es donde debería estar PayPal */}
+              <div style={{ background: '#eee', padding: '10px' }}>
+                <p style={{ fontSize: '10px' }}>Iniciando componente PayPal...</p>
                 <PayPalCheckout 
                   amount={raw_price} 
                   currency={window.foxConfig ? window.foxConfig.currentCurrency : 'USD'} 
                 />
               </div>
-
             </div>
           </div>
         </div>
