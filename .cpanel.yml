@@ -1,0 +1,5 @@
+---
+deployment:
+  tasks:
+    - export DEPLOYPATH=/home1/juanurrego/reactapplication.online/wp-content/themes/PersonalThemeNew
+    - /bin/cp -R * $DEPLOYPATH
