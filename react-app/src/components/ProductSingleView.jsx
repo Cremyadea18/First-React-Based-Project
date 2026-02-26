@@ -71,7 +71,7 @@ export const ProductSingleView = ({ data }) => {
             
             <div className="cart">
               <button 
-                className="btn-primary"
+                className="btn-secondary"
                 onClick={handleAddToCart}
               >
                 {isAdding ? 'Adding...' : 'Add to cart'}
