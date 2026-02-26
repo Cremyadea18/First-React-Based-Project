@@ -1467,15 +1467,34 @@ justify-content: flex-start;
 
 .product-info-wrapper-two-container {
 background: white;
-padding: 20px;
+max-width: 600px;
+width: 90%;
+padding: 30px;
 border: 1px solid rgba(255, 255, 255, 0.1) !important;
 border-radius: 22px;
+}
+
+.hero_tittle_product_template {
+font-size: clamp(22px, 5vw, 30px);
+line-height: 1.7;
+font-weight: 600;
+color: #333333;
+font-family: "Inter", sans-serif;
+}
+
+
+.hero_text_product_price {
+font-size: clamp(20px, 5vw, 24px);
+line-height: 1.5;
+font-weight: 600;
+color: #333333;
+font-family: "Inter", sans-serif;
 }
 
 
 .product-main-description {
 display: inline-block;
-width: 80%;
+width: 100%;
 font-size: clamp(14px, 5vw, 16px);
 line-height: 1.7;
 font-weight: 400;
