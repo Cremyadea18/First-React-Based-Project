@@ -1,19 +1,16 @@
 import React, { useState, useEffect } from 'react'; 
+import PayPalCheckout from "./PaypalCheckout"; // Asegúrate de que coincida con el nombre del archivo
 
 export const ProductSingleView = ({ data }) => {
-  // 1. Estado para la moneda activa
   const [activeCurrency, setActiveCurrency] = useState(() => {
     return localStorage.getItem('store_currency') || 'USD';
   });
   const [isAdding, setIsAdding] = useState(false);
 
-  // 2. Escuchar el evento 'currencyChange' que dispara nuestro nuevo CurrencyMonitor
   useEffect(() => {
     const handleCurrencyChange = () => {
       const newCurr = localStorage.getItem('store_currency') || 'USD';
       setActiveCurrency(newCurr);
-      // Nota: Como CurrencyMonitor hace un window.location.reload(), 
-      // la página se refrescará y traerá los datos nuevos del servidor automáticamente.
     };
     window.addEventListener('currencyChange', handleCurrencyChange);
     return () => window.removeEventListener('currencyChange', handleCurrencyChange);
@@ -21,7 +18,7 @@ export const ProductSingleView = ({ data }) => {
 
   if (!data) return <div className="product_template_container">Cargando producto...</div>;
 
-  const { id, titulo, precio, descripcion, imagen, nonce } = data;
+  const { id, titulo, precio, descripcion, imagen, nonce, raw_price } = data;
   
   const handleAddToCart = async () => {
     setIsAdding(true); 
@@ -61,10 +58,6 @@ export const ProductSingleView = ({ data }) => {
         <div className="product-info-wrapper-two">
           <h1 className="product-main-title animate_dos">{titulo}</h1>
           
-          {/* IMPORTANTE: 'precio' aquí ya viene procesado por FOX desde el functions.php 
-            Gracias a que usamos dangerouslySetInnerHTML, respetará el símbolo (€ o $) 
-            que mande el plugin.
-          */}
           <div className="product-main-price animate_dos" dangerouslySetInnerHTML={{ __html: precio }} />
           
           <div className="product-main-description animate_dos" dangerouslySetInnerHTML={{ __html: descripcion }} />
@@ -75,10 +68,13 @@ export const ProductSingleView = ({ data }) => {
                 className={`btn-secondary ${isAdding ? 'loading' : ''}`} 
                 onClick={handleAddToCart}
                 disabled={isAdding}
-                style={{ width: '100%', padding: '15px' }}
               >
                 {isAdding ? 'Adding...' : 'Add to cart'}
               </button>
+              <PayPalCheckout 
+                amount={raw_price} 
+                currency={window.foxConfig ? window.foxConfig.currentCurrency : 'USD'} 
+              />
             </div>
           </div>
         </div>
