@@ -16,8 +16,10 @@ export const ProductSingleView = ({ data }) => {
     return () => window.removeEventListener('currencyChange', handleCurrencyChange);
   }, []);
 
+  // Estado de carga si no hay data
   if (!data) return <div className="loading-state">Cargando producto...</div>;
 
+  // Extraemos las variables de data
   const { id, titulo, precio, descripcion, imagen, nonce, raw_price } = data;
   
   const handleAddToCart = async () => {
@@ -48,14 +50,25 @@ export const ProductSingleView = ({ data }) => {
       
       <div className="product_template_container_information">
 
+        {/* Bloque de Imagen */}
         <div className="product-image-wrapper-one">
           <img src={imagen} alt={titulo} />
         </div>
 
+        {/* Bloque de Información */}
         <div className="product-info-wrapper-two">
           <h1>{titulo}</h1>
           
-          <div dangerouslySetInnerHTML={{ __html: precio }} />
+          {/* Precio: Si el símbolo sale atrás, es por la configuración de WooCommerce */}
+          <div className="product-price" dangerouslySetInnerHTML={{ __html: precio }} />
+
+          {/* Descripción del Producto: Ahora se renderiza aquí */}
+          {descripcion && (
+            <div 
+              className="product-description" 
+              dangerouslySetInnerHTML={{ __html: descripcion }} 
+            />
+          )}
 
           <div className="product-main-action">
             
@@ -75,6 +88,7 @@ export const ProductSingleView = ({ data }) => {
               </div>
             </div>
           </div>
+
         </div>
       </div>
     </div>
