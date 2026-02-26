@@ -1607,8 +1607,16 @@ display: none;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
 
-.related-products-container h2:first-of-type {
-    display: none;
+
+.related-products-container .related > h2,
+.related-products-container section.related > h2 {
+    display: none !important;
+}
+
+
+.my-custom-related-title {
+    display: block !important;
+    
 }
 
 .my-custom-related-title {
