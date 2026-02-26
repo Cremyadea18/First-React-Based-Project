@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'; 
-import PayPalCheckout from "./PaypalCheckout"; // Asegúrate de que coincida con el nombre del archivo
+import PayPalCheckout from './PaypalCheckout'; 
 
 export const ProductSingleView = ({ data }) => {
   const [activeCurrency, setActiveCurrency] = useState(() => {
