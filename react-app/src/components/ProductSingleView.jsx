@@ -60,7 +60,7 @@ export const ProductSingleView = ({ data }) => {
         <div className="product-info-wrapper-two" style={{ background: '#f0f0f0' }}>
           <h1 style={{ color: 'red' }}>{titulo} (Título en Rojo)</h1>
           
-          <div style={{ borderBottom: '2px dashed black', padding: '10px' }} 
+          <div style={{ borderBottom: '2px dashed black',}} 
                dangerouslySetInnerHTML={{ __html: precio }} />
 
           <div className="product-main-action" style={{ border: '4px solid yellow', marginTop: '20px' }}>
