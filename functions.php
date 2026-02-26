@@ -161,3 +161,11 @@ add_action('wp_head', function() {
         </script>";
     }
 });
+
+// Cambiar el número de productos relacionados a 3
+add_filter( 'woocommerce_output_related_products_args', 'custom_related_products_count', 20 );
+function custom_related_products_count( $args ) {
+    $args['posts_per_page'] = 3; 
+    $args['columns'] = 3;        
+    return $args;
+}
