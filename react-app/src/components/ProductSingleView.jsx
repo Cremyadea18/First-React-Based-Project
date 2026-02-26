@@ -16,7 +16,7 @@ export const ProductSingleView = ({ data }) => {
     return () => window.removeEventListener('currencyChange', handleCurrencyChange);
   }, []);
 
-  if (!data) return <div style={{background: 'orange', padding: '20px'}}>Cargando producto (Data es null)...</div>;
+  if (!data) return <div className="loading-state">Cargando producto...</div>;
 
   const { id, titulo, precio, descripcion, imagen, nonce, raw_price } = data;
   
@@ -43,40 +43,31 @@ export const ProductSingleView = ({ data }) => {
     }
   };
 
-  // LOG PARA CONSOLA
-  console.log("DEBUG DATA:", data);
-
   return (
-    <div className="product_template_container" style={{ border: '5px solid blue', padding: '10px' }}>
-      <h2 style={{ background: 'blue', color: 'white', fontSize: '12px' }}>CONTENEDOR PRINCIPAL (AZUL)</h2>
+    <div className="product_template_container">
       
-      <div className="product_template_container_information" style={{ border: '3px solid green' }}>
-        <h2 style={{ background: 'green', color: 'white', fontSize: '12px' }}>INFO WRAPPER (VERDE)</h2>
+      <div className="product_template_container_information">
 
         <div className="product-image-wrapper-one">
-          <img src={imagen} alt={titulo} style={{ border: '2px solid purple' }} />
+          <img src={imagen} alt={titulo} />
         </div>
 
-        <div className="product-info-wrapper-two" style={{ background: '#f0f0f0' }}>
-          <h1 style={{ color: 'red' }}>{titulo} (Título en Rojo)</h1>
+        <div className="product-info-wrapper-two">
+          <h1>{titulo}</h1>
           
-          <div style={{ borderBottom: '2px dashed black',}} 
-               dangerouslySetInnerHTML={{ __html: precio }} />
+          <div dangerouslySetInnerHTML={{ __html: precio }} />
 
-          <div className="product-main-action" style={{ border: '4px solid yellow', marginTop: '20px' }}>
-            <h2 style={{ color: 'black', fontSize: '12px' }}>SECCIÓN DE BOTONES (AMARILLO)</h2>
+          <div className="product-main-action">
             
             <div className="cart">
               <button 
-                style={{ background: 'black', width: '100%', marginBottom: '10px' }}
+                className="add-to-cart-button"
                 onClick={handleAddToCart}
               >
                 {isAdding ? 'Adding...' : 'Add to cart'}
               </button>
 
-              {/* Aquí es donde debería estar PayPal */}
-              <div style={{ background: '#eee', padding: '10px' }}>
-                <p style={{ fontSize: '10px' }}>Iniciando componente PayPal...</p>
+              <div className="paypal-checkout-container">
                 <PayPalCheckout 
                   amount={raw_price} 
                   currency={window.foxConfig ? window.foxConfig.currentCurrency : 'USD'} 
