@@ -63,7 +63,7 @@ export const ProductSingleView = ({ data }) => {
           <div style={{ borderBottom: '2px dashed black', padding: '10px' }} 
                dangerouslySetInnerHTML={{ __html: precio }} />
 
-          <div className="product-main-action" style={{ border: '4px solid yellow', padding: '15px', marginTop: '20px' }}>
+          <div className="product-main-action" style={{ border: '4px solid yellow', marginTop: '20px' }}>
             <h2 style={{ color: 'black', fontSize: '12px' }}>SECCIÓN DE BOTONES (AMARILLO)</h2>
             
             <div className="cart">
