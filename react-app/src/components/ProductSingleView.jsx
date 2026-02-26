@@ -46,7 +46,7 @@ export const ProductSingleView = ({ data }) => {
       setTimeout(() => setIsAdding(false), 1000);
     }
   };
-
+console.log("DEBUG PAYPAL:", { raw_price, currency: window.foxConfig?.currentCurrency });
   return (
     <div className="product_template_container">
       <div className="product_template_container_information">
