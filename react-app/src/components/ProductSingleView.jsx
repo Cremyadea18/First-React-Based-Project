@@ -57,7 +57,7 @@ export const ProductSingleView = ({ data }) => {
           <img src={imagen} alt={titulo} style={{ border: '2px solid purple' }} />
         </div>
 
-        <div className="product-info-wrapper-two" style={{ background: '#f0f0f0', padding: '20px' }}>
+        <div className="product-info-wrapper-two" style={{ background: '#f0f0f0' }}>
           <h1 style={{ color: 'red' }}>{titulo} (Título en Rojo)</h1>
           
           <div style={{ borderBottom: '2px dashed black', padding: '10px' }} 
