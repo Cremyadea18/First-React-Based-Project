@@ -58,11 +58,11 @@ export const ProductSingleView = ({ data }) => {
         {/* Bloque de Información */}
         <div className="product-info-wrapper-two">
           <div className='product-info-wrapper-two-container'>
-           <h1 className='hero_tittle_product_template'>{titulo}</h1>
-          <div className="hero_text_product_price " dangerouslySetInnerHTML={{ __html: precio }} />
+           <h1 className='hero_tittle_product_template animate'>{titulo}</h1>
+          <div className="hero_text_product_price  animate" dangerouslySetInnerHTML={{ __html: precio }} />
           {descripcion && (
             <div 
-              className="product-main-description" 
+              className="product-main-description animate" 
               dangerouslySetInnerHTML={{ __html: descripcion }} 
             />
           )}
@@ -71,7 +71,7 @@ export const ProductSingleView = ({ data }) => {
             
             <div className="cart">
               <button 
-                className="add-to-cart-button"
+                className="btn-primary"
                 onClick={handleAddToCart}
               >
                 {isAdding ? 'Adding...' : 'Add to cart'}
