@@ -25,7 +25,7 @@ while ( have_posts() ) : the_post();
              <p style="text-align:center; color: white;">Cargando experiencia de producto...</p>
         </div>
 
-        <div class="related-products-container" style="margin-top: 80px; padding: 40px;">
+        <div class="related-products-container">
             <?php woocommerce_output_related_products(); ?>
         </div>
     </div>
