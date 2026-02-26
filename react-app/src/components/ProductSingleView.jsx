@@ -13,7 +13,7 @@ export const ProductSingleView = ({ data }) => {
       setActiveCurrency(newCurr);
     };
     window.addEventListener('currencyChange', handleCurrencyChange);
-    return () => window.removeEventListener('currencyChange', handleCurrencyChange);
+    return () => window.removeEventListener('currencyChange', handleSync); // Nota: Cambié handleSync por handleCurrencyChange para consistencia
   }, []);
 
   if (!data) return <div className="product_template_container">Cargando producto...</div>;
@@ -46,7 +46,10 @@ export const ProductSingleView = ({ data }) => {
       setTimeout(() => setIsAdding(false), 1000);
     }
   };
-console.log("DEBUG PAYPAL:", { raw_price, currency: window.foxConfig?.currentCurrency });
+
+  // LOG UBICADO CORRECTAMENTE
+  console.log("DEBUG PAYPAL:", { raw_price, currency: window.foxConfig?.currentCurrency });
+
   return (
     <div className="product_template_container">
       <div className="product_template_container_information">
@@ -56,25 +59,38 @@ console.log("DEBUG PAYPAL:", { raw_price, currency: window.foxConfig?.currentCur
         </div>
 
         <div className="product-info-wrapper-two">
-          <h1 className="product-main-title animate_dos">{titulo}</h1>
+          <h1 className="product-main-title animate_dos" style={{ color: '#00ffcc' }}>{titulo}</h1> {/* TEST COLOR */}
           
           <div className="product-main-price animate_dos" dangerouslySetInnerHTML={{ __html: precio }} />
           
           <div className="product-main-description animate_dos" dangerouslySetInnerHTML={{ __html: descripcion }} />
 
           <div className="product-main-action animate_dos">
-            <div className="cart">
+            <div className="cart" style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
               <button 
                 className={`btn-secondary ${isAdding ? 'loading' : ''}`} 
                 onClick={handleAddToCart}
                 disabled={isAdding}
+                style={{ cursor: isAdding ? 'not-allowed' : 'pointer' }}
               >
                 {isAdding ? 'Adding...' : 'Add to cart'}
               </button>
-              <PayPalCheckout 
-                amount={raw_price} 
-                currency={window.foxConfig ? window.foxConfig.currentCurrency : 'USD'} 
-              />
+
+              {/* CONTENEDOR DE PRUEBA VISUAL */}
+              <div style={{ 
+                border: '3px solid #ff4444', 
+                padding: '15px', 
+                borderRadius: '10px',
+                background: '#1a1a1a',
+                minHeight: '150px' 
+              }}>
+                <h4 style={{ color: 'white', fontSize: '12px', marginBottom: '10px' }}>PayPal Container Test</h4>
+                <PayPalCheckout 
+                  amount={raw_price} 
+                  currency={window.foxConfig ? window.foxConfig.currentCurrency : 'USD'} 
+                />
+              </div>
+
             </div>
           </div>
         </div>
