@@ -177,7 +177,7 @@ add_action('rest_api_init', function () {
 
 function handle_gemini_request($request) {
    
-    $api_key = 'AIzaSyB9g4H_B2xct8TjkLZStlESigLHsL_OZ7E'; 
+    $api_key = 'AIzaSyC4CLmUJsvnKmi8uQgNTrJ4IBvggFmWA-M'; 
     
    
     $url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=" . $api_key;
