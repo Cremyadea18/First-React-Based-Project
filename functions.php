@@ -160,30 +160,53 @@ add_action('wp_head', function() {
     }
 });
 
-function handle_gemini_request($request) {
-    $api_key = 'AIzaSyAHy6Qa3Rd0Ni9RkeVWl8LE4HcRLvWf8R0'; // Asegúrate de que no tenga espacios antes ni después
-    $url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" . $api_key; 
-    // Nota: Si gemini-3.1-flash te falla, prueba con 1.5-flash que es el estándar estable.
+/**
+ * INTEGRACIÓN DE INTELIGENCIA ARTIFICIAL GEMINI CON WORDPRESS
+ * Este código registra una ruta segura para que React pueda hablar con la IA.
+ */
 
+
+add_action('rest_api_init', function () {
+    register_rest_route('ai-store/v1', '/ask-gemini', [
+        'methods' => 'POST',
+        'callback' => 'handle_gemini_request',
+        'permission_callback' => '__return_true', 
+    ]);
+});
+
+
+function handle_gemini_request($request) {
+   
+    $api_key = 'AIzaSyAHy6Qa3Rd0Ni9RkeVWl8LE4HcRLvWf8R0'; 
+    
+   
+    $url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" . $api_key;
+
+    
     $body = [
         "contents" => [[
             "parts" => [["text" => "Hola, responde solo con la palabra TEST si me escuchas."]]
         ]]
     ];
 
+   
     $response = wp_remote_post($url, [
         'headers' => ['Content-Type' => 'application/json'],
         'body'    => json_encode($body),
         'timeout' => 30,
     ]);
 
-    // Verificamos si hubo error de conexión (Internet, DNS, etc.)
+   
     if (is_wp_error($response)) {
-        return rest_ensure_response(['error' => $response->get_error_message()]);
+        return rest_ensure_response([
+            'status' => 'error',
+            'message' => $response->get_error_message()
+        ]);
     }
 
+    
     $data = json_decode(wp_remote_retrieve_body($response), true);
     
-    // Devolvemos TODO lo que diga Google para ver el error real si falla
+   
     return rest_ensure_response($data);
 }
