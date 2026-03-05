@@ -118,7 +118,7 @@ add_filter('woocommerce_rest_prepare_product_object', function($response, $produ
 
     $final_price = $raw_price * $rate;
 
-    // Formateo para React
+    
     $symbol = get_woocommerce_currency_symbol($currency);
     $formatted_value = number_format($final_price, 2, '.', ',');
     
@@ -137,12 +137,10 @@ add_filter('woocommerce_rest_prepare_product_object', function($response, $produ
     $response->set_data($data);
     return $response;
 }, 9999, 3);
-/**
- * 7. PASAR LA MONEDA ACTUAL DE FOX A REACT AUTOMÁTICAMENTE
- */
+
 add_action('wp_head', function() {
     global $WOOCS;
-    // Intentamos obtener la moneda de la global o de la instancia directa
+    
     $current = '';
     if (isset($WOOCS) && !empty($WOOCS->current_currency)) {
         $current = $WOOCS->current_currency;
@@ -162,3 +160,60 @@ add_action('wp_head', function() {
     }
 });
 
+// 1. Crear el Endpoint en la API de WordPress
+add_action('rest_api_init', function () {
+    register_rest_route('ai-store/v1', '/ask-gemini', [
+        'methods' => 'POST',
+        'callback' => 'handle_gemini_request',
+        'permission_callback' => '__return_true', 
+    ]);
+});
+
+// 2. La función que "habla" con Google
+function handle_gemini_request($request) {
+    $params = $request->get_json_params();
+    $user_query = $params['prompt'] ?? '';
+
+    if (empty($user_query)) {
+        return new WP_Error('no_prompt', 'Por favor, escribe algo.', ['status' => 400]);
+    }
+
+    $api_key = 'AIzaSyAHy6Qa3Rd0Ni9RkeVWl8LE4HcRLvWf8R0'; 
+    
+    
+    $url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" . $api_key;
+
+    
+    $body = [
+        "contents" => [
+            [
+                "role" => "user",
+                "parts" => [
+                    ["text" => "Eres un asistente de moda experto para mi tienda online. Responde de forma elegante y breve a: " . $user_query]
+                ]
+            ]
+        ],
+        "generationConfig" => [
+            "temperature" => 0.7,
+            "maxOutputTokens" => 200,
+        ]
+    ];
+
+   
+    $response = wp_remote_post($url, [
+        'headers' => ['Content-Type' => 'application/json'],
+        'body'    => json_encode($body),
+        'timeout' => 30,
+    ]);
+
+    if (is_wp_error($response)) {
+        return new WP_Error('api_error', 'Error conectando con la IA.', ['status' => 500]);
+    }
+
+    $data = json_decode(wp_remote_retrieve_body($response), true);
+
+  
+    $ai_text = $data['candidates'][0]['content']['parts'][0]['text'] ?? 'No pude obtener una respuesta.';
+
+    return rest_ensure_response(['reply' => $ai_text]);
+}
