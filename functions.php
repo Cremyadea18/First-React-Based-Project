@@ -185,7 +185,7 @@ function handle_gemini_request($request) {
     
     $body = [
         "contents" => [[
-            "parts" => [["text" => "Hola, responde solo con la palabra TEST si me escuchas."]]
+            "parts" => [["text" => "Hola"]]
         ]]
     ];
 
