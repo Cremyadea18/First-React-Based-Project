@@ -180,7 +180,7 @@ function handle_gemini_request($request) {
     $api_key = 'AIzaSyAHy6Qa3Rd0Ni9RkeVWl8LE4HcRLvWf8R0'; 
     
    
-    $url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" . $api_key;
+    $url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash:generateContent?key=" . $api_key;
 
     
     $body = [
