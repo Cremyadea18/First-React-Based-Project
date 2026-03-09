@@ -244,3 +244,10 @@ function handle_gemini_request($request) {
         'message' => $reply,
     ]);
 }
+
+// Agrega esto TEMPORALMENTE en functions.php para ver el nonce
+add_action('wp_head', function() {
+    if (is_user_logged_in()) {
+        echo '<script>console.log("Nonce:", "' . wp_create_nonce('wp_rest') . '")</script>';
+    }
+});
