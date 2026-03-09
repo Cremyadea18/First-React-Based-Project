@@ -175,38 +175,72 @@ add_action('rest_api_init', function () {
 });
 
 
+// 1. Registrar el endpoint REST
+add_action('rest_api_init', function () {
+    register_rest_route('mi-tema/v1', '/gemini', [
+        'methods'             => 'POST',
+        'callback'            => 'handle_gemini_request',
+        'permission_callback' => '__return_true', // público, pero con nonce abajo
+    ]);
+});
+
+// 2. Función principal corregida
 function handle_gemini_request($request) {
-   
-    $api_key = 'AIzaSyC4CLmUJsvnKmi8uQgNTrJ4IBvggFmWA-M'; 
-    
-   
+
+    // ✅ API key desde constante segura (definida en wp-config.php)
+    $api_key = defined('GEMINI_API_KEY') ? GEMINI_API_KEY : '';
+    if (empty($api_key)) {
+        return new WP_Error('no_api_key', 'API key no configurada', ['status' => 500]);
+    }
+
+    // ✅ Leer y validar el mensaje del usuario
+    $user_message = sanitize_text_field($request->get_param('message'));
+    if (empty($user_message)) {
+        return new WP_Error('empty_message', 'El mensaje no puede estar vacío', ['status' => 400]);
+    }
+
+    // ✅ Verificar nonce para seguridad (evita requests externos abusivos)
+    $nonce = $request->get_header('X-WP-Nonce');
+    if (!wp_verify_nonce($nonce, 'wp_rest')) {
+        return new WP_Error('invalid_nonce', 'No autorizado', ['status' => 403]);
+    }
+
+    // URL del modelo
     $url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=" . $api_key;
 
-    
+    // Body con el mensaje dinámico
     $body = [
         "contents" => [[
-            "parts" => [["text" => "Hola"]]
+            "parts" => [["text" => $user_message]]
         ]]
     ];
 
-   
+    // Llamada a la API
     $response = wp_remote_post($url, [
         'headers' => ['Content-Type' => 'application/json'],
         'body'    => json_encode($body),
         'timeout' => 30,
     ]);
 
-   
+    // ✅ Error de red/WordPress
     if (is_wp_error($response)) {
-        return rest_ensure_response([
-            'status' => 'error',
-            'message' => $response->get_error_message()
-        ]);
+        return new WP_Error('request_failed', $response->get_error_message(), ['status' => 500]);
     }
 
-    
+    $status_code = wp_remote_retrieve_response_code($response);
     $data = json_decode(wp_remote_retrieve_body($response), true);
-    
-   
-    return rest_ensure_response($data);
+
+    // ✅ Error de la API de Gemini
+    if ($status_code !== 200 || isset($data['error'])) {
+        $error_msg = $data['error']['message'] ?? 'Error desconocido de Gemini';
+        return new WP_Error('gemini_error', $error_msg, ['status' => $status_code]);
+    }
+
+    // ✅ Extraer solo el texto de la respuesta
+    $reply = $data['candidates'][0]['content']['parts'][0]['text'] ?? 'Sin respuesta';
+
+    return rest_ensure_response([
+        'status'  => 'ok',
+        'message' => $reply,
+    ]);
 }
