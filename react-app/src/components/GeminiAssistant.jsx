@@ -60,7 +60,7 @@ const GeminiAssistant = () => {
           disabled={isLoading} 
           style={glassButtonStyle}
         >
-          {isLoading ? '...' : 'Enviar'}
+          {isLoading ? '...' : 'Send'}
         </button>
       </div>
 
