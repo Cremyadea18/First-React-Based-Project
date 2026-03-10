@@ -7,34 +7,27 @@ const GeminiAssistant = () => {
 
   const handleAskGroq = async () => {
     if (!userQuery.trim()) return;
-
     setIsLoading(true);
     setAiResponse('');
 
     try {
       const settings = window.canabbisSettings;
-      const nonce = settings?.nonce || '';
-      const baseUrl = settings?.restUrl || '/wp-json/';
-      const apiUrl = `${baseUrl}mi-tema/v1/gemini`;
-
-      const response = await fetch(apiUrl, {
+      const response = await fetch(`${settings?.restUrl || '/wp-json/'}mi-tema/v1/gemini`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-WP-Nonce': nonce,
+          'X-WP-Nonce': settings?.nonce || '',
         },
         body: JSON.stringify({ message: userQuery }),
       });
 
       const data = await response.json();
-
       if (data.status === 'ok') {
         setAiResponse(data.message);
       } else {
-        setAiResponse(data.message || 'Hubo un error al procesar tu consulta.');
+        setAiResponse(data.message || 'Hubo un error en la consulta.');
       }
     } catch (error) {
-      console.error('Error:', error);
       setAiResponse('Error de conexión con el servidor.');
     } finally {
       setIsLoading(false);
@@ -42,29 +35,29 @@ const GeminiAssistant = () => {
   };
 
   return (
-    <section style={glassContainerStyle}>
+    <section style={singleGlassBoxStyle}>
       <h3 style={titleStyle}>✨ Consulta a nuestra IA</h3>
       
-      <div style={inputContainerStyle}>
+      <div style={actionRowStyle}>
         <input
           type="text"
-          placeholder="Escribe tu duda sobre bienestar..."
+          placeholder="¿En qué podemos ayudarte hoy?"
           value={userQuery}
           onChange={(e) => setUserQuery(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && handleAskGroq()}
-          style={glassInputStyle}
+          style={minimalInputStyle}
         />
         <button 
           onClick={handleAskGroq} 
           disabled={isLoading} 
-          style={isLoading ? { ...buttonStyle, opacity: 0.7 } : buttonStyle}
+          style={isLoading ? { ...buttonStyle, opacity: 0.5 } : buttonStyle}
         >
-          {isLoading ? '...' : 'Enviar'}
+          {isLoading ? '...' : 'Consultar'}
         </button>
       </div>
 
       {aiResponse && (
-        <div style={responseBoxStyle}>
+        <div style={dividerStyle}>
           <p style={responseTextStyle}>{aiResponse}</p>
         </div>
       )}
@@ -72,78 +65,77 @@ const GeminiAssistant = () => {
   );
 };
 
-// --- ESTILOS GLASSMORFISMO ---
+// --- ESTILOS DE CAJA ÚNICA (GLASSMORFISM) ---
 
-const glassContainerStyle = {
-  // Configuración de dimensiones pedida
+const singleGlassBoxStyle = {
   width: '100%',
   maxWidth: '800px',
   minWidth: '320px',
   margin: '40px auto',
+  padding: '35px',
+  boxSizing: 'border-box',
   
-  // Efecto Cristal
-  background: 'rgba(255, 255, 255, 0.15)', // Fondo semi-transparente
-  backdropFilter: 'blur(10px)',            // Desenfoque de fondo
-  WebkitBackdropFilter: 'blur(10px)',      // Soporte para Safari
-  borderRadius: '20px',
-  border: '1px solid rgba(255, 255, 255, 0.3)', // Borde blanco suave
-  boxShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.15)',
-  padding: '30px',
-  boxSizing: 'border-box'
+  // Efecto Cristal Principal
+  background: 'rgba(255, 255, 255, 0.12)', 
+  backdropFilter: 'blur(12px)',
+  WebkitBackdropFilter: 'blur(12px)',
+  borderRadius: '24px',
+  border: '1px solid rgba(255, 255, 255, 0.3)',
+  boxShadow: '0 10px 40px rgba(0, 0, 0, 0.08)',
 };
 
 const titleStyle = {
   color: '#2e7d32', 
   marginTop: 0, 
-  marginBottom: '15px',
-  fontWeight: '600',
-  textAlign: 'center'
+  marginBottom: '25px',
+  fontSize: '22px',
+  textAlign: 'center',
+  fontWeight: '600'
 };
 
-const inputContainerStyle = {
+const actionRowStyle = {
   display: 'flex',
-  gap: '10px',
-  alignItems: 'center'
+  gap: '15px',
+  background: 'rgba(0, 0, 0, 0.03)', // Un toque sutil de profundidad
+  padding: '8px',
+  borderRadius: '16px',
+  border: '1px solid rgba(255, 255, 255, 0.2)',
 };
 
-const glassInputStyle = {
+const minimalInputStyle = {
   flex: 1,
-  background: 'rgba(255, 255, 255, 0.2)', // Input traslúcido
-  border: '1px solid rgba(255, 255, 255, 0.4)',
-  borderRadius: '12px',
-  padding: '12px 18px',
+  background: 'transparent',
+  border: 'none',
+  padding: '12px 15px',
   color: '#333',
   fontSize: '16px',
   outline: 'none',
-  backdropFilter: 'blur(5px)',
 };
 
 const buttonStyle = {
   backgroundColor: '#2e7d32',
   color: 'white',
   border: 'none',
-  padding: '12px 20px',
+  padding: '12px 25px',
   borderRadius: '12px',
   fontWeight: 'bold',
   cursor: 'pointer',
-  transition: 'all 0.3s ease',
-  boxShadow: '0 4px 15px rgba(46, 125, 50, 0.2)',
+  transition: 'transform 0.2s ease',
 };
 
-const responseBoxStyle = {
-  marginTop: '25px',
-  padding: '15px 20px',
-  backgroundColor: 'rgba(255, 255, 255, 0.25)', // Caja de respuesta traslúcida
-  borderRadius: '15px',
-  border: '1px solid rgba(255, 255, 255, 0.2)',
+const dividerStyle = {
+  marginTop: '30px',
+  paddingTop: '25px',
+  borderTop: '1px solid rgba(255, 255, 255, 0.3)', // Línea de cristal sutil
 };
 
 const responseTextStyle = {
   margin: 0,
-  lineHeight: '1.6',
+  lineHeight: '1.7',
   color: '#1b5e20',
-  fontSize: '15px',
-  whiteSpace: 'pre-wrap'
+  fontSize: '16px',
+  whiteSpace: 'pre-wrap',
+  textAlign: 'left'
 };
 
 export default GeminiAssistant;
