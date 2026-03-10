@@ -12,8 +12,7 @@ const GeminiAssistant = () => {
     setAiResponse('');
 
     try {
-      // 1. Extraemos los datos dinámicos inyectados por functions.php
-      // En JS no necesitamos el "(window as any)"
+      
       const settings = window.canabbisSettings;
       const nonce = settings?.nonce || '';
       const baseUrl = settings?.restUrl || '/wp-json/';
@@ -34,7 +33,7 @@ const GeminiAssistant = () => {
 
       const data = await response.json();
 
-      // 3. Procesamos la respuesta
+     
       if (data.status === 'ok') {
         setAiResponse(data.message);
       } else {
