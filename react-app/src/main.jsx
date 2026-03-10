@@ -7,7 +7,7 @@ import './index.css'
 
 
 import { ProductSingleView } from './components/ProductSingleView';
-import GeminiAssistant from './components/GeminiAssistant'
+import GeminiAssistant from './components/GeminiAssistant';
 const initRoots = () => {
   console.log("🚀 React: Iniciando búsqueda de puntos de montaje...");
 
