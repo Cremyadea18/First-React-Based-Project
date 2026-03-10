@@ -247,7 +247,14 @@ function handle_gemini_request($request) {
 
 // Agrega esto TEMPORALMENTE en functions.php para ver el nonce
 add_action('wp_head', function() {
-    if (is_user_logged_in()) {
-        echo '<script>console.log("Nonce:", "' . wp_create_nonce('wp_rest') . '")</script>';
-    }
+    // Creamos un objeto global en JS llamado 'canabbisSettings'
+    // Quitamos el if (is_user_logged_in) para que funcione para todos los visitantes
+    ?>
+    <script type="text/javascript">
+        window.canabbisSettings = {
+            nonce: '<?php echo wp_create_nonce("wp_rest"); ?>',
+            restUrl: '<?php echo esc_url_raw(rest_url()); ?>'
+        };
+    </script>
+    <?php
 });
