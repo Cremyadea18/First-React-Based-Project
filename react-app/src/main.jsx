@@ -1,13 +1,10 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-
-
-import App, { Header, Footer, Hero, About, ProductsSection } from './App.jsx' 
+import App, { Header, Footer, Hero, About, ProductsSection } from './App' 
 import './index.css'
+import { ProductSingleView } from './components/ProductSingleView'
+import GeminiAssistant from './components/GeminiAssistant' // SIN .js NI .tsx
 
-
-import { ProductSingleView } from './components/ProductSingleView.jsx';
-import GeminiAssistant from './components/GeminiAssistant.js';
 const initRoots = () => {
   console.log("🚀 React: Iniciando búsqueda de puntos de montaje...");
 

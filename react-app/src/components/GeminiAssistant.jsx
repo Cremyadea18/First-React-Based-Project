@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-const GeminiAssistant: React.FC = () => {
+const GeminiAssistant = () => {
   const [userQuery, setUserQuery] = useState('');
   const [aiResponse, setAiResponse] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -13,19 +13,19 @@ const GeminiAssistant: React.FC = () => {
 
     try {
       // 1. Extraemos los datos dinámicos inyectados por functions.php
-      const settings = (window as any).canabbisSettings;
+      // En JS no necesitamos el "(window as any)"
+      const settings = window.canabbisSettings;
       const nonce = settings?.nonce || '';
       const baseUrl = settings?.restUrl || '/wp-json/';
 
-      // 2. Construimos la ruta hacia tu endpoint específico
-      // Asegúrate de que 'mi-tema/v1/gemini' coincida con tu register_rest_route en PHP
+      // 2. Construimos la ruta hacia tu endpoint
       const apiUrl = `${baseUrl}mi-tema/v1/gemini`;
 
       const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-WP-Nonce': nonce, // Enviamos el nonce de seguridad
+          'X-WP-Nonce': nonce,
         },
         body: JSON.stringify({
           message: userQuery,
@@ -34,12 +34,11 @@ const GeminiAssistant: React.FC = () => {
 
       const data = await response.json();
 
-      // 3. Procesamos la respuesta del backend
+      // 3. Procesamos la respuesta
       if (data.status === 'ok') {
         setAiResponse(data.message);
       } else {
-        // En caso de que WordPress devuelva un error (ej. Gemini falló o API Key inválida)
-        setAiResponse(data.message || 'Sorry has been a problem with your search.');
+        setAiResponse(data.message || 'Lo sentimos, hubo un problema con la búsqueda.');
       }
     } catch (error) {
       console.error('Error en la comunicación con WordPress:', error);
@@ -86,8 +85,8 @@ const GeminiAssistant: React.FC = () => {
   );
 };
 
-
-const containerStyle: React.CSSProperties = {
+// Estilos limpios sin tipos de TypeScript
+const containerStyle = {
   backgroundColor: '#ffffff',
   padding: '24px',
   borderRadius: '16px',
@@ -97,13 +96,13 @@ const containerStyle: React.CSSProperties = {
   maxWidth: '600px',
 };
 
-const inputContainerStyle: React.CSSProperties = {
+const inputContainerStyle = {
   display: 'flex',
   gap: '12px',
   marginTop: '16px',
 };
 
-const inputStyle: React.CSSProperties = {
+const inputStyle = {
   flex: 1,
   padding: '12px 16px',
   borderRadius: '8px',
@@ -112,7 +111,7 @@ const inputStyle: React.CSSProperties = {
   outline: 'none',
 };
 
-const buttonStyle: React.CSSProperties = {
+const buttonStyle = {
   backgroundColor: '#2e7d32',
   color: 'white',
   border: 'none',
@@ -123,7 +122,7 @@ const buttonStyle: React.CSSProperties = {
   transition: 'background 0.2s',
 };
 
-const responseBoxStyle: React.CSSProperties = {
+const responseBoxStyle = {
   marginTop: '20px',
   padding: '16px',
   backgroundColor: '#f1f8e9',
