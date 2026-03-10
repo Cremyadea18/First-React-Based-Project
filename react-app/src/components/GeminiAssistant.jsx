@@ -49,7 +49,7 @@ const GeminiAssistant = () => {
       <div style={actionRowStyle}>
         <input
           type="text"
-          placeholder="ASK ANYTHING!"
+          placeholder="Ask Anything..."
           value={userQuery}
           onChange={(e) => setUserQuery(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && handleAskGroq()}
@@ -79,7 +79,7 @@ const cardBaseStyle = {
   width: '100%',
   maxWidth: '800px', 
   minWidth: '320px',
-  height: '400px',
+  height: '180px',
   margin: '40px auto',
   padding: '25px',
   background: '#121212',
