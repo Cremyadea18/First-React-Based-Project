@@ -49,7 +49,7 @@ const GeminiAssistant = () => {
       <div style={actionRowStyle}>
         <input
           type="text"
-          placeholder="¿Qué deseas consultar hoy?"
+          placeholder="ASK ANYTHING!"
           value={userQuery}
           onChange={(e) => setUserQuery(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && handleAskGroq()}
@@ -73,12 +73,13 @@ const GeminiAssistant = () => {
   );
 };
 
-// --- ESTILOS INSPIRADOS EN PRODUCT-CARD ---
+
 
 const cardBaseStyle = {
   width: '100%',
-  maxWidth: '800px', // Mantenemos tu ancho deseado
+  maxWidth: '800px', 
   minWidth: '320px',
+  height: '400px',
   margin: '40px auto',
   padding: '25px',
   background: '#121212',
