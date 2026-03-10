@@ -6,8 +6,8 @@ import App, { Header, Footer, Hero, About, ProductsSection } from './App.jsx'
 import './index.css'
 
 
-import { ProductSingleView } from './components/ProductSingleView';
-import GeminiAssistant from './components/GeminiAssistant';
+import { ProductSingleView } from './components/ProductSingleView.jsx';
+import GeminiAssistant from './components/GeminiAssistant.js';
 const initRoots = () => {
   console.log("🚀 React: Iniciando búsqueda de puntos de montaje...");
 
