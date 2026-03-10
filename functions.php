@@ -162,53 +162,44 @@ add_action('wp_head', function() {
 
 /**
  * INTEGRACIÓN DE INTELIGENCIA ARTIFICIAL GEMINI CON WORDPRESS
- * Este código registra una ruta segura para que React pueda hablar con la IA.
  */
 
-
-add_action('rest_api_init', function () {
-    register_rest_route('ai-store/v1', '/ask-gemini', [
-        'methods' => 'POST',
-        'callback' => 'handle_gemini_request',
-        'permission_callback' => '__return_true', 
-    ]);
-});
-
-
-// 1. Registrar el endpoint REST
+// 1. Registrar el endpoint REST (Solo uno, para evitar conflictos)
 add_action('rest_api_init', function () {
     register_rest_route('mi-tema/v1', '/gemini', [
         'methods'             => 'POST',
         'callback'            => 'handle_gemini_request',
-        'permission_callback' => '__return_true', // público, pero con nonce abajo
+        'permission_callback' => '__return_true', 
     ]);
 });
 
 // 2. Función principal corregida
 function handle_gemini_request($request) {
 
-    // ✅ API key desde constante segura (definida en wp-config.php)
-    $api_key = defined('GEMINI_API_KEY') ? GEMINI_API_KEY : '';
-    if (empty($api_key)) {
-        return new WP_Error('no_api_key', 'API key no configurada', ['status' => 500]);
+    // ✅ API key: Intenta sacarla de wp-config.php o ponla aquí para probar si falla
+    $api_key = defined('GEMINI_API_KEY') ? GEMINI_API_KEY : 'TU_NUEVA_API_KEY_AQUI'; 
+    
+    if (empty($api_key) || $api_key === 'TU_NUEVA_API_KEY_AQUI') {
+        return new WP_Error('no_api_key', 'API key no configurada en el servidor', ['status' => 500]);
     }
 
-    // ✅ Leer y validar el mensaje del usuario
-    $user_message = sanitize_text_field($request->get_param('message'));
+    // ✅ Leer y validar el mensaje
+    $params = $request->get_json_params();
+    $user_message = sanitize_text_field($params['message'] ?? '');
+    
     if (empty($user_message)) {
-        return new WP_Error('empty_message', 'El mensaje no puede estar vacío', ['status' => 400]);
+        return new WP_Error('empty_message', 'El mensaje está vacío', ['status' => 400]);
     }
 
-    // ✅ Verificar nonce para seguridad (evita requests externos abusivos)
+    // ✅ Verificar nonce (Seguridad)
     $nonce = $request->get_header('X-WP-Nonce');
     if (!wp_verify_nonce($nonce, 'wp_rest')) {
-        return new WP_Error('invalid_nonce', 'No autorizado', ['status' => 403]);
+        return new WP_Error('invalid_nonce', 'Sesión expirada o no autorizada', ['status' => 403]);
     }
 
-    // URL del modelo
-    $url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" . $api_key;
+    // ✅ URL Corregida: Usamos v1 y el modelo estable
+    $url = "https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=" . $api_key;
 
-    // Body con el mensaje dinámico
     $body = [
         "contents" => [[
             "parts" => [["text" => $user_message]]
@@ -219,10 +210,9 @@ function handle_gemini_request($request) {
     $response = wp_remote_post($url, [
         'headers' => ['Content-Type' => 'application/json'],
         'body'    => json_encode($body),
-        'timeout' => 30,
+        'timeout' => 45, // Un poco más de tiempo para IA
     ]);
 
-    // ✅ Error de red/WordPress
     if (is_wp_error($response)) {
         return new WP_Error('request_failed', $response->get_error_message(), ['status' => 500]);
     }
@@ -230,14 +220,14 @@ function handle_gemini_request($request) {
     $status_code = wp_remote_retrieve_response_code($response);
     $data = json_decode(wp_remote_retrieve_body($response), true);
 
-    // ✅ Error de la API de Gemini
-    if ($status_code !== 200 || isset($data['error'])) {
-        $error_msg = $data['error']['message'] ?? 'Error desconocido de Gemini';
-        return new WP_Error('gemini_error', $error_msg, ['status' => $status_code]);
+    // ✅ Manejo de errores de cuota o modelo
+    if ($status_code !== 200) {
+        $error_msg = $data['error']['message'] ?? 'Error desconocido';
+        return new WP_Error('gemini_error', "Error de Google: " . $error_msg, ['status' => $status_code]);
     }
 
-    // ✅ Extraer solo el texto de la respuesta
-    $reply = $data['candidates'][0]['content']['parts'][0]['text'] ?? 'Sin respuesta';
+    // ✅ Extraer respuesta
+    $reply = $data['candidates'][0]['content']['parts'][0]['text'] ?? 'No recibí respuesta de la IA.';
 
     return rest_ensure_response([
         'status'  => 'ok',
@@ -245,10 +235,8 @@ function handle_gemini_request($request) {
     ]);
 }
 
-// Agrega esto TEMPORALMENTE en functions.php para ver el nonce
+// 3. Inyectar configuraciones necesarias para React
 add_action('wp_head', function() {
-    // Creamos un objeto global en JS llamado 'canabbisSettings'
-    // Quitamos el if (is_user_logged_in) para que funcione para todos los visitantes
     ?>
     <script type="text/javascript">
         window.canabbisSettings = {
