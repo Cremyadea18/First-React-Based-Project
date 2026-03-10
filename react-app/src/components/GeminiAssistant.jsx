@@ -5,19 +5,16 @@ const GeminiAssistant = () => {
   const [aiResponse, setAiResponse] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleAskGemini = async () => {
+  const handleAskGroq = async () => {
     if (!userQuery.trim()) return;
 
     setIsLoading(true);
     setAiResponse('');
 
     try {
-      
       const settings = window.canabbisSettings;
       const nonce = settings?.nonce || '';
       const baseUrl = settings?.restUrl || '/wp-json/';
-
-      // 2. Construimos la ruta hacia tu endpoint
       const apiUrl = `${baseUrl}mi-tema/v1/gemini`;
 
       const response = await fetch(apiUrl, {
@@ -26,107 +23,127 @@ const GeminiAssistant = () => {
           'Content-Type': 'application/json',
           'X-WP-Nonce': nonce,
         },
-        body: JSON.stringify({
-          message: userQuery,
-        }),
+        body: JSON.stringify({ message: userQuery }),
       });
 
       const data = await response.json();
 
-     
       if (data.status === 'ok') {
         setAiResponse(data.message);
       } else {
-        setAiResponse(data.message || 'Lo sentimos, hubo un problema con la búsqueda.');
+        setAiResponse(data.message || 'Hubo un error al procesar tu consulta.');
       }
     } catch (error) {
-      console.error('Error en la comunicación con WordPress:', error);
-      setAiResponse('Error de conexión con el servidor. Revisa tu conexión.');
+      console.error('Error:', error);
+      setAiResponse('Error de conexión con el servidor.');
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <section style={containerStyle}>
-      <h3 style={{ color: '#2e7d32', marginTop: 0 }}>✨ Consulta a nuestro experto IA</h3>
-      <p style={{ fontSize: '14px', color: '#555' }}>
-        Pregúntanos cualquier duda sobre bienestar y nuestros productos.
-      </p>
-
+    <section style={glassContainerStyle}>
+      <h3 style={titleStyle}>✨ Consulta a nuestra IA</h3>
+      
       <div style={inputContainerStyle}>
         <input
           type="text"
-          placeholder="Ej: ¿Qué beneficios tiene el CBD?"
+          placeholder="Escribe tu duda sobre bienestar..."
           value={userQuery}
           onChange={(e) => setUserQuery(e.target.value)}
-          onKeyDown={(e) => e.key === 'Enter' && handleAskGemini()}
-          style={inputStyle}
+          onKeyDown={(e) => e.key === 'Enter' && handleAskGroq()}
+          style={glassInputStyle}
         />
         <button 
-          onClick={handleAskGemini} 
+          onClick={handleAskGroq} 
           disabled={isLoading} 
-          style={isLoading ? { ...buttonStyle, opacity: 0.6, cursor: 'not-allowed' } : buttonStyle}
+          style={isLoading ? { ...buttonStyle, opacity: 0.7 } : buttonStyle}
         >
-          {isLoading ? 'Pensando...' : 'Consultar'}
+          {isLoading ? '...' : 'Enviar'}
         </button>
       </div>
 
       {aiResponse && (
         <div style={responseBoxStyle}>
-          <strong style={{ display: 'block', marginBottom: '8px', color: '#2e7d32' }}>Respuesta de Gemini:</strong>
-          <p style={{ margin: 0, lineHeight: '1.6', color: '#333', whiteSpace: 'pre-wrap' }}>
-            {aiResponse}
-          </p>
+          <p style={responseTextStyle}>{aiResponse}</p>
         </div>
       )}
     </section>
   );
 };
 
-// Estilos limpios sin tipos de TypeScript
-const containerStyle = {
-  backgroundColor: '#ffffff',
-  padding: '24px',
-  borderRadius: '16px',
-  border: '1px solid #e0e0e0',
-  boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
-  marginTop: '40px',
-  maxWidth: '600px',
+// --- ESTILOS GLASSMORFISMO ---
+
+const glassContainerStyle = {
+  // Configuración de dimensiones pedida
+  width: '100%',
+  maxWidth: '800px',
+  minWidth: '320px',
+  margin: '40px auto',
+  
+  // Efecto Cristal
+  background: 'rgba(255, 255, 255, 0.15)', // Fondo semi-transparente
+  backdropFilter: 'blur(10px)',            // Desenfoque de fondo
+  WebkitBackdropFilter: 'blur(10px)',      // Soporte para Safari
+  borderRadius: '20px',
+  border: '1px solid rgba(255, 255, 255, 0.3)', // Borde blanco suave
+  boxShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.15)',
+  padding: '30px',
+  boxSizing: 'border-box'
+};
+
+const titleStyle = {
+  color: '#2e7d32', 
+  marginTop: 0, 
+  marginBottom: '15px',
+  fontWeight: '600',
+  textAlign: 'center'
 };
 
 const inputContainerStyle = {
   display: 'flex',
-  gap: '12px',
-  marginTop: '16px',
+  gap: '10px',
+  alignItems: 'center'
 };
 
-const inputStyle = {
+const glassInputStyle = {
   flex: 1,
-  padding: '12px 16px',
-  borderRadius: '8px',
-  border: '1px solid #ccc',
+  background: 'rgba(255, 255, 255, 0.2)', // Input traslúcido
+  border: '1px solid rgba(255, 255, 255, 0.4)',
+  borderRadius: '12px',
+  padding: '12px 18px',
+  color: '#333',
   fontSize: '16px',
   outline: 'none',
+  backdropFilter: 'blur(5px)',
 };
 
 const buttonStyle = {
   backgroundColor: '#2e7d32',
   color: 'white',
   border: 'none',
-  padding: '12px 24px',
-  borderRadius: '8px',
+  padding: '12px 20px',
+  borderRadius: '12px',
   fontWeight: 'bold',
   cursor: 'pointer',
-  transition: 'background 0.2s',
+  transition: 'all 0.3s ease',
+  boxShadow: '0 4px 15px rgba(46, 125, 50, 0.2)',
 };
 
 const responseBoxStyle = {
-  marginTop: '20px',
-  padding: '16px',
-  backgroundColor: '#f1f8e9',
-  borderRadius: '8px',
-  borderLeft: '4px solid #2e7d32',
+  marginTop: '25px',
+  padding: '15px 20px',
+  backgroundColor: 'rgba(255, 255, 255, 0.25)', // Caja de respuesta traslúcida
+  borderRadius: '15px',
+  border: '1px solid rgba(255, 255, 255, 0.2)',
+};
+
+const responseTextStyle = {
+  margin: 0,
+  lineHeight: '1.6',
+  color: '#1b5e20',
+  fontSize: '15px',
+  whiteSpace: 'pre-wrap'
 };
 
 export default GeminiAssistant;
