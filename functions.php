@@ -198,7 +198,7 @@ function handle_gemini_request($request) {
     }
 
     // ✅ URL Corregida: Usamos v1 y el modelo estable
-   $url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=" . $api_key;
+   $url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent?key=" . $api_key;
 
     $body = [
         "contents" => [[
