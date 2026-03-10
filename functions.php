@@ -161,32 +161,32 @@ add_action('wp_head', function() {
 });
 
 /**
- * INTEGRACIÓN DE INTELIGENCIA ARTIFICIAL GEMINI CON WORDPRESS
+ * INTEGRACIÓN DE INTELIGENCIA ARTIFICIAL GROQ CON WORDPRESS
  */
 
-// 1. Registrar el endpoint REST (Solo uno, para evitar conflictos)
+// 1. Registrar el endpoint REST
 add_action('rest_api_init', function () {
     register_rest_route('mi-tema/v1', '/gemini', [
         'methods'             => 'POST',
         'callback'            => 'handle_gemini_request',
-        'permission_callback' => '__return_true', 
+        'permission_callback' => '__return_true',
     ]);
 });
 
-// 2. Función principal corregida
+// 2. Función principal adaptada para Groq
 function handle_gemini_request($request) {
 
-    // ✅ API key: Intenta sacarla de wp-config.php o ponla aquí para probar si falla
-    $api_key = defined('GEMINI_API_KEY') ? GEMINI_API_KEY : 'TU_NUEVA_API_KEY_AQUI'; 
-    
-    if (empty($api_key) || $api_key === 'TU_NUEVA_API_KEY_AQUI') {
+    // ✅ API key de Groq (reemplaza con la tuya de console.groq.com)
+    $api_key = defined('GEMINI_API_KEY') ? GEMINI_API_KEY : 'TU_GROQ_API_KEY_AQUI';
+
+    if (empty($api_key) || $api_key === 'TU_GROQ_API_KEY_AQUI') {
         return new WP_Error('no_api_key', 'API key no configurada en el servidor', ['status' => 500]);
     }
 
     // ✅ Leer y validar el mensaje
     $params = $request->get_json_params();
     $user_message = sanitize_text_field($params['message'] ?? '');
-    
+
     if (empty($user_message)) {
         return new WP_Error('empty_message', 'El mensaje está vacío', ['status' => 400]);
     }
@@ -197,20 +197,34 @@ function handle_gemini_request($request) {
         return new WP_Error('invalid_nonce', 'Sesión expirada o no autorizada', ['status' => 403]);
     }
 
-    // ✅ URL Corregida: Usamos v1 y el modelo estable
-   $url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent?key=" . $api_key;
+    // ✅ URL de Groq (compatible con formato OpenAI)
+    $url = "https://api.groq.com/openai/v1/chat/completions";
 
+    // ✅ Body en formato OpenAI que usa Groq
     $body = [
-        "contents" => [[
-            "parts" => [["text" => $user_message]]
-        ]]
+        "model"    => "llama-3.3-70b-versatile",
+        "messages" => [
+            [
+                "role"    => "system",
+                "content" => "Eres un asistente útil integrado en un sitio web WordPress. Responde siempre en español de manera clara y concisa."
+            ],
+            [
+                "role"    => "user",
+                "content" => $user_message
+            ]
+        ],
+        "max_tokens"  => 1024,
+        "temperature" => 0.7,
     ];
 
-    // Llamada a la API
+    // ✅ Llamada a la API con header Authorization
     $response = wp_remote_post($url, [
-        'headers' => ['Content-Type' => 'application/json'],
+        'headers' => [
+            'Content-Type'  => 'application/json',
+            'Authorization' => 'Bearer ' . $api_key,
+        ],
         'body'    => json_encode($body),
-        'timeout' => 45, // Un poco más de tiempo para IA
+        'timeout' => 45,
     ]);
 
     if (is_wp_error($response)) {
@@ -220,14 +234,14 @@ function handle_gemini_request($request) {
     $status_code = wp_remote_retrieve_response_code($response);
     $data = json_decode(wp_remote_retrieve_body($response), true);
 
-    // ✅ Manejo de errores de cuota o modelo
+    // ✅ Manejo de errores
     if ($status_code !== 200) {
         $error_msg = $data['error']['message'] ?? 'Error desconocido';
-        return new WP_Error('gemini_error', "Error de Google: " . $error_msg, ['status' => $status_code]);
+        return new WP_Error('groq_error', "Error de Groq: " . $error_msg, ['status' => $status_code]);
     }
 
-    // ✅ Extraer respuesta
-    $reply = $data['candidates'][0]['content']['parts'][0]['text'] ?? 'No recibí respuesta de la IA.';
+    // ✅ Extraer respuesta (formato OpenAI)
+    $reply = $data['choices'][0]['message']['content'] ?? 'No recibí respuesta de la IA.';
 
     return rest_ensure_response([
         'status'  => 'ok',
