@@ -16,6 +16,7 @@ const initRoots = () => {
     { id: 'react-hero', component: <Hero /> },
     { id: 'react-about', component: <About /> },
     { id: 'react-products', component: <ProductsSection /> },
+    { id: 'gemini-assistant-container', component: <GeminiAssistant /> }, 
     { id: 'react-footer', component: <Footer /> }, 
     { id: 'root-full-app', component: <App /> }
   ];

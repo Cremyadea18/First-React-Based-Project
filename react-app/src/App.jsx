@@ -5,6 +5,7 @@ import miImagenabout from "./assets/asset.svg"
 import ProductSearch from './components/ProductSearch.jsx' 
 import { CartIcon } from './components/CartIcon.jsx'
 import { ProductSingleView } from './components/ProductSingleView';
+import GeminiAssistant from './components/GeminiAssistant';
 
 // --- COMPONENTES AUXILIARES INTERNOS ---
 
@@ -120,6 +121,13 @@ export const ProductsSection = ({ currentCurrency }) => (
     </div>
   </section>
 )
+
+
+{/* --- Bloque del Asistente IA --- */}
+<section className="gemini-section" style={{ margin: '40px 0' }}>
+  <GeminiAssistant />
+</section>
+
 
 // --- COMPONENTE PRINCIPAL APP ---
 

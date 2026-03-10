@@ -6,38 +6,44 @@ const GeminiAssistant: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const handleAskGemini = async () => {
-    if (!userQuery.trim()) return; // No enviar si está vacío
+    if (!userQuery.trim()) return;
 
     setIsLoading(true);
-    setAiResponse(''); // Limpiar respuesta previa
+    setAiResponse('');
 
     try {
-      // 1. Obtenemos el Nonce que configuramos en wp_head
-      const nonce = (window as any).canabbisSettings?.nonce || '';
+      // 1. Extraemos los datos dinámicos inyectados por functions.php
+      const settings = (window as any).canabbisSettings;
+      const nonce = settings?.nonce || '';
+      const baseUrl = settings?.restUrl || '/wp-json/';
 
-      // 2. Llamamos a TU endpoint de WordPress
-      const response = await fetch('/wp-json/mi-tema/v1/gemini', {
+      // 2. Construimos la ruta hacia tu endpoint específico
+      // Asegúrate de que 'mi-tema/v1/gemini' coincida con tu register_rest_route en PHP
+      const apiUrl = `${baseUrl}mi-tema/v1/gemini`;
+
+      const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-WP-Nonce': nonce,
+          'X-WP-Nonce': nonce, // Enviamos el nonce de seguridad
         },
         body: JSON.stringify({
-          message: userQuery, // Este es el 'message' que recibe handle_gemini_request
+          message: userQuery,
         }),
       });
 
       const data = await response.json();
 
-      // 3. Validamos la respuesta del servidor
+      // 3. Procesamos la respuesta del backend
       if (data.status === 'ok') {
         setAiResponse(data.message);
       } else {
-        setAiResponse('Lo siento, hubo un problema al obtener la respuesta.');
+        // En caso de que WordPress devuelva un error (ej. Gemini falló o API Key inválida)
+        setAiResponse(data.message || 'Sorry has been a problem with your search.');
       }
     } catch (error) {
-      console.error('Error:', error);
-      setAiResponse('Error de conexión con el servidor.');
+      console.error('Error en la comunicación con WordPress:', error);
+      setAiResponse('Error de conexión con el servidor. Revisa tu conexión.');
     } finally {
       setIsLoading(false);
     }
@@ -47,13 +53,13 @@ const GeminiAssistant: React.FC = () => {
     <section style={containerStyle}>
       <h3 style={{ color: '#2e7d32', marginTop: 0 }}>✨ Consulta a nuestro experto IA</h3>
       <p style={{ fontSize: '14px', color: '#555' }}>
-        ¿Tienes dudas sobre productos o beneficios? Escribe tu pregunta abajo.
+        Pregúntanos cualquier duda sobre bienestar y nuestros productos.
       </p>
 
       <div style={inputContainerStyle}>
         <input
           type="text"
-          placeholder="Ej: ¿Qué producto recomiendan para relajarme?"
+          placeholder="Ej: ¿Qué beneficios tiene el CBD?"
           value={userQuery}
           onChange={(e) => setUserQuery(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && handleAskGemini()}
@@ -71,14 +77,16 @@ const GeminiAssistant: React.FC = () => {
       {aiResponse && (
         <div style={responseBoxStyle}>
           <strong style={{ display: 'block', marginBottom: '8px', color: '#2e7d32' }}>Respuesta de Gemini:</strong>
-          <p style={{ margin: 0, lineHeight: '1.6', color: '#333' }}>{aiResponse}</p>
+          <p style={{ margin: 0, lineHeight: '1.6', color: '#333', whiteSpace: 'pre-wrap' }}>
+            {aiResponse}
+          </p>
         </div>
       )}
     </section>
   );
 };
 
-// --- ESTILOS (CSS-in-JS) ---
+
 const containerStyle: React.CSSProperties = {
   backgroundColor: '#ffffff',
   padding: '24px',
