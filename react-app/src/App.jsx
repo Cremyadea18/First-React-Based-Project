@@ -94,6 +94,9 @@ export const Hero = () => (
         <BtnPrimary />
         <BtnSecondary />
       </div>
+      <div className="gemini-section" style={{ margin: '40px 0' }}>
+  <GeminiAssistant />
+</div>
     </div>
   </section>
 )
@@ -124,9 +127,9 @@ export const ProductsSection = ({ currentCurrency }) => (
 
 
 {/* --- Bloque del Asistente IA --- */}
-<section className="gemini-section" style={{ margin: '40px 0' }}>
+<div className="gemini-section" style={{ margin: '40px 0' }}>
   <GeminiAssistant />
-</section>
+</div>
 
 
 // --- COMPONENTE PRINCIPAL APP ---
