@@ -81,7 +81,7 @@ const cardBaseStyle = {
   minWidth: '320px',
   height: '180px',
   margin: '40px auto',
-  padding: '25px',
+  padding: `25px 25px clamp(50px, 8vh, 150px) 25px`,
   background: '#121212',
   borderRadius: '22px',
   overflow: 'hidden',
