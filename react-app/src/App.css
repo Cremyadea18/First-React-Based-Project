@@ -19,6 +19,7 @@ justify-content: center;
 padding-top: clamp(50px,8vh,150px);
 padding-left: clamp(20px, 8vh,64px);
 padding-right: clamp(20px,8vh,64px);
+padding-bottom:clamp(20px,8vh,64px) ;
 box-sizing: border-box;
 }
 
